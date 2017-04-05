@@ -54,7 +54,5 @@ public class Group {
 
     public void setExpenses(HashMap<String, Expense> expenses) { this.expenses = expenses; }
 
-    public String toString() {
-        return ID + " " + name + " " + image;
-    }
+    public String toString() { return ID + " " + name + " " + image; }
 }

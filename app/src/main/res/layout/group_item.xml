@@ -9,7 +9,9 @@
         android:id="@+id/img_group"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:src="@mipmap/group"/>
+
+        android:src="@mipmap/group"
+    />
 
     <TextView
         android:id="@+id/tv_group_name"
@@ -32,13 +34,17 @@
         android:layout_width="64dp"
         android:layout_height="match_parent"
         android:layout_margin="16dp"
-        android:background="@color/colorPrimary"
-        android:textSize="14dp"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
         android:layout_marginRight="25dp"
         android:layout_marginEnd="25dp"
-        android:text="111"/>
+
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
+        android:gravity="center"
+
+        android:text="111"
+    />
+
 
 </LinearLayout>
 
