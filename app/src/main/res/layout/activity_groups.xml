@@ -1,17 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.polito.mad17.madmax.Activities.GroupsActivity">
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+
+        <LinearLayout
+            android:id="@+id/balanceline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameline"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            >
+
+
+            <Button
+                android:id="@+id/friendsbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="FRIENDS"
+                />
+
+            <Button
+                android:id="@+id/groupsbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="GROUPS"
+                />
+
+            <Button
+                android:id="@+id/pendingbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="PENDING"
+                />
+
+
+        </LinearLayout>
+
+
+
+
+
+        />
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
     <ListView
         android:id="@+id/lv_list_groups"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-</LinearLayout>
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>
