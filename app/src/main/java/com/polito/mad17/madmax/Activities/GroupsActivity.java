@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +27,24 @@ public class GroupsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
+
+        Button friendsbutton = (Button) findViewById(R.id.friendsbutton);
+
+        friendsbutton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+
+                Context context = GroupsActivity.this;
+                Class destinationActivity = FriendsActivity.class;
+                Intent intent = new Intent(context, destinationActivity);
+                startActivity(intent);
+
+            }
+        });
+
+
+
         listView = (ListView) findViewById(R.id.lv_list_groups);
 
         for(int i = 1; i <= 20; i++)

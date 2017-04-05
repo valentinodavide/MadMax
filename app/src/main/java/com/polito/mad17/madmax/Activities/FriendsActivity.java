@@ -2,34 +2,21 @@ package com.polito.mad17.madmax.Activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import static android.R.color.holo_green_light;
 
 public class FriendsActivity extends AppCompatActivity {
 
@@ -90,9 +77,9 @@ public class FriendsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_friends);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
-        toolbar.setTitle("Friends");
+        //toolbar.setTitle("Friends");
 
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -104,6 +91,23 @@ public class FriendsActivity extends AppCompatActivity {
             }
         });
         */
+
+        Button groupsbutton = (Button) findViewById(R.id.groupsbutton);
+
+        groupsbutton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+
+                Context context = FriendsActivity.this;
+                Class destinationActivity = GroupsActivity.class;
+                Intent intent = new Intent(context, destinationActivity);
+                startActivity(intent);
+
+            }
+        });
+
+
 
 
         lv = (ListView) findViewById(R.id.lv);
@@ -149,7 +153,7 @@ public class FriendsActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
 
                 if (convertView==null) {
-                    convertView=getLayoutInflater().inflate(R.layout.listrow,parent,false);
+                    convertView=getLayoutInflater().inflate(R.layout.friend_item,parent,false);
                 }
 
                 //collego le view agli elementi del layout

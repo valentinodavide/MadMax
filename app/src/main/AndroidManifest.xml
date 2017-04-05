@@ -18,6 +18,8 @@
         </activity>
         <activity android:name=".Activities.GroupDetailsActivity" />
         <activity android:name=".Activities.NewExpenseActivity"></activity>
+        <activity android:name=".Activities.FriendDetailActivity"></activity>
+        <activity android:name=".Activities.FriendsActivity"></activity>
     </application>
 
 </manifest>

@@ -11,12 +11,47 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+
+        <LinearLayout
+            android:id="@+id/balanceline"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameline"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            >
+
+
+            <Button
+                android:id="@+id/friendsbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="FRIENDS"
+                />
+
+            <Button
+                android:id="@+id/groupsbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="GROUPS"
+                />
+
+            <Button
+                android:id="@+id/pendingbutton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="PENDING"
+                />
+
+
+        </LinearLayout>
+
+
+
+
 
             />
 
@@ -32,7 +67,11 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="horizontal" >
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp">
 
 
         <ListView
