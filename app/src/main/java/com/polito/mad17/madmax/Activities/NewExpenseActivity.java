@@ -12,6 +12,8 @@ import com.polito.mad17.madmax.R;
 
 import java.io.IOException;
 
+import static com.polito.mad17.madmax.R.string.groups;
+
 public class NewExpenseActivity extends AppCompatActivity {
 
     private EditText nameExpense;

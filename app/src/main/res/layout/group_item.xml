@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="72dp">
+    android:layout_height="72dp"
+    android:onClick="onClickOpenGroup"
+    android:clickable="true">
 
     <ImageView
         android:id="@+id/img_group"
@@ -17,8 +19,6 @@
         android:layout_margin="20dp"
         android:layout_toRightOf="@id/img_group"
         android:textSize="16dp"
-        android:onClick="onClickOpenGroup"
-        android:clickable="true"
         android:text="GroupName"/>
 
     <TextView

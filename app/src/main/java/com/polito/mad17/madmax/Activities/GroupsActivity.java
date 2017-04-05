@@ -12,13 +12,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.Entities.Group;
+import com.polito.mad17.madmax.Entities.User;
 import com.polito.mad17.madmax.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static com.polito.mad17.madmax.R.mipmap.group;
+import static com.polito.mad17.madmax.R.string.groups;
 
 public class GroupsActivity extends AppCompatActivity {
 
-    private ArrayList<Group> groups = new ArrayList<>();
+    public static HashMap<String, Group> groups = new HashMap<>();
     private ListView listView;
 
     @Override
@@ -30,8 +35,15 @@ public class GroupsActivity extends AppCompatActivity {
         for(int i = 1; i <= 20; i++)
         {
             Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i);
+
+            for(int j = 1; j <= 4; j++)
+            {
+                User user = new User(String.valueOf(j), "Name1", "Surname1", "ImageProfile1");
+                group.getMembers().put(user.getID(), user);
+            }
+
             // Log.d("DEBUG", group.toString());
-            groups.add(group);
+            groups.put(group.getID(), group);
         }
 
         ListAdapter listAdapter = new ListAdapter() {
