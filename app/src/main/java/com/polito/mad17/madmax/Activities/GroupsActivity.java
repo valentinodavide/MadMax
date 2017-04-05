@@ -134,7 +134,7 @@ public class GroupsActivity extends AppCompatActivity {
         TextView groupName = (TextView) view;
         Log.d("DEBUG", groupName.getText().toString());
 
-//        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+//      Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
         Intent myIntent = new Intent(GroupsActivity.this, GroupExpenses.class);
         myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
