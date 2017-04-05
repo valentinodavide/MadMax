@@ -16,7 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.GroupDetailsActivity" />
+        <activity android:name=".Activities.GroupExpenses"> </activity>
         <activity android:name=".Activities.NewExpenseActivity" />
         <activity android:name=".Activities.NewGroupActivity"></activity>
     </application>

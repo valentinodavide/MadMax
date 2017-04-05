@@ -37,7 +37,7 @@ public class NewExpenseActivity extends AppCompatActivity {
         //display message if text field is empty
         Toast.makeText(getBaseContext(), "Saved expense", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(NewExpenseActivity.this, GroupDetailsActivity.class);
+        Intent intent = new Intent(NewExpenseActivity.this, GroupExpenses.class);
         intent.putExtra("nameExpense", nameExpense.getText());
         intent.putExtra("amountExpense", amountExpense.getText());
         intent.putExtra("categoryExpense", categoryExpense.getText());
