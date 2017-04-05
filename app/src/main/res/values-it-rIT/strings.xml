@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="groups">Gruppi</string>
+    <string name="name">Nome</string>
+    <string name="amount">Importo</string>
+    <string name="category">Categoria</string>
+</resources>

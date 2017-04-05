@@ -1,3 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MadMax</string>
+    <string name="app_name" translatable="false">Expenses Taste</string>
+    <string name="groups">Groups</string>
+    <string name="name">Name</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
 </resources>

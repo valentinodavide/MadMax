@@ -1,50 +1,38 @@
-package com.polito.mad17.madmax;
+package com.polito.mad17.madmax.Activities;
 
-// JAVA IMPORTS
-import java.util.ArrayList;
-
-// ANDROID IMPORTS
+import android.content.Intent;
 import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-class GroupItem {
-    private String name;
+import com.polito.mad17.madmax.Entities.Group;
+import com.polito.mad17.madmax.R;
 
-    public GroupItem(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String toString() {  return name; }
-}
+import java.util.ArrayList;
 
 public class GroupsActivity extends AppCompatActivity {
 
+    private ArrayList<Group> groups = new ArrayList<>();
     private ListView listView;
-    private ArrayList<GroupItem> arrayGroup = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
+        listView = (ListView) findViewById(R.id.lv_list_groups);
 
-        GroupItem item1 = new GroupItem("Gruppo1");
-        GroupItem item2 = new GroupItem("Gruppo2");
-
-        arrayGroup.add(item1);
-        arrayGroup.add(item2);
-
-        listView = (ListView) findViewById(R.id.listGroups);
+        for(int i = 1; i <= 20; i++)
+        {
+            Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i);
+            // Log.d("DEBUG", group.toString());
+            groups.add(group);
+        }
 
         ListAdapter listAdapter = new ListAdapter() {
             @Override
@@ -69,12 +57,12 @@ public class GroupsActivity extends AppCompatActivity {
 
             @Override
             public int getCount() {
-                return arrayGroup.size();
+                return groups.size();
             }
 
             @Override
             public Object getItem(int position) {
-                return arrayGroup.get(position);
+                return groups.get(position);
             }
 
             @Override
@@ -91,15 +79,19 @@ public class GroupsActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
 
                 if(convertView == null) {
-                    convertView = getLayoutInflater().inflate(R.layout.activity_group_row, parent, false);
+                    convertView = getLayoutInflater().inflate(R.layout.group_item, parent, false);
                 }
-                else {
-                    ImageView image = (ImageView) convertView.findViewById(R.id.groupImage);
-                    TextView name = (TextView) convertView.findViewById(R.id.groupName);
 
-                    GroupItem groupItem = arrayGroup.get(position);
-                    name.setText(groupItem.getName());
-                }
+                Group group = groups.get(position);
+
+                // ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
+                // groupImage.setImageResource(group.getImage());
+
+                TextView groupName = (TextView) convertView.findViewById(R.id.tv_group_name);
+                groupName.setText(group.getName());
+
+                TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_num_notifications);
+                numberNotifications.setText(group.getNumberNotifications().toString());
 
                 return convertView;
             }
@@ -111,20 +103,25 @@ public class GroupsActivity extends AppCompatActivity {
 
             @Override
             public int getViewTypeCount() {
-                return 0;
+                return 1;
             }
 
             @Override
             public boolean isEmpty() {
-                if(arrayGroup.isEmpty()) {
-                    return true;
-                }
-                else {
-                    return true;
-                }
+                return false;
             }
         };
 
         listView.setAdapter(listAdapter);
+    }
+
+    public void onClickOpenGroup(View view) {
+
+        TextView groupName = (TextView) view;
+        Log.d("DEBUG", groupName.getText().toString());
+
+        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+        myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
+        GroupsActivity.this.startActivity(myIntent);
     }
 }
