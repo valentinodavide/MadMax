@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.GroupDetailsActivity" />
-        <activity android:name=".Activities.NewExpenseActivity"></activity>
+        <activity android:name=".Activities.NewExpenseActivity" />
+        <activity android:name=".Activities.NewGroupActivity"></activity>
     </application>
 
 </manifest>

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.Entities.Group;
@@ -32,17 +33,17 @@ public class GroupsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_groups);
         listView = (ListView) findViewById(R.id.lv_list_groups);
 
-        for(int i = 1; i <= 20; i++)
+        for(int i = 0; i <= 20; i++)
         {
             Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i);
 
-            for(int j = 1; j <= 4; j++)
+            for(int j = 0; j <= 4; j++)
             {
                 User user = new User(String.valueOf(j), "Name1", "Surname1", "ImageProfile1");
                 group.getMembers().put(user.getID(), user);
             }
 
-            // Log.d("DEBUG", group.toString());
+            Log.d("DEBUG", group.toString());
             groups.put(group.getID(), group);
         }
 
@@ -94,7 +95,8 @@ public class GroupsActivity extends AppCompatActivity {
                     convertView = getLayoutInflater().inflate(R.layout.group_item, parent, false);
                 }
 
-                Group group = groups.get(position);
+                Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
+                Group group = groups.get(String.valueOf(position));
 
                 // ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
                 // groupImage.setImageResource(group.getImage());
@@ -132,7 +134,8 @@ public class GroupsActivity extends AppCompatActivity {
         TextView groupName = (TextView) view;
         Log.d("DEBUG", groupName.getText().toString());
 
-        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+//        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+        Intent myIntent = new Intent(GroupsActivity.this, GroupExpenses.class);
         myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }
