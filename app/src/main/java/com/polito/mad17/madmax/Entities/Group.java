@@ -44,11 +44,17 @@ public class Group {
         return numberNotifications;
     }
 
-    public void setNumberNotifications(Integer numberNotifications) {
-        this.numberNotifications = numberNotifications;
-    }
+    public void setNumberNotifications(Integer numberNotifications) { this.numberNotifications = numberNotifications; }
+
+    public HashMap<String, User> getMembers() { return members; }
+
+    public void setMembers(HashMap<String, User> members) { this.members = members; }
+
+    public HashMap<String, Expense> getExpenses() { return expenses; }
+
+    public void setExpenses(HashMap<String, Expense> expenses) { this.expenses = expenses; }
 
     public String toString() {
-        return name + " " + image;
+        return ID + " " + name + " " + image;
     }
 }

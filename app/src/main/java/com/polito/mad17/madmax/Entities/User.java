@@ -8,18 +8,24 @@ import static android.os.Build.VERSION_CODES.M;
 
 public class User {
 
+    private String ID;
     private String name;
     private String surname;
     private String profileImage;
     private SortedMap<String, Expense> addedExpenses;
     private HashMap<String, Double> debts;
 
-    public User(String name, String surname, String profileImage) {
+    public User(String ID, String name, String surname, String profileImage) {
+        this.ID = ID;
         this.name = name;
         this.surname = surname;
         this.profileImage = profileImage;
         debts = new HashMap<>();
     }
+
+    public String getID() { return ID; }
+
+    public void setID(String ID) { this.ID = ID; }
 
     public String getName() {
         return name;

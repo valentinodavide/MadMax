@@ -11,16 +11,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.Entities.Group;
+import com.polito.mad17.madmax.Entities.User;
 import com.polito.mad17.madmax.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import static com.polito.mad17.madmax.R.mipmap.group;
+import static com.polito.mad17.madmax.R.string.groups;
 
 public class GroupsActivity extends AppCompatActivity {
 
-    private ArrayList<Group> groups = new ArrayList<>();
+    public static HashMap<String, Group> groups = new HashMap<>();
     private ListView listView;
 
     @Override
@@ -47,11 +53,18 @@ public class GroupsActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.lv_list_groups);
 
-        for(int i = 1; i <= 20; i++)
+        for(int i = 0; i <= 20; i++)
         {
             Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i);
-            // Log.d("DEBUG", group.toString());
-            groups.add(group);
+
+            for(int j = 0; j <= 4; j++)
+            {
+                User user = new User(String.valueOf(j), "Name1", "Surname1", "ImageProfile1");
+                group.getMembers().put(user.getID(), user);
+            }
+
+            Log.d("DEBUG", group.toString());
+            groups.put(group.getID(), group);
         }
 
         ListAdapter listAdapter = new ListAdapter() {
@@ -102,7 +115,8 @@ public class GroupsActivity extends AppCompatActivity {
                     convertView = getLayoutInflater().inflate(R.layout.group_item, parent, false);
                 }
 
-                Group group = groups.get(position);
+                Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
+                Group group = groups.get(String.valueOf(position));
 
                 // ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
                 // groupImage.setImageResource(group.getImage());
@@ -140,7 +154,8 @@ public class GroupsActivity extends AppCompatActivity {
         TextView groupName = (TextView) view;
         Log.d("DEBUG", groupName.getText().toString());
 
-        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+//        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+        Intent myIntent = new Intent(GroupsActivity.this, GroupExpenses.class);
         myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }

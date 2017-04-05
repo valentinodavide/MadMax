@@ -1,15 +1,21 @@
 package com.polito.mad17.madmax.Entities;
 
+import java.util.HashMap;
+
 public class Expense {
 
     private String name;
     private String category;
     private Double amount;
+    private Boolean equallyDivided;
+    private HashMap<String, Double> partitions;
 
-    public Expense (String name, String category, Double amount) {
+    public Expense (String name, String category, Double amount, Boolean equallyDivided) {
         this.name = name;
         this.category = category;
         this.amount = amount;
+        this.equallyDivided = equallyDivided;
+        partitions = new HashMap<>();
     }
 
     public String getName() {
@@ -34,5 +40,13 @@ public class Expense {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public Boolean getEquallyDivided() {
+        return equallyDivided;
+    }
+
+    public void setEquallyDivided(Boolean equallyDivided) {
+        this.equallyDivided = equallyDivided;
     }
 }
