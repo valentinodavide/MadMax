@@ -5,4 +5,5 @@
     <string name="name">Name</string>
     <string name="amount">Amount</string>
     <string name="category">Category</string>
+    <string name="save">Save</string>
 </resources>
