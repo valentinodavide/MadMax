@@ -41,3 +41,4 @@ captures/
 
 # Gradle
 /app/build.gradle
+/build.gradle

@@ -4,7 +4,9 @@
     <string name="title_activity_group_expenses">Group Expenses</string>
     <string name="title_image_expenses">Image Expenses</string>
     <string name="title_activity_group_expenses_add">GroupExpensesAdd</string>
-    <string name="groups">Groups</string>
+    <string name="groups">GROUPS</string>
+    <string name="friends">FRIENDS</string>
+    <string name="pending">PENDING</string>
     <string name="name">Name</string>
     <string name="amount">Amount</string>
     <string name="category">Category</string>

@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.polito.mad17.madmax.GroupExpensesAdd">
+    tools:context="com.polito.mad17.madmax.Activities.GroupExpenses">
+
+    <TextView
+        android:id="@+id/tv_hidden_group_id"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
 
     <include layout="@layout/content_group_expenses" />
 

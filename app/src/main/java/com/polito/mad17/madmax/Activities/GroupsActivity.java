@@ -81,14 +81,10 @@ public class GroupsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void registerDataSetObserver(DataSetObserver observer) {
-
-            }
+            public void registerDataSetObserver(DataSetObserver observer) { }
 
             @Override
-            public void unregisterDataSetObserver(DataSetObserver observer) {
-
-            }
+            public void unregisterDataSetObserver(DataSetObserver observer) { }
 
             @Override
             public int getCount() {
@@ -125,6 +121,7 @@ public class GroupsActivity extends AppCompatActivity {
 
                 TextView groupName = (TextView) convertView.findViewById(R.id.tv_group_name);
                 groupName.setText(group.getName());
+                groupName.setTag(group.getID());
 
                 TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_num_notifications);
                 numberNotifications.setText(group.getNumberNotifications().toString());
@@ -154,11 +151,11 @@ public class GroupsActivity extends AppCompatActivity {
     public void onClickOpenGroup(View view) {
 
         TextView groupName = (TextView) view;
-        Log.d("DEBUG", groupName.getText().toString());
+        Log.d("DEBUG", groupName.getTag().toString());
 
-//        Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
+//      Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
         Intent myIntent = new Intent(GroupsActivity.this, GroupExpenses.class);
-        myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
+        myIntent.putExtra("groupID", groupName.getTag().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }
 }

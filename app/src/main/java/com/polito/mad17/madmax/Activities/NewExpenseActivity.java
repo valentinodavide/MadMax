@@ -3,6 +3,8 @@ package com.polito.mad17.madmax.Activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,16 +34,42 @@ public class NewExpenseActivity extends AppCompatActivity {
         saveExpense = (Button) findViewById(R.id.bt_add_expense);
     }
 
-    public void onClickSaveExpense(View view) {
-
-        //display message if text field is empty
-        Toast.makeText(getBaseContext(), "Saved expense", Toast.LENGTH_SHORT).show();
-
-        Intent intent = new Intent(NewExpenseActivity.this, GroupExpenses.class);
-        intent.putExtra("nameExpense", nameExpense.getText());
-        intent.putExtra("amountExpense", amountExpense.getText());
-        intent.putExtra("categoryExpense", categoryExpense.getText());
-
-        NewExpenseActivity.this.startActivity(intent);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.save_menu, menu);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemThatWasClickedId = item.getItemId();
+        if (itemThatWasClickedId == R.id.action_save) {
+
+            //display message if text field is empty
+            Toast.makeText(getBaseContext(), "Saved expense", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(NewExpenseActivity.this, GroupExpenses.class);
+            intent.putExtra("nameExpense", nameExpense.getText());
+            intent.putExtra("amountExpense", amountExpense.getText());
+            intent.putExtra("categoryExpense", categoryExpense.getText());
+
+            NewExpenseActivity.this.startActivity(intent);
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+//    public void onClickSaveExpense(View view) {
+//
+//        //display message if text field is empty
+//        Toast.makeText(getBaseContext(), "Saved expense", Toast.LENGTH_SHORT).show();
+//
+//        Intent intent = new Intent(NewExpenseActivity.this, GroupExpenses.class);
+//        intent.putExtra("nameExpense", nameExpense.getText());
+//        intent.putExtra("amountExpense", amountExpense.getText());
+//        intent.putExtra("categoryExpense", categoryExpense.getText());
+//
+//        NewExpenseActivity.this.startActivity(intent);
+//    }
 }
