@@ -91,6 +91,10 @@
         android:layout_height="fill_parent"
         android:orientation="horizontal"
         android:layout_below="@+id/commongroupstext"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
 
         >
 

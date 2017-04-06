@@ -8,8 +8,8 @@ public class Group {
     private String name;
     private String image;
     private Integer numberNotifications;
-    private HashMap<String, User> members;
-    private HashMap<String, Expense> expenses;
+    static private HashMap<String, User> members;
+    static private HashMap<String, Expense> expenses;
 
     public Group(String ID, String name, String image) {
         this.ID = ID;
@@ -53,6 +53,18 @@ public class Group {
     public HashMap<String, Expense> getExpenses() { return expenses; }
 
     public void setExpenses(HashMap<String, Expense> expenses) { this.expenses = expenses; }
+
+    public Double getTotalExpense ()  //ritorna i soldi totali spesi dal gruppo
+    {
+        Double total = 0d;
+
+        for (HashMap.Entry<String, Expense> expense : expenses.entrySet())
+        {
+            total += expense.getValue().getAmount();
+        }
+        return total;
+    }
+
 
     public String toString() {
         return ID + " " + name + " " + image;

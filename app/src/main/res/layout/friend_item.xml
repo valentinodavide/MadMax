@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/photo"
-        android:layout_width="match_parent"
+        android:layout_width="62dp"
         android:layout_height="match_parent"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="5dp"
@@ -24,10 +24,11 @@
         android:layout_toRightOf="@+id/photo"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingTop="5dp"
-        android:text="gggg"
+        android:layout_height="match_parent"
+        android:textSize="24sp"
+        android:paddingLeft="8dp"
+        android:paddingTop="16dp"
+        android:text="Barack"
         android:layout_marginTop="9dp"
 
         />
@@ -37,11 +38,11 @@
         android:layout_toRightOf="@+id/name"
         android:layout_gravity="center_vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingTop="5dp"
-        android:paddingLeft="5dp"
-        android:text="gggg"
+        android:layout_height="match_parent"
+        android:textSize="24sp"
+        android:paddingLeft="8dp"
+        android:paddingTop="16dp"
+        android:text="Obama"
         android:layout_marginTop="9dp"
 
         />
@@ -49,16 +50,19 @@
     <TextView
         android:id="@+id/balance"
         android:layout_alignParentRight="true"
-        android:layout_width="64dp"
-        android:layout_height="33dp"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
+        android:layout_margin="16dp"
         android:background="@android:color/holo_green_light"
         android:layout_marginTop="9dp"
-        android:layout_marginRight="15dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"
         tools:text="333333"
-        android:textColor="#EEEEEE"
-        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:textSize="14dp"
         android:gravity="center"
+
 
 
         />

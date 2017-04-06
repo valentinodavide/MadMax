@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.polito.mad17.madmax.Entities.User;
 import com.polito.mad17.madmax.R;
 
 import java.util.ArrayList;
@@ -70,27 +71,17 @@ public class FriendsActivity extends AppCompatActivity {
 
     private ListView lv;
     private ArrayList<FriendItem> friends = new ArrayList<>();
+    //private ArrayList<User> friends = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
+        User myself = new User("id0", "Ale", "Rota", null);
 
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-        //toolbar.setTitle("Friends");
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
 
         Button groupsbutton = (Button) findViewById(R.id.groupsbutton);
 
@@ -129,6 +120,12 @@ public class FriendsActivity extends AppCompatActivity {
         }
 
 
+        //User u1 = new User("u1", "Barack", "Obama", String.valueOf(imgid[0]));
+        //User u2 = new User("u2", "Vladimir", "Putin", String.valueOf(imgid[1]));
+
+
+
+
 
 
 
@@ -164,13 +161,22 @@ public class FriendsActivity extends AppCompatActivity {
 
                 //prendo il FriendItem
                 FriendItem f=friends.get(position);
+                //User f = friends.get(position);
+
 
                 Integer prova = f.getBalance();
 
                 //setto le view con gli elementi estratti dal FriendItem
+                //String p = f.getProfileImage();
+                //int photoId = Integer.parseInt(p);
+
+                //photo.setImageResource(photoId);
                 photo.setImageResource(f.getPhoto_id());
                 name.setText(f.getName());
                 surname.setText(f.getSurname());
+
+                //Double debttowardfriend =
+
                 if (f.getBalance() > 0)
                 {
                     balance.setText("+ " + f.getBalance() + "€");

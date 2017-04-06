@@ -21,6 +21,7 @@ import com.polito.mad17.madmax.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.polito.mad17.madmax.Entities.Group.members;
 import static com.polito.mad17.madmax.R.mipmap.group;
 import static com.polito.mad17.madmax.R.string.groups;
 
@@ -33,6 +34,7 @@ public class GroupsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
+
 
         Button friendsbutton = (Button) findViewById(R.id.friendsbutton);
 

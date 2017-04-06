@@ -4,13 +4,21 @@ import java.util.HashMap;
 
 public class Expense {
 
+    private String ID;
     private String name;
     private String category;
     private Double amount;
     private Boolean equallyDivided;
     private HashMap<String, Double> partitions;
 
-    public Expense (String name, String category, Double amount, Boolean equallyDivided) {
+
+
+    private Group group;
+
+
+
+    public Expense (String ID, String name, String category, Double amount, Boolean equallyDivided) {
+        this.ID = ID;
         this.name = name;
         this.category = category;
         this.amount = amount;
@@ -49,4 +57,12 @@ public class Expense {
     public void setEquallyDivided(Boolean equallyDivided) {
         this.equallyDivided = equallyDivided;
     }
+
+    public Group getGroup() {return group;}
+
+    public void setGroup(Group group) {this.group = group;}
+
+    public String getID() {return ID;}
+
+    public void setID(String ID) {this.ID = ID;}
 }
