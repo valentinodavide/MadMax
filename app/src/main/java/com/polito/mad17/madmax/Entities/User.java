@@ -63,6 +63,10 @@ public class User {
     public void setDebts(HashMap<String, Double> debts) {
         this.debts = debts;
     }
+
+    public HashMap<String, Double> getDebtsWithGroup() {return debtsWithGroup;}
+
+    public void setDebtsWithGroup(HashMap<String, Double> debtsWithGroup) {this.debtsWithGroup = debtsWithGroup;}
     
     public Double getTotalDebts()
     {
@@ -110,17 +114,17 @@ public class User {
     {
         Group g = expense.getGroup();   //gruppo in cui è stato inserita la spesa
         Double total = g.getTotalExpense(); //spesa totale del gruppo aggiornata
-        Double newdebt = expense.getAmount() / g.getMembers().size();   //soldi che ogni utente deve a me che ho pagato la nuova spesa
-        Double newcredit = newdebt* (g.getMembers().size() -1); //credito totale che io ho verso tutti gli altri
+        Double singlecredit = expense.getAmount() / g.getMembers().size();   //credito che io ho verso ogni singolo utente in virtù della spesa che ho fatto
+        Double totalcredit = singlecredit* (g.getMembers().size() -1); //credito totale che io ho verso tutti gli altri membri del gruppo
         //es. se in un gruppo di 5 persone io ho pagato 10, ognuno mi deve 2
-        //quindi newcredit = 2*4 dove 4 è il n. di membri del gruppo diversi da me. In tutto devo ricevere 8.
+        //quindi totalcredit = 2*4 dove 4 è il n. di membri del gruppo diversi da me. In tutto devo ricevere 8.
 
         Double actualdebts = debtsWithGroup.get(g.getID());
 
         if (actualdebts != null)
         {
             //aggiorno il mio debito verso il gruppo
-            debtsWithGroup.put(g.getID(), actualdebts + newcredit);
+            debtsWithGroup.put(g.getID(), actualdebts + totalcredit);
         }
         else
         {
@@ -139,7 +143,7 @@ public class User {
                 Double debt = debts.get(friend.getKey());
                 if (debt != null)
                 {
-                    debts.put(friend.getKey(), debt-newdebt);
+                    debts.put(friend.getKey(), debt+singlecredit);
                 }
                 else
                 {
@@ -152,11 +156,23 @@ public class User {
 
                 if (hisdebt != null)
                 {
-                    friend.getValue().getDebts().put(this.getID(), hisdebt + newdebt);
+                    friend.getValue().getDebts().put(this.getID(), hisdebt - singlecredit);
                 }
                 else
                 {
                     System.out.println("Io non risulto tra i suoi debiti");
+
+                }
+
+                //aggiorno debito dell'amico verso il gruppo
+                Double hisgroupdebt = friend.getValue().getDebtsWithGroup().get(g.getID());
+                if (hisgroupdebt != null)
+                {
+                    friend.getValue().getDebtsWithGroup().put(g.getID(), hisgroupdebt - singlecredit);
+                }
+                else
+                {
+                    System.out.println("Gruppo non risulta tra i suoi debiti");
 
                 }
             }

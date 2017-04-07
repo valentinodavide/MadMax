@@ -8,16 +8,16 @@ public class Group {
     private String name;
     private String image;
     private Integer numberNotifications;
-    static private HashMap<String, User> members;
-    static private HashMap<String, Expense> expenses;
+    private HashMap<String, User> members;
+    private HashMap<String, Expense> expenses;
 
     public Group(String ID, String name, String image) {
         this.ID = ID;
         this.name = name;
         this.image = image;
         this.numberNotifications = 0;
-        members = new HashMap<>();
-        expenses = new HashMap<>();
+        this.members = new HashMap<>();
+        this.expenses = new HashMap<>();
     }
 
     public String getID() { return ID; }

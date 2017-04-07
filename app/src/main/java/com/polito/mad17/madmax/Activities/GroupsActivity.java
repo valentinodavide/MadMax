@@ -14,19 +14,29 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.polito.mad17.madmax.Entities.Expense;
 import com.polito.mad17.madmax.Entities.Group;
 import com.polito.mad17.madmax.Entities.User;
 import com.polito.mad17.madmax.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 
 
 public class GroupsActivity extends AppCompatActivity {
 
     public static HashMap<String, Group> groups = new HashMap<>();
     private ListView listView;
+    public static ArrayList<User> users = new ArrayList<>();
+    public static User myself;
+
+
+    Integer[] imgid={
+            R.drawable.obama,
+            R.drawable.putin
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +76,41 @@ public class GroupsActivity extends AppCompatActivity {
             Log.d("DEBUG", group.toString());
             groups.put(group.getID(), group);
         }
+
+        //Create users
+        User u1 = new User ("u01", "Alessandro", "Rota", null);
+        User u2 = new User ("u02", "Barack", "Obama", String.valueOf(imgid[0]));
+        User u3 = new User ("u03", "Vladimir", "Putin", String.valueOf(imgid[1]));
+        //Add to users list (needed to share data with other activities)
+        users.add(u2);
+        users.add(u3);
+        myself = u1;
+
+
+        Group g1 = new Group("g01", "Vacanze", null);
+        Group g2 = new Group("g02", "Calcetto", null);
+
+        //Add users to group
+        u1.joinGroup(g1);
+        u2.joinGroup(g1);
+        u3.joinGroup(g1);
+        u1.joinGroup(g2);
+        u2.joinGroup(g2);
+
+        Expense e1 = new Expense("e01", "Pane", "Cibo", 30d, true, g1);
+        Expense e2 = new Expense("e02", "Acqua", "Cibo", 20d, true, g1);
+        Expense e3 = new Expense("e03", "Partita", "Sport", 5d, true, g2);
+
+        u1.addExpense(e1);
+        u2.addExpense(e2);
+        u1.addExpense(e3);
+
+
+
+
+
+
+
 
         ListAdapter listAdapter = new ListAdapter() {
             @Override

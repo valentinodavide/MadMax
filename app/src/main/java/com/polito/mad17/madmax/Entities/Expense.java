@@ -10,20 +10,18 @@ public class Expense {
     private Double amount;
     private Boolean equallyDivided;
     private HashMap<String, Double> partitions;
-
-
-
     private Group group;
 
 
 
-    public Expense (String ID, String name, String category, Double amount, Boolean equallyDivided) {
+    public Expense (String ID, String name, String category, Double amount, Boolean equallyDivided, Group group) {
         this.ID = ID;
         this.name = name;
         this.category = category;
         this.amount = amount;
         this.equallyDivided = equallyDivided;
-        partitions = new HashMap<>();
+        this.partitions = new HashMap<>();
+        this.group = group;
     }
 
     public String getName() {

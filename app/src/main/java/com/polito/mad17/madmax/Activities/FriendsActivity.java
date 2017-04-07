@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.polito.mad17.madmax.Entities.User;
 import com.polito.mad17.madmax.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class FriendsActivity extends AppCompatActivity {
@@ -71,7 +72,9 @@ public class FriendsActivity extends AppCompatActivity {
 
     private ListView lv;
     private ArrayList<FriendItem> friends = new ArrayList<>();
-    //private ArrayList<User> friends = new ArrayList<>();
+    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<Integer> numbers = new ArrayList<>();
+
 
 
     @Override
@@ -79,7 +82,8 @@ public class FriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
-        User myself = new User("id0", "Ale", "Rota", null);
+        User u1 = new User ("u01", "Alessandro", "Rota", null);
+        User u2 = new User ("u02", "Barack", "Obama", String.valueOf(imgid[0]));
 
 
 
@@ -104,6 +108,30 @@ public class FriendsActivity extends AppCompatActivity {
         lv = (ListView) findViewById(R.id.lv);
 
 
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        /*
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        users.add(u1);
+        */
+
+
+
+
+
+
         for (int i = 0; i < 20; i++) {
 
             FriendItem f;
@@ -117,6 +145,7 @@ public class FriendsActivity extends AppCompatActivity {
             }
 
             friends.add(f);
+            numbers.add(1);
         }
 
 
@@ -133,12 +162,12 @@ public class FriendsActivity extends AppCompatActivity {
         final BaseAdapter myadapter = new BaseAdapter() {
             @Override
             public int getCount() {
-                return friends.size();
+                return GroupsActivity.users.size();
             }
 
             @Override
             public Object getItem(int position) {
-                return friends.get(position);
+                return GroupsActivity.users.get(position);
             }
 
             @Override
@@ -160,40 +189,49 @@ public class FriendsActivity extends AppCompatActivity {
                 TextView balance = (TextView)convertView.findViewById(R.id.balance);
 
                 //prendo il FriendItem
-                FriendItem f=friends.get(position);
+                //FriendItem f=friends.get(position);
                 //User f = friends.get(position);
 
 
-                Integer prova = f.getBalance();
+                //FriendItem f = friends.get(position);
+                User f = GroupsActivity.users.get(position);
+
+
 
                 //setto le view con gli elementi estratti dal FriendItem
-                //String p = f.getProfileImage();
-                //int photoId = Integer.parseInt(p);
+                String p = f.getProfileImage();
+                int photoId = Integer.parseInt(p);
 
-                //photo.setImageResource(photoId);
-                photo.setImageResource(f.getPhoto_id());
+                photo.setImageResource(photoId);
                 name.setText(f.getName());
                 surname.setText(f.getSurname());
 
-                //Double debttowardfriend =
+                //mydebt = mio debito con il membro f
+                Double mydebt = GroupsActivity.myself.getDebts().get(f.getID());
 
-                if (f.getBalance() > 0)
+                DecimalFormat df = new DecimalFormat("#.##");
+
+
+                if (mydebt > 0)
                 {
-                    balance.setText("+ " + f.getBalance() + "€");
+                    balance.setText("+ " + df.format(mydebt) + " €");
                     balance.setBackgroundColor(Color.rgb(0,255,0));
 
                 }
-                else if (f.getBalance() < 0)
+                else if (mydebt < 0)
                 {
-                    balance.setText("- " + Math.abs(f.getBalance()));
+                    balance.setText("- " + df.format(Math.abs(mydebt)) + " €");
                     balance.setBackgroundColor(Color.rgb(255,0,0));
                 }
                 else
                 {
-                    balance.setText("" + f.getBalance());
+                    balance.setText("" + df.format(mydebt) + " €");
                     balance.setBackgroundColor(Color.rgb(0,255,0));
 
                 }
+
+
+
 
 
 
