@@ -2,32 +2,32 @@ package com.polito.mad17.madmax.entities;
 
 import java.util.HashMap;
 
+import static com.polito.mad17.madmax.R.mipmap.group;
+
 public class Expense {
-
     private String ID;
+
     private String description;
-    private String category;
+    private String category;        // optional, corrisponde al categoryID della categoria a cui corrisponde la spesa
     private Double amount;
-    private Boolean equallyDivided;
-    private HashMap<String, Double> partitions;
-    private String currency;
-    private String image;
+    private String currency;        // €, $ ...
+    private String image;           // optional, URL dell'immagine su Firebase (può essere lo scontrino o una foto del prodotto)
 
-    private Group group;
+    private Boolean equallyDivided; // se vero la spesa viene divisa equamente fra tutti gli utenti del gruppo
+                                    // altrimenti viene suddivisa come specificato in partitions ->
+    private HashMap<String, Double> partitions;     // String: userID, Double: frazione corrispondente a quello User
 
-    public Expense (String ID, String description, String category, Double amount, Boolean equallyDivided, Group group, String currency, String image) {
+
+    public Expense (String ID, String description, String category, Double amount, String currency, String image, Boolean equallyDivided) {
         this.ID = ID;
         this.description = description;
         this.category = category;
         this.amount = amount;
+        this.currency = currency;
+        this.image = image;
         this.equallyDivided = equallyDivided;
         this.partitions = new HashMap<>();
         partitions = new HashMap<>();
-        this.currency = currency;
-        this.image = image;
-
-        this.group = group;
-
     }
 
     public String getID() {
@@ -62,26 +62,6 @@ public class Expense {
         this.amount = amount;
     }
 
-    public Boolean getEquallyDivided() {
-        return equallyDivided;
-    }
-
-    public void setEquallyDivided(Boolean equallyDivided) {
-        this.equallyDivided = equallyDivided;
-    }
-
-    public HashMap<String, Double> getPartitions() {
-        return partitions;
-    }
-
-    public void setPartitions(HashMap<String, Double> partitions) {
-        this.partitions = partitions;
-    }
-
-    public Group getGroup() {return group;}
-
-    public void setGroup(Group group) {this.group = group;}
-
     public String getCurrency() {
         return currency;
     }
@@ -96,5 +76,21 @@ public class Expense {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Boolean getEquallyDivided() {
+        return equallyDivided;
+    }
+
+    public void setEquallyDivided(Boolean equallyDivided) {
+        this.equallyDivided = equallyDivided;
+    }
+
+    public HashMap<String, Double> getPartitions() {
+        return partitions;
+    }
+
+    public void setPartitions(HashMap<String, Double> partitions) {
+        this.partitions = partitions;
     }
 }

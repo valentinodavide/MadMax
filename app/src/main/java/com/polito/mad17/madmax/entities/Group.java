@@ -3,21 +3,20 @@ package com.polito.mad17.madmax.entities;
 import java.util.HashMap;
 
 public class Group {
-
     private String ID;
     private String name;
-    private String image;
-    private String description;
-    private Integer numberNotifications;
-    private HashMap<String, User> members;
-    private HashMap<String, Expense> expenses;
+    private String image;                       // optional, URL dell'immagine su Firebase
+    private String description;                 // optional
+    private Integer counterAddedExpenses;       // numero di spese aggiunte dall'ultima apertura del gruppo
+    private HashMap<String, User> members;      // String: userID,      User: oggetto
+    private HashMap<String, Expense> expenses;  // String: expenseID,   Expense: oggetto
 
     public Group(String ID, String name, String image, String description) {
         this.ID = ID;
         this.name = name;
         this.image = image;
         this.description = description;
-        this.numberNotifications = 0;
+        this.counterAddedExpenses = 0;
         this.members = new HashMap<>();
         this.expenses = new HashMap<>();
     }
@@ -42,10 +41,6 @@ public class Group {
         this.image = image;
     }
 
-    public Integer getNumberNotifications() {
-        return numberNotifications;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -54,7 +49,11 @@ public class Group {
         return this.description = description;
     }
 
-    public void setNumberNotifications(Integer numberNotifications) { this.numberNotifications = numberNotifications; }
+    public Integer getNumberNotifications() {
+        return counterAddedExpenses;
+    }
+
+    public void setNumberNotifications(Integer numberNotifications) { this.counterAddedExpenses = numberNotifications; }
 
     public HashMap<String, User> getMembers() { return members; }
 
@@ -75,6 +74,8 @@ public class Group {
         return total;
     }
 
+    // todo updateCounterAddedExpenses: ogni volta che l'utente apre un gruppo il numerino che segna
+    // todo     il numero di spese aggiunte dall'ultima apertura del gruppo deve essere azzerato
 
     public String toString() {
         return ID + " " + name + " " + image;
