@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "174143395",
+    "firebase_url": "https://expensivetastes-9f84d.firebaseio.com",
+    "project_id": "expensivetastes-9f84d",
+    "storage_bucket": "expensivetastes-9f84d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:174143395:android:b003802df844c4b7",
+        "android_client_info": {
+          "package_name": "com.polito.mad17.madmax"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "174143395-h7gsrpcitad5p9p6ofcf1404cramsu1h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIuo_xmINCVXL2JdRmeL-e6gNWUFRUfrE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

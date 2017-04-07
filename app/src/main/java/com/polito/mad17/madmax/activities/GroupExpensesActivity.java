@@ -20,6 +20,7 @@ import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static android.os.Build.ID;
 import static com.polito.mad17.madmax.R.mipmap.expense;
@@ -38,6 +39,19 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_group_expenses);
 
+
+
+        // initialize statically a set of expenses for that group
+        int i;
+        for(i = 0; i < 10; i++)
+        {
+//            Expense expense = new Expense(String.valueOf(i), "Description expense " + i, (double) i+1);
+//
+//            Log.d("DEBUG", expense.toString());
+//            expenses.put(expense.getID(), expense);
+        }
+
+
         final String IDGroup;
 
         Intent intent = getIntent();
@@ -48,12 +62,13 @@ public class GroupExpensesActivity extends AppCompatActivity {
             String description = intent.getStringExtra("description");
             String amount = intent.getStringExtra("amount");
             String currency = intent.getStringExtra("currency");
+//            expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
 
             Group group = null;
-            for (Group g : GroupsActivity.groups) {
-                Log.d("GroupExpensesActivity", "getID = " + g.getID() + ", IDGroup = " + IDGroup);
-                if (g.getID().equals(IDGroup)) {
-                    group = g;
+            for (Map.Entry<String, Group> entry : GroupsActivity.groups.entrySet()) {
+                Log.d("GroupExpensesActivity", "getID = " + entry.getValue().getID() + ", IDGroup = " + IDGroup);
+                if (entry.getValue().getID().equals(IDGroup)) {
+                    group = entry.getValue();
                     Log.d("GroupExpensesActivity", "found");
                 }
             }
@@ -76,10 +91,10 @@ public class GroupExpensesActivity extends AppCompatActivity {
             IDGroup = intent.getStringExtra("IDGroup");
 
             Group group = null;
-            for (Group g : GroupsActivity.groups) {
-                Log.d("GroupExpensesActivity", "getID = " + g.getID() + ", IDGroup = " + IDGroup);
-                if (g.getID().equals(IDGroup)) {
-                    group = g;
+            for (Map.Entry<String, Group> entry : GroupsActivity.groups.entrySet()) {
+                Log.d("GroupExpensesActivity", "getID = " + entry.getValue().getID() + ", IDGroup = " + IDGroup);
+                if (entry.getValue().getID().equals(IDGroup)) {
+                    group = entry.getValue();
                     Log.d("GroupExpensesActivity", "found");
                 }
             }
@@ -96,7 +111,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(GroupExpensesActivity.this, NewExpenseActivity.class);
-                intent.putExtra("IDGroup", IDGroup);
+                GroupExpensesActivity.this.startActivity(intent);
 
                 finish();
                 GroupExpensesActivity.this.startActivity(intent);
