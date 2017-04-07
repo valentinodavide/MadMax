@@ -51,7 +51,8 @@ public class NewGroupActivity extends AppCompatActivity {
             String description = descriptionGroup.getText().toString();
 
             Group newGroup = new Group(newID.toString(), name, "noImage", description);
-            groups.put(newID.toString(), newGroup);
+            //groups.put(newID.toString(), newGroup);
+            groups.add(newGroup); //soluzione temporanea di ale, poi discutamo se tenere groups come lista o hashmap
 
 //          Log.d("DEBUG", "groups.size() after " + groups.size());
 

@@ -104,7 +104,7 @@ public class GroupExpenses extends AppCompatActivity {
                     LayoutInflater inflater = LayoutInflater.from(GroupExpenses.this);
 
                     // last parameter is very important: for now we don't want to attach our view to the parent view
-                    convertView = inflater.inflate(R.layout.expense, parent, false);
+                    convertView = inflater.inflate(R.layout.item_expense, parent, false);
                 }
 
                 //ImageView photo = (ImageView) convertView.findViewById(R.id.photo);

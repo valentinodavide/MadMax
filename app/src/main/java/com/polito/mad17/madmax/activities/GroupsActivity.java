@@ -114,9 +114,9 @@ public class GroupsActivity extends AppCompatActivity {
             myself = u0;
 
 
-            Group g1 = new Group(String.valueOf(1), "Vacanze", String.valueOf(imgid[5]));
-            Group g2 = new Group(String.valueOf(1), "Calcetto", String.valueOf(imgid[6]));
-            Group g3 = new Group(String.valueOf(1), "Spese Casa", String.valueOf(imgid[7]));
+            Group g1 = new Group(String.valueOf(1), "Vacanze", String.valueOf(imgid[5]), "ciao");
+            Group g2 = new Group(String.valueOf(1), "Calcetto", String.valueOf(imgid[6]), "ciao");
+            Group g3 = new Group(String.valueOf(1), "Spese Casa", String.valueOf(imgid[7]), "ciao");
 
 
 
