@@ -3,6 +3,8 @@ package com.polito.mad17.madmax.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,19 +18,28 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.R;
 
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.polito.mad17.madmax.R.mipmap.group;
+
 public class GroupsActivity extends AppCompatActivity {
 
-    //public static HashMap<String, Group> groups = new HashMap<>();
-    public static ArrayList<Group> groups = new ArrayList<>();
+    public static HashMap<String, Group> groups = new HashMap<>();
     private ListView listView;
     public static ArrayList<User> users = new ArrayList<>();
     public static User myself;
@@ -58,6 +69,27 @@ public class GroupsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        JSONObject prova = new JSONObject();
+        try {
+            prova.put("nome", "chiara");
+            prova.put("cognome", "nome");
+
+            myRef.setValue(prova);
+        }
+        catch(org.json.JSONException exception)
+        {
+            exception.printStackTrace();
+        }
+
+        myRef.setValue("Hello, World!");
+
+//        scaleDownImage("E:\\Chiara\\Documents\\PoliTo\\MAD\\MadMax\\app\\src\\main\\res\\drawable\\obama.jpg");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
 
@@ -126,12 +158,9 @@ public class GroupsActivity extends AppCompatActivity {
             myself = u0;
 
 
-            Group g1 = new Group(String.valueOf(1), "Vacanze", String.valueOf(imgid[5]), "ciao");
-            Group g2 = new Group(String.valueOf(2), "Calcetto", String.valueOf(imgid[6]), "ciao");
-            Group g3 = new Group(String.valueOf(3), "Spese Casa", String.valueOf(imgid[7]), "ciao");
-
-
-
+            Group g1 = new Group(String.valueOf(0), "Vacanze", String.valueOf(imgid[5]), "ciao");
+            Group g2 = new Group(String.valueOf(1), "Calcetto", String.valueOf(imgid[6]), "ciao");
+            Group g3 = new Group(String.valueOf(2), "Spese Casa", String.valueOf(imgid[7]), "ciao");
 
             //Add users to group
             u0.joinGroup(g1);
@@ -160,20 +189,11 @@ public class GroupsActivity extends AppCompatActivity {
             u0.addExpense(e3);
             u4.addExpense(e4);
 
-            groups.add(g1);
-            groups.add(g2);
-            groups.add(g3);
+            groups.put(g1.getID(), g1);
+            groups.put(g2.getID(), g2);
+            groups.put(g3.getID(), g3);
 
         }
-
-
-
-
-
-
-
-
-
 
         ListAdapter listAdapter = new ListAdapter() {
             @Override
@@ -220,9 +240,7 @@ public class GroupsActivity extends AppCompatActivity {
                 }
 
                 //Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
-                //Group group = groups.get(String.valueOf(position));
-                Group group = groups.get(position);
-
+                Group group = groups.get(String.valueOf(position));
 
                 ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
                 String p = group.getImage();
@@ -298,30 +316,40 @@ public class GroupsActivity extends AppCompatActivity {
         GroupsActivity.this.startActivity(myIntent);
     }
 
-//    private void scaleDownImage() {
+//    private void scaleDownImage(String imagePath) {
 //
-//        Bitmap background = Bitmap.createBitmap((int)width, (int)height, Config.ARGB_8888);
+//        String outputFolder = "E:\\Chiara\\Documents\\PoliTo\\MAD\\MadMax\\app\\src\\main\\res\\drawable\\prova";
 //
-//        float originalWidth = originalImage.getWidth();
-//        float originalHeight = originalImage.getHeight();
+//        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+//        BitmapFactory.decodeFile(imagePath, bitmapOptions);
+//        Log.d("DEBUG", bitmapOptions.outWidth + " " + bitmapOptions.outHeight);
 //
-//        Canvas canvas = new Canvas(background);
+//        Integer imageWidth = bitmapOptions.outWidth;
+//        Integer imageHeight = bitmapOptions.outHeight;
 //
-//        float scale = width / originalWidth;
+//        bitmapOptions.inJustDecodeBounds = true;
+//        bitmapOptions.inScaled = true;
+//        bitmapOptions.inSampleSize = 4;
+//        bitmapOptions.inDensity = imageWidth;
+//        bitmapOptions.inTargetDensity = (100) * bitmapOptions.inSampleSize;
 //
-//        float xTranslation = 0.0f;
-//        float yTranslation = (height - originalHeight * scale) / 2.0f;
+//        Bitmap image = Bitmap.createBitmap(imageWidth, imageHeight, Bitmap.Config.ARGB_8888);
 //
-//        Matrix transformation = new Matrix();
-//        transformation.postTranslate(xTranslation, yTranslation);
-//        transformation.preScale(scale, scale);
-//
-//        Paint paint = new Paint();
-//        paint.setFilterBitmap(true);
-//
-//        canvas.drawBitmap(originalImage, transformation, paint);
-//
-//        return background;
+//        FileOutputStream fileOutputStream = null;
+//        try {
+//            fileOutputStream = new FileOutputStream(outputFolder);
+//            image.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+//        }
+//        catch(FileNotFoundException e)
+//        {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                fileOutputStream.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
 //    }
 
 }

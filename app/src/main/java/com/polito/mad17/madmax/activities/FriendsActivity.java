@@ -125,11 +125,6 @@ public class FriendsActivity extends AppCompatActivity {
 
                 }
 
-
-
-
-
-
                 return convertView;
             }
         };
