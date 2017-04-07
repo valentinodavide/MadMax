@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,21 +22,18 @@ public class NewExpenseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_expense);
 
-        EditText description;
-        EditText amount;
-        Spinner currency;
-        Button saveExpense;
+        final String IDGroup;
+        Intent intent = getIntent();
+        IDGroup = intent.getStringExtra("IDGroup");
 
-        description = (EditText) findViewById(R.id.edit_description);
-        amount = (EditText) findViewById(R.id.edit_amount);
-        currency = (Spinner) findViewById(R.id.currency);
-        saveExpense = (Button) findViewById(R.id.save_expense);
-
-        // showing values of the spinner for the currencies
+        // creating spinner for currencies
+        Spinner currency = (Spinner) findViewById(R.id.currency);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currency.setAdapter(adapter);
 
+        // creating button for saving new expense
+        Button saveExpense = (Button) findViewById(R.id.save_expense);
         saveExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,12 +50,13 @@ public class NewExpenseActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(NewExpenseActivity.this, GroupExpensesActivity.class);
                 intent.putExtra("addExpense", true);
-                intent.putExtra("description", description.getText());
-                intent.putExtra("amount", amount.getText());
+                intent.putExtra("IDGroup", IDGroup);
+                intent.putExtra("description", description.getText().toString());
+                intent.putExtra("amount", amount.getText().toString());
                 intent.putExtra("currency", currency.getSelectedItem().toString());
 
-                NewExpenseActivity.this.startActivity(intent);
                 finish();
+                NewExpenseActivity.this.startActivity(intent);
             }
         });
     }

@@ -45,6 +45,16 @@ public class GroupsActivity extends AppCompatActivity {
             R.drawable.casa
     };
 
+    Integer[] img_expense={
+            R.drawable.expense1,
+            R.drawable.expense2,
+            R.drawable.expense3,
+            R.drawable.expense4,
+            R.drawable.expense5,
+            R.drawable.expense6,
+            R.drawable.expense7
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +109,7 @@ public class GroupsActivity extends AppCompatActivity {
         if (users.isEmpty())
         {
             //Create users
-            User u0 = new User("u0", "Mario", "Rossi", null);
+            User u0 = new User("u00", "Mario", "Rossi", null);
             User u1 = new User ("u01", "Alessandro", "Rota", String.valueOf(imgid[0]) );
             User u2 = new User ("u02", "Davide", "Valentino", String.valueOf(imgid[1]));
             User u3 = new User ("u03", "Chiara", "Di Nardo", String.valueOf(imgid[2]));
@@ -138,10 +148,12 @@ public class GroupsActivity extends AppCompatActivity {
             u4.joinGroup(g3);
 
 
-            Expense e1 = new Expense("e01", "Pizza", "Cibo", 30d, true, g1);
-            Expense e2 = new Expense("e02", "Crema Solare", "Altro", 20d, true, g1);
-            Expense e3 = new Expense("e03", "Partita", "Sport", 5d, true, g2);
-            Expense e4 = new Expense("e04", "Affitto", "Altro", 500d, true, g3);
+            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo", 30d, true, g1, "€", String.valueOf(img_expense[0]));
+            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro", 20d, true, g1, "€", String.valueOf(img_expense[1]));
+
+            Expense e3 = new Expense(String.valueOf(0), "Partita", "Sport", 5d, true, g2, "€", String.valueOf(img_expense[2]));
+
+            Expense e4 = new Expense(String.valueOf(0), "Affitto", "Altro", 500d, true, g3, "€", String.valueOf(img_expense[3]));
 
             u0.addExpense(e1);
             u3.addExpense(e2);
@@ -219,7 +231,7 @@ public class GroupsActivity extends AppCompatActivity {
 
                 TextView groupName = (TextView) convertView.findViewById(R.id.tv_group_name);
                 groupName.setText(group.getName());
-                //groupName.setTag(group.getID());
+                groupName.setTag(group.getID());
 
                 TextView balance = (TextView) convertView.findViewById(R.id.tv_group_debt);
 
@@ -278,10 +290,11 @@ public class GroupsActivity extends AppCompatActivity {
         TextView groupName = (TextView) view;
         Log.d("DEBUG", groupName.getTag().toString());
 
+        String IDGroup = groupName.getTag().toString();
 
         Intent myIntent = new Intent(GroupsActivity.this, GroupExpensesActivity.class);
         myIntent.putExtra("addExpense", false);
-        myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
+        myIntent.putExtra("IDGroup", IDGroup); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }
 

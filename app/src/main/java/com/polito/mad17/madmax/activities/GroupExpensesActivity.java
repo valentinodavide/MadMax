@@ -9,18 +9,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.entities.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import static android.os.Build.ID;
+import static com.polito.mad17.madmax.R.mipmap.expense;
+import static com.polito.mad17.madmax.R.mipmap.group;
 
 public class GroupExpensesActivity extends AppCompatActivity {
     public static HashMap<String, Expense> expenses = new HashMap<>();
-
-
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,30 +38,53 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_group_expenses);
 
-
-
-        // initialize statically a set of expenses for that group
-        int i;
-        for(i = 0; i < 10; i++)
-        {
-            //Expense expense = new Expense(String.valueOf(i), "Description expense " + i, (double) i+1);
-            Expense expense = new Expense(String.valueOf(i), "Description expense " + i, null, null, null, null);
-
-
-            Log.d("DEBUG", expense.toString());
-            expenses.put(expense.getID(), expense);
-        }
-
-
+        final String IDGroup;
 
         Intent intent = getIntent();
+        // if starting activity from itself (adding a new expense)
         if (intent.getBooleanExtra("addExpense", true)) {
-            // adding a new expense
+            IDGroup = intent.getStringExtra("IDGroup");
+
             String description = intent.getStringExtra("description");
             String amount = intent.getStringExtra("amount");
             String currency = intent.getStringExtra("currency");
-            //expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
-            //expenses.put(String.valueOf(i), new Expense(String.valueOf(i), "Description expense " + i, null, null, null, null));
+
+            Group group = null;
+            for (Group g : GroupsActivity.groups) {
+                Log.d("GroupExpensesActivity", "getID = " + g.getID() + ", IDGroup = " + IDGroup);
+                if (g.getID().equals(IDGroup)) {
+                    group = g;
+                    Log.d("GroupExpensesActivity", "found");
+                }
+            }
+
+            //Group group = myGroups.get(IDGroup);
+            expenses = group.getExpenses();
+
+            Expense e = new Expense(
+                    String.valueOf(expenses.size()), description, null,
+                    Double.valueOf(amount), true, group, currency, String.valueOf(R.drawable.expense6)
+            );
+
+            // save the new expense
+            expenses.put(String.valueOf(expenses.size()), e);
+
+            GroupsActivity.users.get(0).addExpense(e);
+        }
+        // if starting activity from GroupActivity (tapping on a group for showing details)
+        else {
+            IDGroup = intent.getStringExtra("IDGroup");
+
+            Group group = null;
+            for (Group g : GroupsActivity.groups) {
+                Log.d("GroupExpensesActivity", "getID = " + g.getID() + ", IDGroup = " + IDGroup);
+                if (g.getID().equals(IDGroup)) {
+                    group = g;
+                    Log.d("GroupExpensesActivity", "found");
+                }
+            }
+
+            expenses = group.getExpenses();
         }
 
         // then show group expenses list
@@ -66,9 +95,11 @@ public class GroupExpensesActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent myIntent = new Intent(GroupExpensesActivity.this, NewExpenseActivity.class);
-                GroupExpensesActivity.this.startActivity(myIntent);
+                Intent intent = new Intent(GroupExpensesActivity.this, NewExpenseActivity.class);
+                intent.putExtra("IDGroup", IDGroup);
 
+                finish();
+                GroupExpensesActivity.this.startActivity(intent);
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
             }
@@ -109,13 +140,15 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 }
 
                 Expense expense = expenses.get(String.valueOf(position));
+                //Expense expense = GroupsActivity.groups.get(Integer.parseInt(IDGroup)).getExpenses().get(String.valueOf(position));
 
-                //ImageView category = (ImageView) convertView.findViewById(R.id.category);
+                ImageView photo = (ImageView) convertView.findViewById(R.id.photo);
                 TextView description = (TextView) convertView.findViewById(R.id.description);
                 TextView amount = (TextView) convertView.findViewById(R.id.amount);
 
+                photo.setImageResource(Integer.parseInt(expense.getImage()));
                 description.setText(expense.getDescription());
-                String amountString = expense.getAmount() + " €";
+                String amountString = expense.getAmount() + " " + expense.getCurrency();
                 amount.setText(amountString);
 
                 return convertView;

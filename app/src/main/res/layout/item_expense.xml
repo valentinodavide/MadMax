@@ -6,7 +6,7 @@
     android:layout_height="75dp"
     android:padding="@dimen/padding_list">
 
-    <ImageView android:id="@+id/category"
+    <ImageView android:id="@+id/photo"
         android:layout_height="match_parent"
         android:layout_width="50dp"
 
