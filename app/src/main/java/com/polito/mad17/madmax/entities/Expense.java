@@ -1,10 +1,5 @@
 package com.polito.mad17.madmax.entities;
 
-import java.util.HashMap;
-
-import static android.R.attr.name;
-import static android.R.attr.src;
-
 public class Expense {
 
     private String ID;

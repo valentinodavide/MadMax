@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Expenses Taste</string>
     <string name="title_activity_group_expenses">Group Expenses</string>
     <string name="title_image_expenses">Image Expenses</string>
     <string name="title_activity_group_expenses_add">GroupExpensesAdd</string>
@@ -10,5 +9,8 @@
     <string name="name">Nome</string>
     <string name="amount">Importo</string>
     <string name="category">Categoria</string>
+    <string name="purpose">Scopo</string>
+    <string name="description">Descrizione</string>
+    <string name="photo">Foto</string>
     <string name="save">Salva</string>
 </resources>

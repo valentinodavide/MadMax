@@ -10,6 +10,9 @@
     <string name="name">Name</string>
     <string name="amount">Amount</string>
     <string name="category">Category</string>
+    <string name="purpose">Purpose</string>
+    <string name="description">Description</string>
+    <string name="photo">Photo</string>
     <string name="save">Save</string>
     <string name="edit_description_hint">Insert expense description</string>
     <string name="edit_amount_hint">Insert amount</string>

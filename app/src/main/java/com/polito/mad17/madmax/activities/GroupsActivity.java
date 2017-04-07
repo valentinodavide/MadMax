@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +14,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.R;
 
 import java.util.ArrayList;
@@ -37,9 +38,23 @@ public class GroupsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if(groups.isEmpty()) {
+            for (int i = 0; i <= 3; i++) {
+                Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i, "description");
+
+                for (int j = 0; j <= 4; j++) {
+                    User user = new User(String.valueOf(j), "Name1", "Surname1", "ImageProfile1");
+                    group.getMembers().put(user.getID(), user);
+                }
+
+                Log.d("DEBUG", group.toString());
+                groups.put(group.getID(), group);
+            }
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups);
-
 
         Button friendsbutton = (Button) findViewById(R.id.friendsbutton);
 
@@ -56,23 +71,19 @@ public class GroupsActivity extends AppCompatActivity {
             }
         });
 
-
-
         listView = (ListView) findViewById(R.id.lv_list_groups);
 
-        for(int i = 0; i <= 20; i++)
-        {
-            Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i);
 
-            for(int j = 0; j <= 4; j++)
-            {
-                User user = new User(String.valueOf(j), "Name1", "Surname1", "ImageProfile1");
-                group.getMembers().put(user.getID(), user);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(GroupsActivity.this, NewGroupActivity.class);
+                GroupsActivity.this.startActivity(myIntent);
+
             }
-
-            Log.d("DEBUG", group.toString());
-            groups.put(group.getID(), group);
-        }
+        });
 
         //Create users
         User u1 = new User ("u01", "Alessandro", "Rota", null);
@@ -84,8 +95,8 @@ public class GroupsActivity extends AppCompatActivity {
         myself = u1;
 
 
-        Group g1 = new Group("g01", "Vacanze", null);
-        Group g2 = new Group("g02", "Calcetto", null);
+        Group g1 = new Group("g01", "Vacanze", null, null);
+        Group g2 = new Group("g02", "Calcetto", null, null);
 
         //Add users to group
         u1.joinGroup(g1);
@@ -101,12 +112,6 @@ public class GroupsActivity extends AppCompatActivity {
         u1.addExpense(e1);
         u2.addExpense(e2);
         u1.addExpense(e3);
-
-
-
-
-
-
 
 
         ListAdapter listAdapter = new ListAdapter() {
@@ -153,7 +158,8 @@ public class GroupsActivity extends AppCompatActivity {
                     convertView = getLayoutInflater().inflate(R.layout.item_group, parent, false);
                 }
 
-                Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
+//                Log.d("DEBUG", "group " + position groups.get(String.valueOf(position)).toString());
+                Log.d("DEBUG", "position " + position);
                 Group group = groups.get(String.valueOf(position));
 
                 // ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
@@ -163,7 +169,7 @@ public class GroupsActivity extends AppCompatActivity {
                 groupName.setText(group.getName());
                 groupName.setTag(group.getID());
 
-                TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_num_notifications);
+                TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_debt);
                 numberNotifications.setText(group.getNumberNotifications().toString());
 
                 return convertView;
@@ -199,4 +205,31 @@ public class GroupsActivity extends AppCompatActivity {
         myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }
+
+//    private void scaleDownImage() {
+//
+//        Bitmap background = Bitmap.createBitmap((int)width, (int)height, Config.ARGB_8888);
+//
+//        float originalWidth = originalImage.getWidth();
+//        float originalHeight = originalImage.getHeight();
+//
+//        Canvas canvas = new Canvas(background);
+//
+//        float scale = width / originalWidth;
+//
+//        float xTranslation = 0.0f;
+//        float yTranslation = (height - originalHeight * scale) / 2.0f;
+//
+//        Matrix transformation = new Matrix();
+//        transformation.postTranslate(xTranslation, yTranslation);
+//        transformation.preScale(scale, scale);
+//
+//        Paint paint = new Paint();
+//        paint.setFilterBitmap(true);
+//
+//        canvas.drawBitmap(originalImage, transformation, paint);
+//
+//        return background;
+//    }
+
 }
