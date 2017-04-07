@@ -63,14 +63,14 @@ public class Group {
 
     public void setExpenses(HashMap<String, Expense> expenses) { this.expenses = expenses; }
 
-    public Double getTotalExpense ()  //ritorna i soldi totali spesi dal gruppo
-    {
+    //ritorna i soldi totali spesi dal gruppo (packake-private: visibilità di default)
+    Double getTotalExpense () {
         Double total = 0d;
 
-        for (HashMap.Entry<String, Expense> expense : expenses.entrySet())
-        {
+        for (HashMap.Entry<String, Expense> expense : expenses.entrySet()) {
             total += expense.getValue().getAmount();
         }
+
         return total;
     }
 

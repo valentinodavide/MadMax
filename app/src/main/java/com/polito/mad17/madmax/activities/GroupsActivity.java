@@ -3,8 +3,6 @@ package com.polito.mad17.madmax.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -18,24 +16,18 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+//import com.google.firebase.database.DatabaseReference;
+//import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
-import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.R;
 
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static com.polito.mad17.madmax.R.mipmap.group;
 
 public class GroupsActivity extends AppCompatActivity {
 
@@ -70,6 +62,7 @@ public class GroupsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        /*
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("message");
@@ -87,6 +80,7 @@ public class GroupsActivity extends AppCompatActivity {
         }
 
         myRef.setValue("Hello, World!");
+        */
 
 //        scaleDownImage("E:\\Chiara\\Documents\\PoliTo\\MAD\\MadMax\\app\\src\\main\\res\\drawable\\obama.jpg");
 
@@ -108,8 +102,6 @@ public class GroupsActivity extends AppCompatActivity {
 
             }
         });
-
-
 
         listView = (ListView) findViewById(R.id.lv_list_groups);
 
@@ -138,16 +130,14 @@ public class GroupsActivity extends AppCompatActivity {
             }
         });
 
-        if (users.isEmpty())
-        {
+        if (users.isEmpty()) {
             //Create users
-            User u0 = new User("u00", "Mario", "Rossi", null);
-            User u1 = new User ("u01", "Alessandro", "Rota", String.valueOf(imgid[0]) );
-            User u2 = new User ("u02", "Davide", "Valentino", String.valueOf(imgid[1]));
-            User u3 = new User ("u03", "Chiara", "Di Nardo", String.valueOf(imgid[2]));
-            User u4 = new User ("u04", "Riccardo", "Di Vittorio", String.valueOf(imgid[3]));
-            User u5 = new User ("u05", "Rossella", "Mangiardi", String.valueOf(imgid[4]));
-
+            User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
+            User u1 = new User(String.valueOf(1), "Alero3",         "Alessandro", "Rota",       "email1@email.it", "password1", String.valueOf(imgid[0]));
+            User u2 = new User(String.valueOf(2), "deviz92",        "Davide", "Valentino",      "email2@email.it", "password2", String.valueOf(imgid[1]));
+            User u3 = new User(String.valueOf(3), "missArmstrong",  "Chiara", "Di Nardo",       "email3@email.it", "password3", String.valueOf(imgid[2]));
+            User u4 = new User(String.valueOf(4), "rickydivi",      "Riccardo", "Di Vittorio",  "email4@email.it", "password4", String.valueOf(imgid[3]));
+            User u5 = new User(String.valueOf(5), "roxy",           "Rossella", "Mangiardi",    "email5@email.it", "password5", String.valueOf(imgid[4]));
 
             //Add to users list (needed to share data with other activities)
             users.add(u1);
@@ -157,10 +147,9 @@ public class GroupsActivity extends AppCompatActivity {
             users.add(u5);
             myself = u0;
 
-
-            Group g1 = new Group(String.valueOf(0), "Vacanze", String.valueOf(imgid[5]), "ciao");
-            Group g2 = new Group(String.valueOf(1), "Calcetto", String.valueOf(imgid[6]), "ciao");
-            Group g3 = new Group(String.valueOf(2), "Spese Casa", String.valueOf(imgid[7]), "ciao");
+            Group g1 = new Group(String.valueOf(0), "Vacanze",      String.valueOf(imgid[5]), "description0");
+            Group g2 = new Group(String.valueOf(1), "Calcetto",     String.valueOf(imgid[6]), "description1");
+            Group g3 = new Group(String.valueOf(2), "Spese Casa",   String.valueOf(imgid[7]), "description2");
 
             //Add users to group
             u0.joinGroup(g1);
@@ -169,25 +158,25 @@ public class GroupsActivity extends AppCompatActivity {
             u3.joinGroup(g1);
             u4.joinGroup(g1);
             u5.joinGroup(g1);
+
             u0.joinGroup(g2);
             u1.joinGroup(g2);
             u2.joinGroup(g2);
             u4.joinGroup(g2);
+
             u0.joinGroup(g3);
             u4.joinGroup(g3);
 
+            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€",   String.valueOf(img_expense[0]), true);
+            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",   String.valueOf(img_expense[1]), true);
+            u0.addExpenseToGroup(e1, g1);
+            u3.addExpenseToGroup(e2, g1);
 
-            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo", 30d, true, g1, "€", String.valueOf(img_expense[0]));
-            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro", 20d, true, g1, "€", String.valueOf(img_expense[1]));
+            Expense e3 = new Expense(String.valueOf(0), "Partita", "Sport",         5d, "€",    String.valueOf(img_expense[2]), true);
+            u0.addExpenseToGroup(e3, g2);
 
-            Expense e3 = new Expense(String.valueOf(0), "Partita", "Sport", 5d, true, g2, "€", String.valueOf(img_expense[2]));
-
-            Expense e4 = new Expense(String.valueOf(0), "Affitto", "Altro", 500d, true, g3, "€", String.valueOf(img_expense[3]));
-
-            u0.addExpense(e1);
-            u3.addExpense(e2);
-            u0.addExpense(e3);
-            u4.addExpense(e4);
+            Expense e4 = new Expense(String.valueOf(0), "Affitto", "Altro",         500d, "€",  String.valueOf(img_expense[3]), true);
+            u4.addExpenseToGroup(e4, g3);
 
             groups.put(g1.getID(), g1);
             groups.put(g2.getID(), g2);
@@ -255,7 +244,7 @@ public class GroupsActivity extends AppCompatActivity {
 
 
                 //mydebt = mio debito con il gruppo
-                Double mygroupdebt = GroupsActivity.myself.getDebtsWithGroup().get(group.getID());
+                Double mygroupdebt = GroupsActivity.myself.getBalanceWithGroups().get(group.getID());
 
                 DecimalFormat df = new DecimalFormat("#.##");
 
@@ -311,7 +300,7 @@ public class GroupsActivity extends AppCompatActivity {
         String IDGroup = groupName.getTag().toString();
 
         Intent myIntent = new Intent(GroupsActivity.this, GroupExpensesActivity.class);
-        myIntent.putExtra("addExpense", false);
+        myIntent.putExtra("addExpenseToGroup", false);
         myIntent.putExtra("IDGroup", IDGroup); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }

@@ -49,7 +49,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(), R.string.expense_saved, Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(NewExpenseActivity.this, GroupExpensesActivity.class);
-                intent.putExtra("addExpense", true);
+                intent.putExtra("addExpenseToGroup", true);
                 intent.putExtra("IDGroup", IDGroup);
                 intent.putExtra("description", description.getText().toString());
                 intent.putExtra("amount", amount.getText().toString());

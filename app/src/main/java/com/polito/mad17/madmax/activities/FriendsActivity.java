@@ -102,7 +102,7 @@ public class FriendsActivity extends AppCompatActivity {
                 name.setText(f.getName() + " " + f.getSurname());
 
                 //mydebt = mio debito con il membro f
-                Double mydebt = GroupsActivity.myself.getDebts().get(f.getID());
+                Double mydebt = GroupsActivity.myself.getBalanceWithUsers().get(f.getID());
 
                 DecimalFormat df = new DecimalFormat("#.##");
 
@@ -146,7 +146,7 @@ public class FriendsActivity extends AppCompatActivity {
                 bundle.putInt("photoid", Integer.parseInt(item.getProfileImage()));
                 bundle.putString("name", item.getName());
                 bundle.putString("surname", item.getSurname());
-                bundle.putDouble("balance", GroupsActivity.myself.getDebts().get(item.getID()));
+                bundle.putDouble("balance", GroupsActivity.myself.getBalanceWithUsers().get(item.getID()));
 
 
                 Context context = FriendsActivity.this;
