@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -115,8 +117,8 @@ public class GroupsActivity extends AppCompatActivity {
 
 
             Group g1 = new Group(String.valueOf(1), "Vacanze", String.valueOf(imgid[5]), "ciao");
-            Group g2 = new Group(String.valueOf(1), "Calcetto", String.valueOf(imgid[6]), "ciao");
-            Group g3 = new Group(String.valueOf(1), "Spese Casa", String.valueOf(imgid[7]), "ciao");
+            Group g2 = new Group(String.valueOf(2), "Calcetto", String.valueOf(imgid[6]), "ciao");
+            Group g3 = new Group(String.valueOf(3), "Spese Casa", String.valueOf(imgid[7]), "ciao");
 
 
 
@@ -219,7 +221,34 @@ public class GroupsActivity extends AppCompatActivity {
                 groupName.setText(group.getName());
                 //groupName.setTag(group.getID());
 
-                //TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_num_notifications);
+                TextView balance = (TextView) convertView.findViewById(R.id.tv_group_debt);
+
+
+                //mydebt = mio debito con il gruppo
+                Double mygroupdebt = GroupsActivity.myself.getDebtsWithGroup().get(group.getID());
+
+                DecimalFormat df = new DecimalFormat("#.##");
+
+
+                if (mygroupdebt > 0)
+                {
+                    balance.setText("+ " + df.format(mygroupdebt) + " €");
+                    balance.setBackgroundResource(R.color.greenBalance);
+
+                }
+                else if (mygroupdebt < 0)
+                {
+                    balance.setText("- " + df.format(Math.abs(mygroupdebt)) + " €");
+                    balance.setBackgroundColor(Color.rgb(255,0,0));
+                }
+                else
+                {
+                    balance.setText("" + df.format(mygroupdebt) + " €");
+                    balance.setBackgroundResource(R.color.greenBalance);
+
+                }
+
+
                 //numberNotifications.setText(group.getNumberNotifications().toString());
 
                 return convertView;
