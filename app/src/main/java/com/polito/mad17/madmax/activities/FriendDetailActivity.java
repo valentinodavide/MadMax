@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
+
+import java.text.DecimalFormat;
+
+import static com.polito.mad17.madmax.R.id.balance;
+import static com.polito.mad17.madmax.R.id.parent;
 
 public class FriendDetailActivity extends AppCompatActivity {
 
@@ -28,13 +34,29 @@ public class FriendDetailActivity extends AppCompatActivity {
         String n = bundle.getString("name");
         String s = bundle.getString("surname");
         Integer p = bundle.getInt("photoid");
-        Integer b = bundle.getInt("balance");
+        Double b = bundle.getDouble("balance");
         System.out.println(n + s);
 
         photo.setImageResource(p);
         name.setText(n);
         surname.setText(s);
-        balance.setText("TOTAL BALANCE: " + b);
+
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+
+        if (b > 0)
+        {
+            balance.setText("TOTAL BALANCE: " + "+ " + df.format(b) + " €");
+        }
+        else if (b < 0)
+        {
+            balance.setText("TOTAL BALANCE: " + "- " + df.format(Math.abs(b)) + " €");
+        }
+        else
+        {
+            balance.setText("TOTAL BALANCE: " + "+ " + df.format(b) + " €");
+        }
 
 
         setContentView(view);

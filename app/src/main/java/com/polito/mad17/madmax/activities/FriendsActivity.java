@@ -22,58 +22,10 @@ import java.util.ArrayList;
 
 public class FriendsActivity extends AppCompatActivity {
 
-    Integer[] imgid={
-            R.drawable.obama,
-            R.drawable.putin
-    };
 
-    String[] names={
-            "Barack",
-            "Valdimir",
-
-    };
-    String[] surnames={
-            "Obama",
-            "Putin"
-    };
-
-    Integer[] balances = {
-            33,
-            -24
-    };
-
-
-
-    class FriendItem {
-
-        //Attributes
-        private String name, surname;
-        private Integer photo_id, balance;
-
-
-        //Constructor
-        public FriendItem(String name, String surname, Integer photo_id, Integer balance) {
-            this.name = name;
-            this.surname = surname;
-            this.photo_id = photo_id;
-            this.balance = balance;
-
-        }
-
-        //Getters
-        public String getName() {
-            return name;
-        }
-        public String getSurname() {return surname;}
-        public Integer getPhoto_id() {return photo_id;}
-        public Integer getBalance() {return balance;}
-    }
 
 
     private ListView lv;
-    private ArrayList<FriendItem> friends = new ArrayList<>();
-    private ArrayList<User> users = new ArrayList<>();
-    private ArrayList<Integer> numbers = new ArrayList<>();
 
 
 
@@ -82,12 +34,7 @@ public class FriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
-        User u1 = new User ("u01", "Alessandro", "Rota", null);
-        User u2 = new User ("u02", "Barack", "Obama", String.valueOf(imgid[0]));
 
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-        //toolbar.setTitle("FriendsActivity");
 
         Button groupsbutton = (Button) findViewById(R.id.groupsbutton);
 
@@ -108,51 +55,6 @@ public class FriendsActivity extends AppCompatActivity {
 
 
         lv = (ListView) findViewById(R.id.lv);
-
-
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        /*
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        users.add(u1);
-        */
-
-
-
-
-
-
-        for (int i = 0; i < 20; i++) {
-
-            FriendItem f;
-            if (i%2 == 0)
-            {
-                f = new FriendItem(names[0], surnames[0], imgid[0], balances[0]);
-            }
-            else
-            {
-                f = new FriendItem(names[1], surnames[1], imgid[1], balances[1]);
-            }
-
-            friends.add(f);
-            numbers.add(1);
-        }
-
-
-        //User u1 = new User("u1", "Barack", "Obama", String.valueOf(imgid[0]));
-        //User u2 = new User("u2", "Vladimir", "Putin", String.valueOf(imgid[1]));
 
 
 
@@ -190,12 +92,6 @@ public class FriendsActivity extends AppCompatActivity {
                 TextView surname=(TextView)convertView.findViewById(R.id.surname);
                 TextView balance = (TextView)convertView.findViewById(R.id.balance);
 
-                //prendo il FriendItem
-                //FriendItem f=friends.get(position);
-                //User f = friends.get(position);
-
-
-                //FriendItem f = friends.get(position);
                 User f = GroupsActivity.users.get(position);
 
 
@@ -217,7 +113,7 @@ public class FriendsActivity extends AppCompatActivity {
                 if (mydebt > 0)
                 {
                     balance.setText("+ " + df.format(mydebt) + " €");
-                    balance.setBackgroundColor(Color.rgb(0,255,0));
+                    balance.setBackgroundResource(R.color.greenBalance);
 
                 }
                 else if (mydebt < 0)
@@ -228,7 +124,7 @@ public class FriendsActivity extends AppCompatActivity {
                 else
                 {
                     balance.setText("" + df.format(mydebt) + " €");
-                    balance.setBackgroundColor(Color.rgb(0,255,0));
+                    balance.setBackgroundResource(R.color.greenBalance);
 
                 }
 
@@ -247,22 +143,18 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
-                /*
-                Intent intent = new Intent(MainActivity.this, SendMessage.class);
-                String message = "abc";
-                intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);
-                */
-                FriendItem item = (FriendItem) myadapter.getItem(position);
+
+                //FriendItem item = (FriendItem) myadapter.getItem(position);
+                User item = (User) myadapter.getItem(position);
 
 
 
                 //put elements needed by FriendDetailActivity in a Bundle
                 Bundle bundle = new Bundle();
-                bundle.putInt("photoid", item.getPhoto_id());
+                bundle.putInt("photoid", Integer.parseInt(item.getProfileImage()));
                 bundle.putString("name", item.getName());
                 bundle.putString("surname", item.getSurname());
-                bundle.putInt("balance", item.getBalance());
+                bundle.putDouble("balance", GroupsActivity.myself.getDebts().get(item.getID()));
 
 
                 Context context = FriendsActivity.this;

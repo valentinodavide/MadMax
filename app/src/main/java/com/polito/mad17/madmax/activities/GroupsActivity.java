@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,15 +24,22 @@ import java.util.HashMap;
 
 public class GroupsActivity extends AppCompatActivity {
 
-    public static HashMap<String, Group> groups = new HashMap<>();
+    //public static HashMap<String, Group> groups = new HashMap<>();
+    public static ArrayList<Group> groups = new ArrayList<>();
     private ListView listView;
     public static ArrayList<User> users = new ArrayList<>();
     public static User myself;
 
 
     Integer[] imgid={
-            R.drawable.obama,
-            R.drawable.putin
+            R.drawable.ale,
+            R.drawable.davide,
+            R.drawable.chiara,
+            R.drawable.riki,
+            R.drawable.rossella,
+            R.drawable.vacanze,
+            R.drawable.calcetto,
+            R.drawable.casa
     };
 
 
@@ -60,6 +68,7 @@ public class GroupsActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.lv_list_groups);
 
+        /*
         for(int i = 0; i <= 20; i++)
         {
             Group group = new Group(String.valueOf(i), "Group" + i, "imgGroup" + i);
@@ -73,34 +82,67 @@ public class GroupsActivity extends AppCompatActivity {
             Log.d("DEBUG", group.toString());
             groups.put(group.getID(), group);
         }
+        */
 
-        //Create users
-        User u1 = new User ("u01", "Alessandro", "Rota", null);
-        User u2 = new User ("u02", "Barack", "Obama", String.valueOf(imgid[0]));
-        User u3 = new User ("u03", "Vladimir", "Putin", String.valueOf(imgid[1]));
-        //Add to users list (needed to share data with other activities)
-        users.add(u2);
-        users.add(u3);
-        myself = u1;
+        if (users.isEmpty())
+        {
+            //Create users
+            User u0 = new User("u0", "Mario", "Rossi", null);
+            User u1 = new User ("u01", "Alessandro", "Rota", String.valueOf(imgid[0]) );
+            User u2 = new User ("u02", "Davide", "Valentino", String.valueOf(imgid[1]));
+            User u3 = new User ("u03", "Chiara", "Di Nardo", String.valueOf(imgid[2]));
+            User u4 = new User ("u04", "Riccardo", "Di Vittorio", String.valueOf(imgid[3]));
+            User u5 = new User ("u05", "Rossella", "Mangiardi", String.valueOf(imgid[4]));
 
 
-        Group g1 = new Group("g01", "Vacanze", null);
-        Group g2 = new Group("g02", "Calcetto", null);
+            //Add to users list (needed to share data with other activities)
+            users.add(u1);
+            users.add(u2);
+            users.add(u3);
+            users.add(u4);
+            users.add(u5);
+            myself = u0;
 
-        //Add users to group
-        u1.joinGroup(g1);
-        u2.joinGroup(g1);
-        u3.joinGroup(g1);
-        u1.joinGroup(g2);
-        u2.joinGroup(g2);
 
-        Expense e1 = new Expense("e01", "Pane", "Cibo", 30d, true, g1);
-        Expense e2 = new Expense("e02", "Acqua", "Cibo", 20d, true, g1);
-        Expense e3 = new Expense("e03", "Partita", "Sport", 5d, true, g2);
+            Group g1 = new Group(String.valueOf(1), "Vacanze", String.valueOf(imgid[5]));
+            Group g2 = new Group(String.valueOf(1), "Calcetto", String.valueOf(imgid[6]));
+            Group g3 = new Group(String.valueOf(1), "Spese Casa", String.valueOf(imgid[7]));
 
-        u1.addExpense(e1);
-        u2.addExpense(e2);
-        u1.addExpense(e3);
+
+
+
+            //Add users to group
+            u0.joinGroup(g1);
+            u1.joinGroup(g1);
+            u2.joinGroup(g1);
+            u3.joinGroup(g1);
+            u4.joinGroup(g1);
+            u5.joinGroup(g1);
+            u0.joinGroup(g2);
+            u1.joinGroup(g2);
+            u2.joinGroup(g2);
+            u4.joinGroup(g2);
+            u0.joinGroup(g3);
+            u4.joinGroup(g3);
+
+
+            Expense e1 = new Expense("e01", "Pizza", "Cibo", 30d, true, g1);
+            Expense e2 = new Expense("e02", "Crema Solare", "Altro", 20d, true, g1);
+            Expense e3 = new Expense("e03", "Partita", "Sport", 5d, true, g2);
+            Expense e4 = new Expense("e04", "Affitto", "Altro", 500d, true, g3);
+
+            u0.addExpense(e1);
+            u3.addExpense(e2);
+            u0.addExpense(e3);
+            u4.addExpense(e4);
+
+            groups.add(g1);
+            groups.add(g2);
+            groups.add(g3);
+
+        }
+
+
 
 
 
@@ -153,18 +195,22 @@ public class GroupsActivity extends AppCompatActivity {
                     convertView = getLayoutInflater().inflate(R.layout.item_group, parent, false);
                 }
 
-                Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
-                Group group = groups.get(String.valueOf(position));
+                //Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
+                //Group group = groups.get(String.valueOf(position));
+                Group group = groups.get(position);
 
-                // ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
-                // groupImage.setImageResource(group.getImage());
+
+                ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
+                String p = group.getImage();
+                int photoId = Integer.parseInt(p);
+                groupImage.setImageResource(photoId);
 
                 TextView groupName = (TextView) convertView.findViewById(R.id.tv_group_name);
                 groupName.setText(group.getName());
-                groupName.setTag(group.getID());
+                //groupName.setTag(group.getID());
 
-                TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_num_notifications);
-                numberNotifications.setText(group.getNumberNotifications().toString());
+                //TextView numberNotifications = (TextView) convertView.findViewById(R.id.tv_group_num_notifications);
+                //numberNotifications.setText(group.getNumberNotifications().toString());
 
                 return convertView;
             }

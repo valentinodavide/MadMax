@@ -20,6 +20,8 @@ import java.util.HashMap;
 public class GroupExpensesActivity extends AppCompatActivity {
     public static HashMap<String, Expense> expenses = new HashMap<>();
 
+
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -36,7 +38,9 @@ public class GroupExpensesActivity extends AppCompatActivity {
         int i;
         for(i = 0; i < 10; i++)
         {
-            Expense expense = new Expense(String.valueOf(i), "Description expense " + i, (double) i+1);
+            //Expense expense = new Expense(String.valueOf(i), "Description expense " + i, (double) i+1);
+            Expense expense = new Expense(String.valueOf(i), "Description expense " + i, null, null, null, null);
+
 
             Log.d("DEBUG", expense.toString());
             expenses.put(expense.getID(), expense);
@@ -50,7 +54,8 @@ public class GroupExpensesActivity extends AppCompatActivity {
             String description = intent.getStringExtra("description");
             String amount = intent.getStringExtra("amount");
             String currency = intent.getStringExtra("currency");
-            expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
+            //expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
+            //expenses.put(String.valueOf(i), new Expense(String.valueOf(i), "Description expense " + i, null, null, null, null));
         }
 
         // then show group expenses list
