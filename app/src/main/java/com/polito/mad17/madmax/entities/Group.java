@@ -7,14 +7,16 @@ public class Group {
     private String ID;
     private String name;
     private String image;
+    private String description;
     private Integer numberNotifications;
     private HashMap<String, User> members;
     private HashMap<String, Expense> expenses;
 
-    public Group(String ID, String name, String image) {
+    public Group(String ID, String name, String image, String description) {
         this.ID = ID;
         this.name = name;
         this.image = image;
+        this.description = description;
         this.numberNotifications = 0;
         this.members = new HashMap<>();
         this.expenses = new HashMap<>();
@@ -42,6 +44,14 @@ public class Group {
 
     public Integer getNumberNotifications() {
         return numberNotifications;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String setDescription(String description) {
+        return this.description = description;
     }
 
     public void setNumberNotifications(Integer numberNotifications) { this.numberNotifications = numberNotifications; }

@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -83,6 +84,15 @@ public class GroupsActivity extends AppCompatActivity {
             groups.put(group.getID(), group);
         }
         */
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(GroupsActivity.this, NewGroupActivity.class);
+                GroupsActivity.this.startActivity(myIntent);
+
+            }
+        });
 
         if (users.isEmpty())
         {
@@ -245,4 +255,31 @@ public class GroupsActivity extends AppCompatActivity {
         myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }
+
+//    private void scaleDownImage() {
+//
+//        Bitmap background = Bitmap.createBitmap((int)width, (int)height, Config.ARGB_8888);
+//
+//        float originalWidth = originalImage.getWidth();
+//        float originalHeight = originalImage.getHeight();
+//
+//        Canvas canvas = new Canvas(background);
+//
+//        float scale = width / originalWidth;
+//
+//        float xTranslation = 0.0f;
+//        float yTranslation = (height - originalHeight * scale) / 2.0f;
+//
+//        Matrix transformation = new Matrix();
+//        transformation.postTranslate(xTranslation, yTranslation);
+//        transformation.preScale(scale, scale);
+//
+//        Paint paint = new Paint();
+//        paint.setFilterBitmap(true);
+//
+//        canvas.drawBitmap(originalImage, transformation, paint);
+//
+//        return background;
+//    }
+
 }
