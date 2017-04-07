@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.polito.mad17.madmax.Activities.GroupsActivity">
+    tools:context="com.polito.mad17.madmax.activities.GroupsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

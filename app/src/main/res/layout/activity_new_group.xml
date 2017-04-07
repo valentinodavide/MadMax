@@ -8,7 +8,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                tools:context="com.polito.mad17.madmax.Activities.NewGroupActivity">
+                tools:context="com.polito.mad17.madmax.activities.NewGroupActivity">
 
     <LinearLayout
         android:id="@+id/ll_name"

@@ -1,17 +1,13 @@
-package com.polito.mad17.madmax.Activities;
+package com.polito.mad17.madmax.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
-
-import static com.polito.mad17.madmax.R.id.balance;
-import static com.polito.mad17.madmax.R.id.parent;
 
 public class FriendDetailActivity extends AppCompatActivity {
 

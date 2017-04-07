@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.Activities;
+package com.polito.mad17.madmax.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,18 +11,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.polito.mad17.madmax.Entities.Expense;
-import com.polito.mad17.madmax.Entities.Group;
-import com.polito.mad17.madmax.Entities.User;
+import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 
 public class GroupsActivity extends AppCompatActivity {
 
@@ -153,7 +150,7 @@ public class GroupsActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
 
                 if(convertView == null) {
-                    convertView = getLayoutInflater().inflate(R.layout.group_item, parent, false);
+                    convertView = getLayoutInflater().inflate(R.layout.item_group, parent, false);
                 }
 
                 Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
@@ -196,9 +193,10 @@ public class GroupsActivity extends AppCompatActivity {
         TextView groupName = (TextView) view;
         Log.d("DEBUG", groupName.getTag().toString());
 
-//      Intent myIntent = new Intent(GroupsActivity.this, GroupDetailsActivity.class);
-        Intent myIntent = new Intent(GroupsActivity.this, GroupExpenses.class);
-        myIntent.putExtra("groupID", groupName.getTag().toString()); //Optional parameters
+
+        Intent myIntent = new Intent(GroupsActivity.this, GroupExpensesActivity.class);
+        myIntent.putExtra("addExpense", false);
+        myIntent.putExtra("groupName", groupName.getText().toString()); //Optional parameters
         GroupsActivity.this.startActivity(myIntent);
     }
 }

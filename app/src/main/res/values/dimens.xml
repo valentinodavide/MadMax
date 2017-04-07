@@ -1,5 +1,5 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="padding_list">4dp</dimen>
-    <dimen name="padding_expense">8dp</dimen>
+    <dimen name="padding_expense">4dp</dimen>
 </resources>

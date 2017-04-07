@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.Activities;
+package com.polito.mad17.madmax.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.polito.mad17.madmax.Entities.User;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.R;
 
 import java.text.DecimalFormat;
@@ -85,7 +85,9 @@ public class FriendsActivity extends AppCompatActivity {
         User u1 = new User ("u01", "Alessandro", "Rota", null);
         User u2 = new User ("u02", "Barack", "Obama", String.valueOf(imgid[0]));
 
-
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        //toolbar.setTitle("FriendsActivity");
 
         Button groupsbutton = (Button) findViewById(R.id.groupsbutton);
 
@@ -179,7 +181,7 @@ public class FriendsActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
 
                 if (convertView==null) {
-                    convertView=getLayoutInflater().inflate(R.layout.friend_item,parent,false);
+                    convertView=getLayoutInflater().inflate(R.layout.item_friend,parent,false);
                 }
 
                 //collego le view agli elementi del layout

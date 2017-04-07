@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.Entities;
+package com.polito.mad17.madmax.entities;
 
 import java.util.HashMap;
 import java.util.LinkedList;

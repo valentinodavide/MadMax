@@ -11,4 +11,15 @@
     <string name="amount">Amount</string>
     <string name="category">Category</string>
     <string name="save">Save</string>
+    <string name="edit_description_hint">Insert expense description</string>
+    <string name="edit_amount_hint">Insert amount</string>
+    <string name="expense_saved">Expense saved</string>
+
+    <string-array name="currencies">
+        <item>€</item>
+        <item>$</item>
+        <item>£</item>
+        <item>¥</item>
+    </string-array>
+
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.polito.mad17.madmax.Activities.GroupExpenses">
+    tools:context="com.polito.mad17.madmax.activities.GroupExpensesActivity">
 
     <TextView
         android:id="@+id/tv_hidden_group_id"
