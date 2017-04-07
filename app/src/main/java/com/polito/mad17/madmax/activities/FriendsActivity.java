@@ -14,11 +14,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 public class FriendsActivity extends AppCompatActivity {
 
@@ -89,7 +88,6 @@ public class FriendsActivity extends AppCompatActivity {
                 //collego le view agli elementi del layout
                 ImageView photo = (ImageView) convertView.findViewById(R.id.photo);
                 TextView name=(TextView)convertView.findViewById(R.id.name);
-                TextView surname=(TextView)convertView.findViewById(R.id.surname);
                 TextView balance = (TextView)convertView.findViewById(R.id.balance);
 
                 User f = GroupsActivity.users.get(position);
@@ -101,8 +99,7 @@ public class FriendsActivity extends AppCompatActivity {
                 int photoId = Integer.parseInt(p);
 
                 photo.setImageResource(photoId);
-                name.setText(f.getName());
-                surname.setText(f.getSurname());
+                name.setText(f.getName() + " " + f.getSurname());
 
                 //mydebt = mio debito con il membro f
                 Double mydebt = GroupsActivity.myself.getDebts().get(f.getID());
