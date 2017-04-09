@@ -2,6 +2,8 @@ package com.polito.mad17.madmax.entities;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class User {
     private String ID;
@@ -14,9 +16,8 @@ public class User {
     private String profileImage; // optional, URL dell'immagine da Firebase
     private HashMap<String, Double> balanceWithUsers;    //String = userID,  Double = debito(-) o credito (+) verso gli altri utenti
     private HashMap<String, Double> balanceWithGroups;   //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
-
-    //private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
-    //private HashMap<String, Group> userGroups;          //String = groupID, Group = oggetto Group di cui user fa parte
+    private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
+    private HashMap<String, Group> userGroups;          //String = groupID, Group = oggetto Group di cui user fa parte
 
 
     public User(String ID, String username, String name, String surname, String email, String password, String profileImage) {
@@ -28,12 +29,10 @@ public class User {
         // todo criptare password
         this.password = password;
         this.profileImage = profileImage;
-
-        //addedExpenses = new TreeMap<>();
-        //userGroups = new HashMap<>();
-
-        balanceWithUsers = new HashMap<>();
-        balanceWithGroups = new HashMap<>();
+        this.addedExpenses = new TreeMap<>();
+        this.userGroups = new HashMap<>();
+        this.balanceWithUsers = new HashMap<>();
+        this.balanceWithGroups = new HashMap<>();
     }
 
     public String getID() { return ID; }
@@ -104,7 +103,7 @@ public class User {
         this.balanceWithGroups = balanceWithGroups;
     }
 
-    /*public SortedMap<String, Expense> getAddedExpenses() {
+    public SortedMap<String, Expense> getAddedExpenses() {
         return addedExpenses;
     }
 
@@ -118,7 +117,7 @@ public class User {
 
     public void setUserGroups(HashMap<String, Group> userGroups) {
         this.userGroups = userGroups;
-    }*/
+    }
 
     // todo
     public Double getTotalDebts() {
@@ -130,37 +129,36 @@ public class User {
 
     }
 
-    public void addExpenseToGroup(Expense expense, Group group) {
-        group.getExpenses().put(expense.getID(), expense);
-        //addedExpenses.put(expense.getID(), expense);  //spesa aggiunta alla lista spese utente
-        //expense.getGroup().getExpenses().put(expense.getID(), expense);   //spesa aggiunta alla lista spese del gruppo
-        updateBalance(expense, group);
+    public void addExpense(Expense expense) {
+        addedExpenses.put(expense.getID(), expense);  //spesa aggiunta alla lista spese utente
+        expense.getGroup().getExpenses().put(expense.getID(), expense);   //spesa aggiunta alla lista spese del gruppo
+        updateBalance(expense);
     }
 
     // update balance among other users and among the group this user is part of
-    private void updateBalance(Expense expense, Group group) {
+    private void updateBalance(Expense expense) {
         // todo per ora fa il calcolo come se le spese fossero sempre equamente divise fra tutti i
         // todo     membri del gruppo (cioè come se expense.equallyDivided fosse sempre = true
 
-        //Group g = expense.getGroup();   //gruppo in cui è stato inserita la spesa
+        Group g = expense.getGroup();   //gruppo in cui è stato inserita la spesa
 
-        Double total = group.getTotalExpense(); //spesa totale del gruppo aggiornata
-        Double singlecredit = expense.getAmount() / group.getMembers().size();   //credito che io ho verso ogni singolo utente in virtù della spesa che ho fatto
-        Double totalcredit = singlecredit * (group.getMembers().size() -1); //credito totale che io ho verso tutti gli altri membri del gruppo
+        Double total = g.getTotalExpense(); //spesa totale del gruppo aggiornata
+        Double singlecredit = expense.getAmount() / g.getMembers().size();   //credito che io ho verso ogni singolo utente in virtù della spesa che ho fatto
+        Double totalcredit = singlecredit * (g.getMembers().size() -1); //credito totale che io ho verso tutti gli altri membri del gruppo
         //es. se in un gruppo di 5 persone io ho pagato 10, ognuno mi deve 2
         //quindi totalcredit = 2*4 dove 4 è il n. di membri del gruppo diversi da me. In tutto devo ricevere 8.
 
-        Double actualdebts = balanceWithGroups.get(group.getID());
+        Double actualdebts = balanceWithGroups.get(g.getID());
         if (actualdebts != null) {
             //aggiorno il mio debito verso il gruppo
-            balanceWithGroups.put(group.getID(), actualdebts + totalcredit);
+            balanceWithGroups.put(g.getID(), actualdebts + totalcredit);
         }
         else {
             System.out.println("Group not found");
         }
 
         //per ogni amico del gruppo in cui è stata aggiunta la spesa
-        for (HashMap.Entry<String, User> friend : group.getMembers().entrySet()) {
+        for (HashMap.Entry<String, User> friend : g.getMembers().entrySet()) {
             //se non sono io stesso
             if (!friend.getKey().equals(this.getID())) {
                 //aggiorno mio credito verso di lui
@@ -187,14 +185,14 @@ public class User {
 
                 //aggiorno debito dell'amico verso il gruppo
                 HashMap<String, Double> friendBalanceWithGroups = friend.getValue().getBalanceWithGroups();
-                balance = friendBalanceWithGroups.get(group.getID());
+                balance = friendBalanceWithGroups.get(g.getID());
                 if (balance != null) {
-                    friend.getValue().getBalanceWithGroups().put(group.getID(), balance-singlecredit);
+                    friend.getValue().getBalanceWithGroups().put(g.getID(), balance-singlecredit);
                 }
                 else {
                     System.out.println("Gruppo non risulta tra i suoi debiti");
                     // => allora lo devo aggiungere
-                    friendBalanceWithGroups.put(group.getID(), -singlecredit);
+                    friendBalanceWithGroups.put(g.getID(), -singlecredit);
                 }
             }
         }

@@ -12,13 +12,13 @@ public class Expense {
     private Double amount;
     private String currency;        // €, $ ...
     private String image;           // optional, URL dell'immagine su Firebase (può essere lo scontrino o una foto del prodotto)
-
+    private Group group;
     private Boolean equallyDivided; // se vero la spesa viene divisa equamente fra tutti gli utenti del gruppo
                                     // altrimenti viene suddivisa come specificato in partitions ->
     private HashMap<String, Double> partitions;     // String: userID, Double: frazione corrispondente a quello User
 
 
-    public Expense (String ID, String description, String category, Double amount, String currency, String image, Boolean equallyDivided) {
+    public Expense (String ID, String description, String category, Double amount, String currency, String image, Boolean equallyDivided, Group group) {
         this.ID = ID;
         this.description = description;
         this.category = category;
@@ -27,7 +27,8 @@ public class Expense {
         this.image = image;
         this.equallyDivided = equallyDivided;
         this.partitions = new HashMap<>();
-        partitions = new HashMap<>();
+        this.partitions = new HashMap<>();
+        this.group = group;
     }
 
     public String getID() {
@@ -93,4 +94,8 @@ public class Expense {
     public void setPartitions(HashMap<String, Double> partitions) {
         this.partitions = partitions;
     }
+
+    public Group getGroup() {return group;}
+
+    public void setGroup(Group group) {this.group = group;}
 }

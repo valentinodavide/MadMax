@@ -167,16 +167,16 @@ public class GroupsActivity extends AppCompatActivity {
             u0.joinGroup(g3);
             u4.joinGroup(g3);
 
-            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€",   String.valueOf(img_expense[0]), true);
-            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",   String.valueOf(img_expense[1]), true);
-            u0.addExpenseToGroup(e1, g1);
-            u3.addExpenseToGroup(e2, g1);
+            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€",   String.valueOf(img_expense[0]), true, g1);
+            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",   String.valueOf(img_expense[1]), true, g1);
+            u0.addExpense(e1);
+            u3.addExpense(e2);
 
-            Expense e3 = new Expense(String.valueOf(0), "Partita", "Sport",         5d, "€",    String.valueOf(img_expense[2]), true);
-            u0.addExpenseToGroup(e3, g2);
+            Expense e3 = new Expense(String.valueOf(0), "Partita", "Sport",         5d, "€",    String.valueOf(img_expense[2]), true, g2);
+            u0.addExpense(e3);
 
-            Expense e4 = new Expense(String.valueOf(0), "Affitto", "Altro",         500d, "€",  String.valueOf(img_expense[3]), true);
-            u4.addExpenseToGroup(e4, g3);
+            Expense e4 = new Expense(String.valueOf(0), "Affitto", "Altro",         500d, "€",  String.valueOf(img_expense[3]), true, g3);
+            u4.addExpense(e4);
 
             groups.put(g1.getID(), g1);
             groups.put(g2.getID(), g2);

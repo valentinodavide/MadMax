@@ -45,13 +45,14 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
             Expense e = new Expense(
                     String.valueOf(expenses.size()), description, null, Double.valueOf(amount),
-                    currency, String.valueOf(R.drawable.expense6), false
+                    currency, String.valueOf(R.drawable.expense6), false, group
             );
 
             // save the new expense
-            expenses.put(String.valueOf(expenses.size()), e);
+            //expenses.put(String.valueOf(expenses.size()), e);
 
-            GroupsActivity.users.get(0).addExpenseToGroup(e, group);
+            //GroupsActivity.users.get(0).addExpense(e);
+            GroupsActivity.myself.addExpense(e);
         }
         // if starting activity from GroupActivity (tapping on a group for showing details)
         else {
