@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     package="com.polito.mad17.madmax">
 
     <application
@@ -9,30 +10,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".activities.GroupsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.GroupExpensesActivity"></activity>
+        <activity android:name=".activities.NewExpenseActivity"></activity>
+        <activity
+            android:name=".activities.FriendDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            >
 
-        <activity android:name=".activities.GroupExpensesActivity">
         </activity>
-
-        <activity android:name=".activities.NewExpenseActivity">
-        </activity>
-
-        <activity android:name=".activities.FriendDetailActivity">
-        </activity>
-
-        <activity android:name=".activities.FriendsActivity">
-        </activity>
-
-        <activity android:name=".activities.NewGroupActivity">
-        </activity>
-
+        <activity android:name=".activities.FriendsActivity"></activity>
+        <activity android:name=".activities.NewGroupActivity"></activity>
     </application>
-
 
 </manifest>
