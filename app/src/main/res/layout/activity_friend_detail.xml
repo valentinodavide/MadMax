@@ -7,82 +7,127 @@
     tools:context="com.polito.mad17.madmax.activities.FriendDetailActivity">
 
 
+
     <ImageView
         android:id="@+id/photo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        tools:src="@mipmap/ic_launcher"
+        android:layout_width="match_parent"
+        android:layout_height="255dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        tools:src="@drawable/riki"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         />
 
-    <LinearLayout
-        android:id="@+id/nameline"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@+id/photo"
-        android:gravity="center_horizontal"
-        >
+        android:layout_height="255dp"
+        android:background="#000000"
+        android:alpha="0.3">
+    </FrameLayout>
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:paddingTop="5dp"
-            tools:text="Name"
-            />
 
-        <TextView
-            android:id="@+id/surname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:paddingLeft="5dp"
-            android:paddingTop="5dp"
-            tools:text="Surname"
-            />
-    </LinearLayout>
 
     <LinearLayout
+            android:id="@+id/nameline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="80dp"
+            android:layout_marginLeft="20dp"
+            >
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:textSize="25sp"
+                android:textColor="@color/white"
+                android:paddingTop="5dp"
+                tools:text="Name"
+                />
+
+            <TextView
+                android:id="@+id/surname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:textColor="@color/white"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp"
+                tools:text="Surname"
+                />
+        </LinearLayout>
+
+
+
+    <RelativeLayout
         android:id="@+id/balanceline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/nameline"
         android:orientation="horizontal"
+        android:layout_marginTop="160dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        >
+
+    <LinearLayout
+        android:id="@+id/balancelayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
         >
 
 
-        <Button
-            android:id="@+id/balancebutton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            tools:text="TOTAL BALANCE: -33 €"
+
+        <TextView
+            android:id="@+id/balancetext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:textColor="@color/beige"
+            tools:text="OWES YOU"
             />
+        <TextView
+            android:id="@+id/balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            tools:text="130 €"
+            />
+    </LinearLayout>
 
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:layout_width="10dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/balancelayout"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="100dp"
+            android:background="@drawable/pay_button_border"
+            android:textColor="@color/white"
             android:text="PAY DEBT"
             />
 
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <TextView
-        android:id="@+id/commongroupstext"
+        android:id="@+id/sharedgroupstext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/balanceline"
-        android:text="Common Groups"
+        android:layout_below="@id/photo"
+        android:text="Shared Groups"
 
         />
+
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -90,7 +135,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal"
-        android:layout_below="@+id/commongroupstext"
+        android:layout_below="@+id/sharedgroupstext"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="16dp"
@@ -105,11 +150,6 @@
             android:id="@+id/lv"
             />
     </LinearLayout>
-
-
-
-
-
 
 
 </RelativeLayout>

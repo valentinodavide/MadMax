@@ -45,7 +45,10 @@ public class GroupsActivity extends AppCompatActivity {
             R.drawable.rossella,
             R.drawable.vacanze,
             R.drawable.calcetto,
-            R.drawable.casa
+            R.drawable.casa,
+            R.drawable.pasquetta,
+            R.drawable.fantacalcio,
+            R.drawable.alcolisti
     };
 
     Integer[] img_expense={
@@ -145,11 +148,14 @@ public class GroupsActivity extends AppCompatActivity {
             users.add(u3);
             users.add(u4);
             users.add(u5);
-            myself = u0;
 
             Group g1 = new Group(String.valueOf(0), "Vacanze",      String.valueOf(imgid[5]), "description0");
             Group g2 = new Group(String.valueOf(1), "Calcetto",     String.valueOf(imgid[6]), "description1");
             Group g3 = new Group(String.valueOf(2), "Spese Casa",   String.valueOf(imgid[7]), "description2");
+            Group g4 = new Group(String.valueOf(3), "Pasquetta",   String.valueOf(imgid[8]), "description3");
+            Group g5 = new Group(String.valueOf(4), "Fantacalcio",   String.valueOf(imgid[9]), "description4");
+            Group g6 = new Group(String.valueOf(5), "Alcolisti Anonimi",   String.valueOf(imgid[10]), "description5");
+
 
             //Add users to group
             u0.joinGroup(g1);
@@ -167,6 +173,16 @@ public class GroupsActivity extends AppCompatActivity {
             u0.joinGroup(g3);
             u4.joinGroup(g3);
 
+            u0.joinGroup(g4);
+            u2.joinGroup(g4);
+
+            u0.joinGroup(g5);
+            u2.joinGroup(g5);
+
+            u0.joinGroup(g6);
+            u2.joinGroup(g6);
+
+
             Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€",   String.valueOf(img_expense[0]), true, g1);
             Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",   String.valueOf(img_expense[1]), true, g1);
             u0.addExpense(e1);
@@ -178,9 +194,15 @@ public class GroupsActivity extends AppCompatActivity {
             Expense e4 = new Expense(String.valueOf(0), "Affitto", "Altro",         500d, "€",  String.valueOf(img_expense[3]), true, g3);
             u4.addExpense(e4);
 
+            myself = u0;
             groups.put(g1.getID(), g1);
             groups.put(g2.getID(), g2);
             groups.put(g3.getID(), g3);
+            groups.put(g4.getID(), g4);
+            groups.put(g5.getID(), g5);
+            groups.put(g6.getID(), g6);
+
+
 
         }
 
@@ -264,7 +286,6 @@ public class GroupsActivity extends AppCompatActivity {
                 {
                     balance.setText("" + df.format(mygroupdebt) + " €");
                     balance.setBackgroundResource(R.color.greenBalance);
-
                 }
 
 

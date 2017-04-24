@@ -1,6 +1,10 @@
 package com.polito.mad17.madmax.entities;
 
+import com.polito.mad17.madmax.activities.GroupsActivity;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -201,6 +205,7 @@ public class User {
     public void joinGroup (Group group) {
         group.getMembers().put(this.getID(), this); //aggiunto user alla lista di membri del gruppo
         //this.userGroups.add(g); //gruppo aggiunto alla lista di gruppi di cui user fa parte
+        this.userGroups.put(group.getID(), group);
 
         //creo un debito verso il gruppo
         balanceWithGroups.put(group.getID(), 0d);
@@ -214,6 +219,39 @@ public class User {
             }
         }
     }
+
+    public HashMap<String, Group> getSharedGroupsMap(User friend)
+    {
+        HashMap<String, Group> mygroups = new HashMap<>();
+        mygroups = this.getUserGroups();
+
+        mygroups.keySet().retainAll(friend.getUserGroups().keySet());
+
+        return  mygroups;
+
+    }
+
+
+    public ArrayList<Group> getSharedGroupsList (User friend)
+    {
+        ArrayList<Group> mygroups = new ArrayList<>();
+        HashMap<String, Group> mygroupsmap = new HashMap<>(this.getUserGroups());
+        HashMap<String, Group> friendgroupsmap = new HashMap<>(friend.getUserGroups());
+        //mygroupsmap = this.getUserGroups();
+        //friendgroupsmap = friend.getUserGroups();
+
+        mygroupsmap.keySet().retainAll(friendgroupsmap.keySet());
+
+        for(Map.Entry<String, Group> entry : mygroupsmap.entrySet()) {
+            //String key = entry.getKey();
+            //HashMap value = entry.getValue();
+            mygroups.add(entry.getValue());
+        }
+
+        return mygroups;
+    }
+
+
 
     public String toString() {
         return name + " " + surname + " ";

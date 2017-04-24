@@ -88,7 +88,7 @@ public class FriendsActivity extends AppCompatActivity {
                 //collego le view agli elementi del layout
                 ImageView photo = (ImageView) convertView.findViewById(R.id.photo);
                 TextView name=(TextView)convertView.findViewById(R.id.name);
-                TextView balance = (TextView)convertView.findViewById(R.id.balance);
+                TextView balance = (TextView)convertView.findViewById(R.id.balancetext);
 
                 User f = GroupsActivity.users.get(position);
 
@@ -143,10 +143,16 @@ public class FriendsActivity extends AppCompatActivity {
 
                 //put elements needed by FriendDetailActivity in a Bundle
                 Bundle bundle = new Bundle();
+                /*
                 bundle.putInt("photoid", Integer.parseInt(item.getProfileImage()));
                 bundle.putString("name", item.getName());
                 bundle.putString("surname", item.getSurname());
                 bundle.putDouble("balance", GroupsActivity.myself.getBalanceWithUsers().get(item.getID()));
+                bundle.putSerializable("groups", GroupsActivity.myself.getUserGroups());
+                */
+
+
+                bundle.putString("userID", item.getID());
 
 
                 Context context = FriendsActivity.this;
