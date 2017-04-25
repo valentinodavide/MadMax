@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="drawerItem">
+        <item>Invite a friend</item>
+        <item>Logout</item>
+    </string-array>
+</resources>

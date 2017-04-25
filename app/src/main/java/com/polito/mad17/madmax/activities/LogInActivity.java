@@ -13,7 +13,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.polito.mad17.madmax.R;
 
@@ -46,7 +48,8 @@ public class LogInActivity extends AppCompatActivity {
                 String subTag = "onAuthStateChanged";
                 if(firebaseAuth.getCurrentUser()!=null && auth.getCurrentUser().isEmailVerified()){
                     Log.d(TAG, subTag+" user is logged, go to GroupsActivity");
-                    Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+  //                  Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     finish();
                     startActivity(intent);
 
@@ -121,7 +124,15 @@ public class LogInActivity extends AppCompatActivity {
         progressDialog.show();
 
         // user authentication
-        auth.signInWithEmailAndPassword(email, password);
+        auth.signInWithEmailAndPassword(email, password).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+                Log.d(TAG,e.toString());
+                Toast.makeText(LogInActivity.this, "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     // check if both email and password form are filled
