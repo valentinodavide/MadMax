@@ -10,11 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.GroupsActivity"></activity>
-        <activity android:name=".activities.GroupExpensesActivity"></activity>
-        <activity android:name=".activities.NewExpenseActivity"></activity>
-        <activity android:name=".activities.FriendDetailActivity"></activity>
-        <activity android:name=".activities.FriendsActivity"></activity>
-        <activity android:name=".activities.NewGroupActivity"></activity>
         <activity android:name=".activities.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,6 +17,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.GroupExpensesActivity" />
+        <activity android:name=".activities.NewExpenseActivity" />
+        <activity
+            android:name=".activities.FriendDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.FriendsActivity" />
+        <activity android:name=".activities.NewGroupActivity" />
+        <activity
+            android:name=".activities.GroupInfoActivity"
+            android:label="@string/title_activity_group_info"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.NewMemberActivity"
+            android:label="@string/title_activity_new_member"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.EmailVericationActivity" />
         <activity android:name=".activities.MainActivity"/>

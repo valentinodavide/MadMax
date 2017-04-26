@@ -48,8 +48,8 @@ public class LogInActivity extends AppCompatActivity {
                 String subTag = "onAuthStateChanged";
                 if(firebaseAuth.getCurrentUser()!=null && auth.getCurrentUser().isEmailVerified()){
                     Log.d(TAG, subTag+" user is logged, go to GroupsActivity");
-  //                  Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     finish();
                     startActivity(intent);
 

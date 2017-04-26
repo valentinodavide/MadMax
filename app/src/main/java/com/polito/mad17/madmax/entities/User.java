@@ -1,5 +1,10 @@
 package com.polito.mad17.madmax.entities;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.activities.GroupsActivity;
 
 import java.util.ArrayList;
@@ -23,6 +28,12 @@ public class User {
     private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
     private HashMap<String, Group> userGroups;          //String = groupID, Group = oggetto Group di cui user fa parte
 
+
+    private DatabaseReference mDatabase;
+
+
+
+    public User() {}
 
     public User(String ID, String username, String name, String surname, String email, String password, String profileImage) {
         this.ID = ID;
@@ -123,6 +134,7 @@ public class User {
         this.userGroups = userGroups;
     }
 
+    /*
     // todo
     public Double getTotalDebts() {
         Double total = 0d;
@@ -132,13 +144,11 @@ public class User {
         return total;
 
     }
+    */
 
-    public void addExpense(Expense expense) {
-        addedExpenses.put(expense.getID(), expense);  //spesa aggiunta alla lista spese utente
-        expense.getGroup().getExpenses().put(expense.getID(), expense);   //spesa aggiunta alla lista spese del gruppo
-        updateBalance(expense);
-    }
 
+
+    /*
     // update balance among other users and among the group this user is part of
     private void updateBalance(Expense expense) {
         // todo per ora fa il calcolo come se le spese fossero sempre equamente divise fra tutti i
@@ -201,6 +211,7 @@ public class User {
             }
         }
     }
+    */
 
     public void joinGroup (Group group) {
         group.getMembers().put(this.getID(), this); //aggiunto user alla lista di membri del gruppo
@@ -219,6 +230,8 @@ public class User {
             }
         }
     }
+
+
 
     public HashMap<String, Group> getSharedGroupsMap(User friend)
     {
@@ -256,4 +269,18 @@ public class User {
     public String toString() {
         return name + " " + surname + " ";
     }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("userID", ID);
+        result.put("name", name);
+        result.put("surname", surname);
+        result.put("email", email);
+        result.put ("password", password);
+        result.put("profileImage", profileImage);
+
+        return result;
+    }
+
+
 }

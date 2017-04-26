@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.entities;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import static com.polito.mad17.madmax.R.mipmap.group;
 
@@ -12,13 +13,13 @@ public class Expense {
     private Double amount;
     private String currency;        // €, $ ...
     private String image;           // optional, URL dell'immagine su Firebase (può essere lo scontrino o una foto del prodotto)
-    private Group group;
+    private String groupID;
     private Boolean equallyDivided; // se vero la spesa viene divisa equamente fra tutti gli utenti del gruppo
                                     // altrimenti viene suddivisa come specificato in partitions ->
     private HashMap<String, Double> partitions;     // String: userID, Double: frazione corrispondente a quello User
 
 
-    public Expense (String ID, String description, String category, Double amount, String currency, String image, Boolean equallyDivided, Group group) {
+    public Expense (String ID, String description, String category, Double amount, String currency, String image, Boolean equallyDivided, String groupID) {
         this.ID = ID;
         this.description = description;
         this.category = category;
@@ -28,10 +29,13 @@ public class Expense {
         this.equallyDivided = equallyDivided;
         this.partitions = new HashMap<>();
         this.partitions = new HashMap<>();
-        this.group = group;
+        this.groupID = groupID;
     }
 
-    public String getID() {
+
+
+
+        public String getID() {
         return ID;
     }
 
@@ -95,7 +99,21 @@ public class Expense {
         this.partitions = partitions;
     }
 
-    public Group getGroup() {return group;}
+    public String getGroupID() {return groupID;}
 
-    public void setGroup(Group group) {this.group = group;}
+    public void setGroupID(String groupID) {this.groupID = groupID;}
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("ID", ID);
+        result.put("description", description);
+        result.put("category", category);
+        result.put("amount", amount);
+        result.put ("currency", currency);
+        result.put("image", image);
+        result.put("equallyDivided", equallyDivided);
+        result.put("groupID", groupID);
+
+        return result;
+    }
 }

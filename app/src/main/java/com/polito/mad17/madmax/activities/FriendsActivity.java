@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.User;
 
@@ -25,6 +29,7 @@ public class FriendsActivity extends AppCompatActivity {
 
 
     private ListView lv;
+    private DatabaseReference mDatabase;
 
 
 
@@ -33,7 +38,13 @@ public class FriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
+        /*
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        User u = new User ("utent1", "username", "name", "String surname", "String email", "String password", "String profileImage");
+        mDatabase.child("users").child("u01").setValue(u);
+
+        */
 
         Button groupsbutton = (Button) findViewById(R.id.groupsbutton);
 
@@ -54,6 +65,8 @@ public class FriendsActivity extends AppCompatActivity {
 
 
         lv = (ListView) findViewById(R.id.lv);
+
+
 
 
 

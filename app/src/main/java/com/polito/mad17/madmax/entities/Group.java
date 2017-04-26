@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.entities;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Group {
     private String ID;
@@ -79,5 +80,15 @@ public class Group {
 
     public String toString() {
         return ID + " " + name + " " + image;
+    }
+
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("groupID", ID);
+        result.put("name", name);
+        result.put("image", image);
+        result.put("description", description);
+
+        return result;
     }
 }

@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,14 +47,15 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
             Expense e = new Expense(
                     String.valueOf(expenses.size()), description, null, Double.valueOf(amount),
-                    currency, String.valueOf(R.drawable.expense6), false, group
+                    currency, String.valueOf(R.drawable.expense6), false, group.getID()
             );
 
             // save the new expense
             //expenses.put(String.valueOf(expenses.size()), e);
 
             //GroupsActivity.users.get(0).addExpense(e);
-            GroupsActivity.myself.addExpense(e);
+            //GroupsActivity.myself.addExpense(e);
+            //todo mettere addExpenseFirebase
         }
         // if starting activity from GroupActivity (tapping on a group for showing details)
         else {
@@ -78,6 +81,22 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 GroupExpensesActivity.this.startActivity(intent);
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
+            }
+        });
+
+        //Button to go to group info
+        Button groupInfoButton = (Button) findViewById(R.id.infobutton);
+        groupInfoButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view) {
+
+                Context context = GroupExpensesActivity.this;
+                Class destinationActivity = GroupInfoActivity.class;
+                Intent intent = new Intent(context, destinationActivity);
+                intent.putExtra("groupID", IDGroup);
+                startActivity(intent);
+
             }
         });
 
@@ -132,4 +151,6 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
         lv.setAdapter(a);
     }
+
+
 }

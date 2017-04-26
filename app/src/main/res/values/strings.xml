@@ -28,6 +28,8 @@
     <string name="auth_failed">Authentication failed</string>
     <string name="required">This filed is required</string>
     <string name="emailVerification_text">A verification email has been sent to your email address.\\n\\nPlease, look for the verification email in your inbox and click the link in the email</string>
+    <string name="invitemember_hint">Insert email to invite a friend</string>
+
 
     <string-array name="currencies">
         <item>€</item>
@@ -36,5 +38,7 @@
         <item>¥</item>
     </string-array>
     <string name="title_activity_dddd">dddd</string>
+    <string name="title_activity_group_info">GroupInfoActivity</string>
+    <string name="title_activity_new_member">NewMemberActivity</string>
 
 </resources>
