@@ -42,7 +42,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
             String currency = intent.getStringExtra("currency");
 //            expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
 
-            Group group = GroupsActivity.groups.get(IDGroup);
+            Group group = MainActivity.groups.get(IDGroup);
             expenses = group.getExpenses();
 
             Expense e = new Expense(
@@ -61,7 +61,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
         else {
             IDGroup = intent.getStringExtra("IDGroup");
 
-            Group group = GroupsActivity.groups.get(IDGroup);
+            Group group = MainActivity.groups.get(IDGroup);
             expenses = group.getExpenses();
         }
 

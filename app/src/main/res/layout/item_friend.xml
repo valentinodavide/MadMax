@@ -3,50 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="72dp">
+    android:layout_height="72dp"
+    android:padding="4dp">
 
     <ImageView
-        android:id="@+id/photo"
+        android:id="@+id/img_friend"
         android:layout_width="62dp"
         android:layout_height="match_parent"
         android:layout_marginBottom="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
-        android:src="@mipmap/ic_launcher"
+
         tools:src="@drawable/obama"
         />
 
 
     <TextView
-        android:id="@+id/name"
-        android:layout_gravity="center_vertical"
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_friend_name"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:textSize="16sp"
-        android:paddingLeft="8dp"
-        android:paddingTop="16dp"
-        android:text="Barack"
-        android:layout_marginTop="9dp"
         android:layout_weight="1"
+
+
+        android:paddingLeft="8dp"
+        android:paddingTop="20dp"
+
+        android:textSize="16sp"
+        android:text="Barack"
+
         />
 
     <TextView
-        android:id="@+id/balancetext"
+        android:id="@+id/tv_friend_balance"
         android:layout_width="70dp"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
 
-        android:background="@color/greenBalance"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
 
-        tools:text="333333"
+        android:background="@color/greenBalance"
+        android:gravity="center"
+        tools:text="111"
         android:textColor="#FFFFFF"
         android:textSize="14dp"
-        android:gravity="center"
-
-
-
         />
 
 </LinearLayout>

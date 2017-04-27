@@ -9,9 +9,12 @@
         android:id="@+id/img_group"
         android:layout_width="62dp"
         android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
 
         android:src="@mipmap/group"
-    />
+        />
 
     <TextView
         android:id="@+id/tv_group_name"
@@ -20,21 +23,21 @@
         android:layout_weight="1"
 
         android:paddingLeft="8dp"
-        android:paddingTop="16dp"
+        android:paddingTop="20dp"
 
-        android:clickable="true"
-        android:onClick="onClickOpenGroup"
+        android:clickable="false"
 
-        android:textSize="24dp"
+        android:textSize="16dp"
         android:text="GroupName"
-    />
+        />
 
     <TextView
-        android:id="@+id/tv_group_debt"
+        android:id="@+id/tv_group_balance"
         android:layout_width="70dp"
         android:layout_height="match_parent"
-        android:layout_marginBottom="16dp"
+
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
 
         android:background="@color/colorPrimary"
         android:gravity="center"

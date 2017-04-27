@@ -1,20 +1,15 @@
 package com.polito.mad17.madmax.entities;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.polito.mad17.madmax.activities.GroupsActivity;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class User {
+public class User implements Parcelable {
     private String ID;
 
     private String username;
@@ -27,11 +22,6 @@ public class User {
     private HashMap<String, Double> balanceWithGroups;   //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
     private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
     private HashMap<String, Group> userGroups;          //String = groupID, Group = oggetto Group di cui user fa parte
-
-
-    private DatabaseReference mDatabase;
-
-
 
     public User() {}
 
@@ -48,6 +38,40 @@ public class User {
         this.userGroups = new HashMap<>();
         this.balanceWithUsers = new HashMap<>();
         this.balanceWithGroups = new HashMap<>();
+    }
+
+    protected User(Parcel in) {
+        ID = in.readString();
+        name = in.readString();
+        surname = in.readString();
+        profileImage = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(ID);
+        dest.writeString(name);
+        dest.writeString(surname);
+        dest.writeString(profileImage);
+
     }
 
     public String getID() { return ID; }
@@ -134,8 +158,9 @@ public class User {
         this.userGroups = userGroups;
     }
 
-    /*
-    // todo
+
+    // Scommentato per far funzionare tutto
+    // todo, implementa con firebase
     public Double getTotalDebts() {
         Double total = 0d;
         for (HashMap.Entry<String, Double> debt : balanceWithUsers.entrySet()) {
@@ -144,9 +169,6 @@ public class User {
         return total;
 
     }
-    */
-
-
 
     /*
     // update balance among other users and among the group this user is part of

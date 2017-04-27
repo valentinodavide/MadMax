@@ -1,9 +1,9 @@
 package com.polito.mad17.madmax.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.R;
 
-import static com.polito.mad17.madmax.activities.GroupsActivity.groups;
+import static com.polito.mad17.madmax.activities.MainActivity.groups;
 
 public class NewGroupActivity extends AppCompatActivity {
 
@@ -43,7 +43,7 @@ public class NewGroupActivity extends AppCompatActivity {
             //display message if text field is empty
             Toast.makeText(getBaseContext(), "Saved group", Toast.LENGTH_SHORT).show();
 
-            Intent intent = new Intent(NewGroupActivity.this, GroupsActivity.class);
+            Intent intent = new Intent(NewGroupActivity.this, MainActivity.class);
 
 //          Log.d("DEBUG", "groups.size() before " + groups.size());
             Integer newID = groups.size();

@@ -6,6 +6,8 @@
     <string name="groups">GRUPPI</string>
     <string name="friends">AMICI</string>
     <string name="pending">IN ATTESA</string>
+    <string name="paydebt">SALDA DEBITO</string>
+    <string name="owes_you">TI DEVE</string>
     <string name="name">Nome</string>
     <string name="amount">Importo</string>
     <string name="category">Categoria</string>
@@ -13,4 +15,5 @@
     <string name="description">Descrizione</string>
     <string name="photo">Foto</string>
     <string name="save">Salva</string>
+    <string name="shared_groups">Gruppi Condivisi</string>
 </resources>

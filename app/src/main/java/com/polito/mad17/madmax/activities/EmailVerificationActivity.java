@@ -71,7 +71,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
                 if(currentUser!=null){
                     if(currentUser.isEmailVerified()){
                         Log.d(TAG, "email has been verified");
-                        Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         finish();
                         startActivity(intent);
                     }

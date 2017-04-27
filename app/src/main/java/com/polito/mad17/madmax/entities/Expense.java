@@ -3,8 +3,6 @@ package com.polito.mad17.madmax.entities;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.polito.mad17.madmax.R.mipmap.group;
-
 public class Expense {
     private String ID;
 
@@ -33,9 +31,7 @@ public class Expense {
     }
 
 
-
-
-        public String getID() {
+    public String getID() {
         return ID;
     }
 

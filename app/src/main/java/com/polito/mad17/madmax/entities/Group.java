@@ -1,9 +1,12 @@
 package com.polito.mad17.madmax.entities;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class Group {
+public class Group implements Parcelable {
     private String ID;
     private String name;
     private String image;                       // optional, URL dell'immagine su Firebase
@@ -20,6 +23,54 @@ public class Group {
         this.counterAddedExpenses = 0;
         this.members = new HashMap<>();
         this.expenses = new HashMap<>();
+    }
+
+    protected Group(Parcel in) {
+        ID = in.readString();
+        name = in.readString();
+        image = in.readString();
+        description = in.readString();
+        counterAddedExpenses = in.readInt();
+
+        members = in.readHashMap(new ClassLoader() {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                return super.loadClass(name, resolve);
+            }
+        });
+
+        expenses = in.readHashMap(new ClassLoader() {
+            @Override
+            protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+                return super.loadClass(name, resolve);
+            }
+        });
+    }
+
+    public static final Creator<Group> CREATOR = new Creator<Group>() {
+        @Override
+        public Group createFromParcel(Parcel in) {
+            return new Group(in);
+        }
+
+        @Override
+        public Group[] newArray(int size) {
+            return new Group[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(ID);
+        dest.writeString(name);
+        dest.writeString(image);
+        dest.writeString(description);
+        dest.writeInt(counterAddedExpenses);
     }
 
     public String getID() { return ID; }
