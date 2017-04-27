@@ -33,7 +33,7 @@
             android:label="@string/title_activity_new_member"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.EmailVericationActivity" />
+        <activity android:name=".activities.EmailVerificationActivity" />
         <activity android:name=".activities.MainActivity"/>
     </application>
 

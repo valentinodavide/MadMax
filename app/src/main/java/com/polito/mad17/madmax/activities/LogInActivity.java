@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -35,7 +36,7 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_in);
+
 
         auth = FirebaseAuth.getInstance();
 
@@ -46,22 +47,25 @@ public class LogInActivity extends AppCompatActivity {
                     progressDialog.dismiss();
 
                 String subTag = "onAuthStateChanged";
+
+                // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
                 if(firebaseAuth.getCurrentUser()!=null && auth.getCurrentUser().isEmailVerified()){
                     Log.d(TAG, subTag+" user is logged, go to GroupsActivity");
-                    Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
-                    //Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    finish();
+     //               Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
-
+                    finish();
                 }
                 else {
+                    // if the user is already logged but has not verified the mail redirect him to the email verification
                     if(firebaseAuth.getCurrentUser()!=null && !auth.getCurrentUser().isEmailVerified()) {
                         Log.d(TAG, subTag+" user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
-                        Intent intent = new Intent(getApplicationContext(), EmailVericationActivity.class);
-                        finish();
+                        Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                     else{
+                        // if the user has done the logout
                         Log.d(TAG, subTag+" user has done the logout");
                     }
                 }
@@ -69,9 +73,12 @@ public class LogInActivity extends AppCompatActivity {
             }
         };
 
+        setContentView(R.layout.activity_log_in);
+
         emailView = (EditText) findViewById(R.id.email);
         passwordView = (EditText) findViewById(R.id.password);
         signupView = (TextView) findViewById(R.id.link_signup);
+        signupView.setPaintFlags(signupView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG); // to make the link underlined
         loginButton = (Button) findViewById(R.id.btn_login);
         progressDialog = new ProgressDialog(this);
 

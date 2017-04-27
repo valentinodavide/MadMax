@@ -80,7 +80,7 @@
                 android:linksClickable="true"
                 android:text="@string/prompt_create_account"
                 android:gravity="center"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
 
         </LinearLayout>
 

@@ -15,7 +15,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.polito.mad17.madmax.R;
 
-public class EmailVericationActivity extends AppCompatActivity {
+public class EmailVerificationActivity extends AppCompatActivity {
 
     private static final String TAG = "EmailVerificatActivity";
     private FirebaseAuth auth;
@@ -27,7 +27,7 @@ public class EmailVericationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_email_verication);
+        setContentView(R.layout.activity_email_verification);
 
         progressDialog = new ProgressDialog(this);
 

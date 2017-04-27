@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
                     auth.signOut();
 
                     Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
-                    finish();
                     startActivity(intent);
+                    finish();
                 }
                 else if(position == 0){
                     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))

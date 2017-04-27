@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,8 +34,6 @@ public class SignUpActivity extends AppCompatActivity {
     private int PICK_IMAGE_REQUEST = 1; // to use for selecting the image profile
     private static final String TAG = "SignUpActivity";
 
-    private LinearLayout createAccountLayout;
-
     private EditText nameView;
     private EditText surnameView;
     private EditText usernameView;
@@ -54,8 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
         Log.d(TAG, "enter in signup activity");
         auth = FirebaseAuth.getInstance();
 
-        createAccountLayout = (LinearLayout)findViewById(R.id.create_account_layout);
-
         nameView = (EditText)findViewById(R.id.name);
         surnameView = (EditText)findViewById(R.id.surname);
         usernameView = (EditText)findViewById(R.id.username);
@@ -64,6 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
 
         loginView = (TextView)findViewById(R.id.link_login);
+        loginView.setPaintFlags(loginView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         loginView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,9 +111,9 @@ public class SignUpActivity extends AppCompatActivity {
                             // delete the account and restart the activity
                             Log.d(TAG, "verification email not sent, exception: "+task.getException());
                         }
-                        Intent intent = new Intent(getApplicationContext(), EmailVericationActivity.class);
-                        finish();
+                        Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
                         startActivity(intent);
+                        finish();
                     }
                 });
     }
