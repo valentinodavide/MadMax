@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // todo persistenza da testare
+        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -533,10 +535,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                         if (balance != null) {
                             mDatabase.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
                         }
-                    }
-                    else
-                    {
-                        System.out.println("Friend not found");
                     }
 
                     //aggiorno debito dell'amico verso di me
