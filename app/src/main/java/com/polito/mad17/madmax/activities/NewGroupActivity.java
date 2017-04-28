@@ -82,7 +82,7 @@ public class NewGroupActivity extends AppCompatActivity {
             if(imageString!=null)
                 newGroup = new Group(newID.toString(), name, imageString, description);
             else
-                newGroup = new Group(newID.toString(), name, "noImage", description);
+                newGroup = new Group(newID.toString(), name, String.valueOf(R.mipmap.group), description);
 
             groups.put(newGroup.getID(), newGroup);
 
