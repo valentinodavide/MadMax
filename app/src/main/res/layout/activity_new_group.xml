@@ -1,50 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
                 tools:context="com.polito.mad17.madmax.activities.NewGroupActivity">
 
-    <LinearLayout
-        android:id="@+id/ll_name"
+    <ImageView android:src="@mipmap/group"
+        android:id="@+id/group_image"
+        android:layout_width="wrap_content"
+        android:layout_height="72dp"
+        android:layout_marginBottom="24dp"
+        android:layout_gravity="center_horizontal"
+        android:clickable="true"/>
+
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="@string/name"/>
+        android:layout_height="wrap_content">
+
         <EditText
             android:id="@+id/et_name_group"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:textSize="20sp"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_below="@id/ll_name"
-        android:layout_marginTop="8dp">
-        <TextView
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="@string/description"/>
+            android:hint="@string/name"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <EditText
             android:id="@+id/et_description_group"
             android:layout_width="match_parent"
-            android:layout_height="42dp"
-            android:textSize="20sp"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:hint="@string/description"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"/>
+    </android.support.design.widget.TextInputLayout>
 
-
-</RelativeLayout>
+</LinearLayout>
