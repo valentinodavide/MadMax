@@ -95,6 +95,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 Class destinationActivity = GroupInfoActivity.class;
                 Intent intent = new Intent(context, destinationActivity);
                 intent.putExtra("groupID", IDGroup);
+                intent.putExtra("caller", "GroupExpensesActivity");
                 startActivity(intent);
 
             }
@@ -140,7 +141,8 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 TextView description = (TextView) convertView.findViewById(R.id.description);
                 TextView amount = (TextView) convertView.findViewById(R.id.amount);
 
-                photo.setImageResource(Integer.parseInt(expense.getImage()));
+                if (expense.getImage() != null)
+                    photo.setImageResource(Integer.parseInt(expense.getImage()));
                 description.setText(expense.getDescription());
                 String amountString = expense.getAmount() + " " + expense.getCurrency();
                 amount.setText(amountString);

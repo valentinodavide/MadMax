@@ -2,12 +2,17 @@ package com.polito.mad17.madmax.entities;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.polito.mad17.madmax.activities.MainActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import static android.R.attr.tag;
 
 public class User implements Parcelable {
     private String ID;
@@ -161,11 +166,14 @@ public class User implements Parcelable {
 
     // Scommentato per far funzionare tutto
     // todo, implementa con firebase
-    public Double getTotalDebts() {
+    public Double myTotalDebts() {
         Double total = 0d;
+
         for (HashMap.Entry<String, Double> debt : balanceWithUsers.entrySet()) {
+            Log.d("Ciao ", debt.getValue().toString());
             total += debt.getValue();
         }
+
         return total;
 
     }
@@ -294,7 +302,7 @@ public class User implements Parcelable {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("userID", ID);
+        result.put("ID", ID);
         result.put("name", name);
         result.put("surname", surname);
         result.put("email", email);
@@ -303,6 +311,71 @@ public class User implements Parcelable {
 
         return result;
     }
+
+    // update balance among other users and among the group this user is part of
+    public void updateBalance(Expense expense) {
+        // todo per ora fa il calcolo come se le spese fossero sempre equamente divise fra tutti i
+        // todo     membri del gruppo (cioè come se expense.equallyDivided fosse sempre = true
+
+        String groupID = expense.getGroupID();   //gruppo in cui è stato inserita la spesa
+        Group g = MainActivity.groups.get(groupID);
+
+        Double total = g.getTotalExpense(); //spesa totale del gruppo aggiornata
+        Double singlecredit = expense.getAmount() / g.getMembers().size();   //credito che io ho verso ogni singolo utente in virtù della spesa che ho fatto
+        Double totalcredit = singlecredit * (g.getMembers().size() -1); //credito totale che io ho verso tutti gli altri membri del gruppo
+        //es. se in un gruppo di 5 persone io ho pagato 10, ognuno mi deve 2
+        //quindi totalcredit = 2*4 dove 4 è il n. di membri del gruppo diversi da me. In tutto devo ricevere 8.
+
+        Double actualdebts = balanceWithGroups.get(g.getID());
+        if (actualdebts != null) {
+            //aggiorno il mio debito verso il gruppo
+            balanceWithGroups.put(g.getID(), actualdebts + totalcredit);
+        }
+        else {
+            System.out.println("Group not found");
+        }
+
+        //per ogni amico del gruppo in cui è stata aggiunta la spesa
+        for (HashMap.Entry<String, User> friend : g.getMembers().entrySet()) {
+            //se non sono io stesso
+            if (!friend.getKey().equals(this.getID())) {
+                //aggiorno mio credito verso di lui
+                Double balance = balanceWithUsers.get(friend.getKey());
+                if (balance != null) {
+                    balanceWithUsers.put(friend.getKey(), balance+singlecredit);
+                }
+                else {
+                    System.out.println("Friend not found");
+                }
+
+                //aggiorno debito dell'amico verso di me
+                HashMap<String, Double> friendBalanceWithUsers = friend.getValue().getBalanceWithUsers();
+                balance = friendBalanceWithUsers.get(this.getID());;
+
+                if (balance != null) {
+                    friend.getValue().getBalanceWithUsers().put(this.getID(), balance-singlecredit);
+                }
+                else {
+                    System.out.println("Io non risulto tra i suoi debiti");
+                    // => allora devo aggiungermi
+                    friendBalanceWithUsers.put(this.getID(), -singlecredit);
+                }
+
+                //aggiorno debito dell'amico verso il gruppo
+                HashMap<String, Double> friendBalanceWithGroups = friend.getValue().getBalanceWithGroups();
+                balance = friendBalanceWithGroups.get(g.getID());
+                if (balance != null) {
+                    friend.getValue().getBalanceWithGroups().put(g.getID(), balance-singlecredit);
+                }
+                else {
+                    System.out.println("Gruppo non risulta tra i suoi debiti");
+                    // => allora lo devo aggiungere
+                    friendBalanceWithGroups.put(g.getID(), -singlecredit);
+                }
+            }
+        }
+    }
+
 
 
 }

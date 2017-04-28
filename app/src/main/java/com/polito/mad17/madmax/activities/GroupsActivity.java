@@ -1,57 +1,54 @@
+/*
 package com.polito.mad17.madmax.activities;
 
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.database.DataSetObserver;
+import android.graphics.Color;
+import android.support.constraint.solver.widgets.Snapshot;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.android.gms.appinvite.AppInviteInvitation;
-import com.google.firebase.auth.FirebaseAuth;
+//import com.google.firebase.database.DatabaseReference;
+//import com.google.firebase.database.FirebaseDatabase;
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.R;
 
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements OnItemClickInterface {
+public class GroupsActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-
+    public static HashMap<String, Group> groups = new HashMap<>();
+    private ListView listView;
+    public static ArrayList<User> users = new ArrayList<>();
+    public static User myself;
     private DatabaseReference mDatabase;
 
 
-    private String[] drawerOptions;
-    private DrawerLayout drawerLayout;
-    private ListView drawerList;
- //   private ActionBarDrawerToggle drawerToggle;
-    private FirebaseAuth auth;
-    private static final int REQUEST_INVITE = 0;
-
-    public static HashMap<String, Group> groups = new HashMap<>();
-    public static HashMap<String, User> users = new HashMap<>();
-    public static User myself;
 
     Integer[] imgid={
             R.drawable.ale,
@@ -77,14 +74,41 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             R.drawable.expense7
     };
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+
+        listView = (ListView) findViewById(R.id.lv_list_groups);
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(GroupsActivity.this, NewGroupActivity.class);
+                String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
+                //inizialmente l'unico user è il creatore del gruppo stesso
+                NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
+                User myself = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
+                mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
+                mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
+                NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
+                myIntent.putExtra("groupID", tempGroupID);
+                GroupsActivity.this.startActivity(myIntent);
+
+            }
+        });
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
-        if (users.isEmpty())
-        {
+        if (users.isEmpty()) {
             //Create users
             User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
             User u1 = new User(String.valueOf(1), "Alero3",         "Alessandro", "Rota",       "email1@email.it", "password1", String.valueOf(imgid[0]));
@@ -101,13 +125,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             mDatabase.child("users").child(u4.getID()).setValue(u4);
             mDatabase.child("users").child(u5.getID()).setValue(u5);
 
+
+
             //Add to users list (needed to share data with other activities)
-            users.put(u0.getID(), u0);
-            users.put(u1.getID(), u1);
-            users.put(u2.getID(), u2);
-            users.put(u3.getID(), u3);
-            users.put(u4.getID(), u4);
-            users.put(u4.getID(), u5);
+            users.add(u1);
+            users.add(u2);
+            users.add(u3);
+            users.add(u4);
+            users.add(u5);
 
             Group g1 = new Group(String.valueOf(0), "Vacanze",      String.valueOf(imgid[5]), "description0");
             Group g2 = new Group(String.valueOf(1), "Calcetto",     String.valueOf(imgid[6]), "description1");
@@ -117,12 +142,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             Group g6 = new Group(String.valueOf(5), "Alcolisti Anonimi",   String.valueOf(imgid[10]), "description5");
 
             //Add groups to database
-            mDatabase.child("groups").child(g1.getID()).setValue(g1);
             mDatabase.child("groups").child(g2.getID()).setValue(g2);
             mDatabase.child("groups").child(g3.getID()).setValue(g3);
             mDatabase.child("groups").child(g4.getID()).setValue(g4);
             mDatabase.child("groups").child(g5.getID()).setValue(g5);
             mDatabase.child("groups").child(g6.getID()).setValue(g6);
+
+
 
             //Aggiungo utente a lista membri del gruppo e gruppo a lista gruppi nell'utente in Firebase
             joinGroupFirebase(u0,g1);
@@ -151,6 +177,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             joinGroupFirebase(u2,g6);
 
 
+
+
             //Add users to group
             u0.joinGroup(g1);
             u1.joinGroup(g1);
@@ -176,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             u0.joinGroup(g6);
             u2.joinGroup(g6);
 
+
             groups.put(g1.getID(), g1);
             groups.put(g2.getID(), g2);
             groups.put(g3.getID(), g3);
@@ -196,10 +225,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             //u0.addExpense(e3);
             addExpenseFirebase(u0,e3);
 
+
+
+
             //Spese in g3
             Expense e4 = new Expense(String.valueOf(3), "Affitto", "Altro",         500d, "€",  String.valueOf(img_expense[3]), true, g3.getID());
             //u4.addExpense(e4);
             addExpenseFirebase(u4,e4);
+
 
             //Add expenses to Firebase
 
@@ -208,187 +241,178 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             mDatabase.child("expenses").child(e3.getID()).setValue(e3);
             mDatabase.child("expenses").child(e4.getID()).setValue(e4);
 
+
+
+
+
             myself = u0;
+
+
+
+
         }
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        auth = FirebaseAuth.getInstance();
-
-        drawerOptions = getResources().getStringArray(R.array.drawerItem);
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        drawerList = (ListView)findViewById(R.id.left_drawer);
-
-        // set the adapter for the Listview
-        drawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, drawerOptions));
-
-        // set the click's listener
-        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       */
+/* final FirebaseListAdapter<Group> firebaseListAdapter = new FirebaseListAdapter<Group>(
+                this,   //activity contentente la ListView
+                Group.class,   //classe in cui viene messo il dato letto (?)
+                R.layout.item_group,   //layout del singolo item
+                mDatabase.child("groups") //nodo del db da cui leggo
+        ) {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 1){
-                    Toast.makeText(MainActivity.this, "Logout selected", Toast.LENGTH_SHORT).show();
-                    auth.signOut();
+            protected void populateView(View v, Group model, int position) {
 
-                    Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
-                    startActivity(intent);
-                    finish();
+                Log.d("DEBUG", model.toString());
+
+                TextView groupName = (TextView) v.findViewById(R.id.tv_group_name);
+                groupName.setText(model.getName());
+                groupName.setTag(model.getID());
+
+
+                TextView balance = (TextView) v.findViewById(R.id.tv_group_debt);
+
+
+            }
+        };
+
+        listView.setAdapter(firebaseListAdapter);*//*
+
+
+
+
+       */
+/*
+        ListAdapter listAdapter = new ListAdapter() {
+            @Override
+            public boolean areAllItemsEnabled() {
+                return false;
+            }
+
+            @Override
+            public boolean isEnabled(int position) {
+                return false;
+            }
+
+            @Override
+            public void registerDataSetObserver(DataSetObserver observer) { }
+
+            @Override
+            public void unregisterDataSetObserver(DataSetObserver observer) { }
+
+            @Override
+            public int getCount() {
+                return groups.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return groups.get(position);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return 0;
+            }
+
+            @Override
+            public boolean hasStableIds() {
+                return false;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+
+                if(convertView == null) {
+                    convertView = getLayoutInflater().inflate(R.layout.item_group, parent, false);
                 }
-                else if(position == 0){
-                    Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                            .setMessage(getString(R.string.invitation_message))
-     //                       .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-     //                       .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                            .setCallToActionText(getString(R.string.invitation_cta))
-                            .build();
-                    startActivityForResult(intent, REQUEST_INVITE);
+
+                //Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
+                Group group = groups.get(String.valueOf(position));
+
+                ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
+                String p = group.getImage();
+                if (!p.equals("noImage"))
+                {
+                    int photoId = Integer.parseInt(p);
+                    groupImage.setImageResource(photoId);
                 }
-            }
-        });
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.friends));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+                TextView groupName = (TextView) convertView.findViewById(R.id.tv_group_name);
+                groupName.setText(group.getName());
+                groupName.setTag(group.getID());
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
+                TextView balance = (TextView) convertView.findViewById(R.id.tv_group_debt);
 
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
 
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
-        });
+                //mydebt = mio debito con il gruppo
+                Double mygroupdebt = GroupsActivity.myself.getBalanceWithGroups().get(group.getID());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-                String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
-                //inizialmente l'unico user è il creatore del gruppo stesso
-                NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
-                User myself = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
-                mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
-                mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
-                NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
-                myIntent.putExtra("groupID", tempGroupID);
-                MainActivity.this.startActivity(myIntent);
+                DecimalFormat df = new DecimalFormat("#.##");
 
-            }
-        });
-    }
+                if (mygroupdebt != null)
+                {
+                    if (mygroupdebt > 0)
+                    {
+                        balance.setText("+ " + df.format(mygroupdebt) + " €");
+                        balance.setBackgroundResource(R.color.greenBalance);
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-
-        if(requestCode == REQUEST_INVITE){
-            if(resultCode == RESULT_OK){
-                // Get the invitation IDs of all sent messages
-                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                for (String id : ids) {
-                    Log.d(TAG, "onActivityResult: sent invitation " + id);
+                    }
+                    else if (mygroupdebt < 0)
+                    {
+                        balance.setText("- " + df.format(Math.abs(mygroupdebt)) + " €");
+                        balance.setBackgroundColor(Color.rgb(255,0,0));
+                    }
+                    else
+                    {
+                        balance.setText("" + df.format(mygroupdebt) + " €");
+                        balance.setBackgroundResource(R.color.greenBalance);
+                    }
                 }
-            } else {
-                // Sending failed or it was canceled, show failure message to the user
-                Log.d(TAG, "onActivityResult: failed sent");
+
+
+
+
+                //numberNotifications.setText(group.getNumberNotifications().toString());
+
+                return convertView;
             }
-        }
-    }
 
-    public class PagerAdapter extends FragmentStatePagerAdapter {
-
-        int numberOfTabs;
-
-        public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
-            super(fragmentManager);
-            this.numberOfTabs = numberOfTabs;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch(position) {
-                case 0:
-                    Log.d(TAG, "here in case 0");
-                    FriendsFragment friendsFragment = new FriendsFragment();
-                    return friendsFragment;
-                case 1:
-                    Log.d(TAG, "here in case 1");
-                    GroupsFragment groups1Fragment = new GroupsFragment();
-                    return groups1Fragment;
-                case 2:
-                    Log.d(TAG, "here in case 2");
-                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
-                    return pendingExpensesFragment;
-                default:
-                    return null;
+            @Override
+            public int getItemViewType(int position) {
+                return 0;
             }
-        }
 
-        @Override
-        public int getCount() {
-            return numberOfTabs;
-        }
+            @Override
+            public int getViewTypeCount() {
+                return 1;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+        };
+
+        listView.setAdapter(listAdapter);
+    }
+    *//*
+
+
+    public void onClickOpenGroup(View view) {
+
+        TextView groupName = (TextView) view;
+        Log.d("DEBUG", groupName.getTag().toString());
+
+        String IDGroup = groupName.getTag().toString();
+
+        Intent myIntent = new Intent(GroupsActivity.this, GroupExpensesActivity.class);
+        myIntent.putExtra("addExpenseToGroup", false);
+        myIntent.putExtra("IDGroup", IDGroup); //Optional parameters
+        GroupsActivity.this.startActivity(myIntent);
     }
 
-    @Override
-    public void itemClicked(String fragmentName, String itemID) {
-
-        Log.d(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        Bundle bundle = new Bundle();
-        Intent intent = null;
-
-        switch(fragmentName) {
-            case "FriendsFragment":
-                User friendDetail = users.get(itemID);
-                bundle.putParcelable("friendDetail", friendDetail);
-
-                intent = new Intent(this, FriendDetailActivity.class);
-                intent.putExtra("friendDetails", friendDetail);
-                startActivity(intent);
-
-//                FriendDetailFragment friendDetailFragment = new FriendDetailFragment();
-//                friendDetailFragment.setArguments(bundle);
-//
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.replace(R.id.main_content, friendDetailFragment);
-
-//                fragmentTransaction.commit();
-
-                break;
-
-            case "GroupsFragment":
-                Group groupDetail = groups.get(itemID);
-                bundle.putParcelable("groupDetails", groupDetail);
-
-                intent = new Intent(this, GroupDetailActivity.class);
-                intent.putExtra("groupDetails", groupDetail);
-                startActivity(intent);
-
-                break;
-        }
-
-    }
 
     public void joinGroupFirebase (final User u, Group g)
     {
@@ -396,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         mDatabase.child("users").child(u.getID()).child("groups").push();
         mDatabase.child("groups").child(g.getID()).child("members").push();
 
-        Map<String, Object> groupValues = g.toMap();
+        Map <String, Object> groupValues = g.toMap();
         Map <String, Object> userValues = u.toMap();
 
         Map <String, Object> childUpdates = new HashMap<>();
@@ -586,7 +610,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
 
-        /*
+        */
+/*
         Double total = g.getTotalExpense(); //spesa totale del gruppo aggiornata
         Double singlecredit = expense.getAmount() / g.getMembers().size();   //credito che io ho verso ogni singolo utente in virtù della spesa che ho fatto
         Double totalcredit = singlecredit * (g.getMembers().size() -1); //credito totale che io ho verso tutti gli altri membri del gruppo
@@ -643,10 +668,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         }
 
     }
+    *//*
+
+
+
     */
-
-
-    /*
+/*
     //ritorna i soldi totali spesi dal gruppo (packake-private: visibilità di default)
     Double getTotalExpenseFirebase (String groupID) {
 
@@ -682,8 +709,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
     }
-    */
+    *//*
 
 
-    }
+
 }
+}
+*/

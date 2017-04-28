@@ -28,6 +28,7 @@ import java.util.Map;
 public class GroupInfoActivity extends AppCompatActivity {
 
     String groupID;
+    String caller;
     private ListView lv;
     private DatabaseReference mDatabase;
 
@@ -44,6 +45,9 @@ public class GroupInfoActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
+        caller = intent.getStringExtra("caller");
+
+
 
         //Button to add a new member
         Button newMemberButton = (Button) findViewById(R.id.addmember);
@@ -69,7 +73,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 this,   //activity contentente la ListView
                 User.class,   //classe in cui viene messo il dato letto (?)
                 R.layout.item_friend,   //layout del singolo item
-                mDatabase.child("groups").child("0").child("members")  //nodo del db da cui leggo
+                mDatabase.child("groups").child(groupID).child("members")  //nodo del db da cui leggo
                 ) {
             @Override
             protected void populateView(View v, User model, int position) {

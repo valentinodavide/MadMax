@@ -8,14 +8,21 @@ android:layout_height="match_parent">
         android:id="@+id/infobutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Info about group"
+        android:text="Group members"
         />
+
+    <TextView
+        android:id="@+id/expensestext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/infobutton"
+        android:text="Expenses"/>
 
 
     <ListView
         android:id="@+id/expenses"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/infobutton"/>
+        android:layout_below="@id/expensestext"/>
 
 </RelativeLayout>

@@ -15,6 +15,8 @@ public class Group implements Parcelable {
     private HashMap<String, User> members;      // String: userID,      User: oggetto
     private HashMap<String, Expense> expenses;  // String: expenseID,   Expense: oggetto
 
+    public  Group (){};
+
     public Group(String ID, String name, String image, String description) {
         this.ID = ID;
         this.name = name;
