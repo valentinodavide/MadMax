@@ -16,14 +16,12 @@ import android.widget.TextView;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.User;
 
-import org.w3c.dom.Text;
-
 import java.text.DecimalFormat;
 import java.util.Map;
 
-public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
+public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener {
 
-    private static final String TAG = FriendDetailFragment.class.getSimpleName();
+    private static final String TAG = GroupDetailFragment.class.getSimpleName();
 
     private OnItemClickInterface onClickGroupInterface;
 
@@ -41,7 +39,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
 
-    public FriendDetailFragment() {}
+    public GroupDetailFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,13 +49,9 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_friend_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_group_detail, container, false);
 
-        imageView = (ImageView) view.findViewById(R.id.img_photo);
-        nameTextView = (TextView) view.findViewById(R.id.tv_friend_name);
-        balanceTextView = (TextView) view.findViewById(R.id.tv_balance);
-        balanceTextTextView = (TextView) view.findViewById(R.id.tv_balance_text);
-        payButton = (Button) view.findViewById(R.id.btn_pay_debt);
+
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
@@ -65,17 +59,24 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        groupsViewAdapter = new GroupsViewAdapter(this);
+//        groupsViewAdapter = new GroupsViewAdapter(this);
         recyclerView.setAdapter(groupsViewAdapter);
 
         groupsViewAdapter.setGroupsData(MainActivity.groups, MainActivity.myself);
 
+        /* Preso dalla vecchia activity
+        ImageView photo = (ImageView) view.findViewById(R.id.photo);
+        TextView name=(TextView)view.findViewById(R.id.name);
+        TextView surname=(TextView)view.findViewById(R.id.surname);
+        TextView balancetext=(TextView) view.findViewById(R.id.balancetext);
+        TextView balance=(TextView) view.findViewById(R.id.balance);
+        */
 
         //Extract data from bundle
         Bundle bundle = this.getArguments();
         User friendDetail = null;
         if(bundle != null) {
-            friendDetail = bundle.getParcelable("friendDetails");
+            friendDetail = (User) bundle.getParcelable("friendDetails");
 
             String photo = friendDetail.getProfileImage();
             int photoUserId = Integer.parseInt(photo);

@@ -3,11 +3,8 @@ package com.polito.mad17.madmax.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
 
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.entities.User;
 
 public class FriendDetailActivity extends AppCompatActivity {
 
@@ -16,7 +13,7 @@ public class FriendDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend_detail);
+        setContentView(R.layout.fragment_container);
 
         Log.d(TAG, "onCreate di FriendDetailActivity");
 

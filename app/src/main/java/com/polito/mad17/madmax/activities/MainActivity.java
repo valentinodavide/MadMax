@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent myIntent = new Intent(GroupsActivity.this, NewGroupActivity.class);
+//                Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
 //                GroupsActivity.this.startActivity(myIntent);
 
             }
@@ -335,13 +335,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         Bundle bundle = new Bundle();
+        Intent intent = null;
 
         switch(fragmentName) {
             case "FriendsFragment":
-                User friendDetail = users.get(String.valueOf(itemID));
+                User friendDetail = users.get(itemID);
                 bundle.putParcelable("friendDetail", friendDetail);
 
-                Intent intent = new Intent(this, FriendDetailActivity.class);
+                intent = new Intent(this, FriendDetailActivity.class);
                 intent.putExtra("friendDetails", friendDetail);
                 startActivity(intent);
 
@@ -356,6 +357,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 break;
 
             case "GroupsFragment":
+                Group groupDetail = groups.get(itemID);
+                bundle.putParcelable("groupDetails", groupDetail);
+
+                intent = new Intent(this, GroupDetailActivity.class);
+                intent.putExtra("groupDetails", groupDetail);
+                startActivity(intent);
+
                 break;
         }
     }

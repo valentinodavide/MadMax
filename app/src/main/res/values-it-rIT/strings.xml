@@ -16,4 +16,10 @@
     <string name="photo">Foto</string>
     <string name="save">Salva</string>
     <string name="shared_groups">Gruppi Condivisi</string>
+    <string name="verify_email">Verifica email</string>
+    <string name="login">Login</string>
+    <string name="expenses">Spese</string>
+    <string name="balance">Bilancio</string>
+    <string name="history">Storico</string>
+    <string name="members">Membri</string>
 </resources>

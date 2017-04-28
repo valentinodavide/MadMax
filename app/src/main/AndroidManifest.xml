@@ -21,7 +21,8 @@
         <activity
             android:name=".activities.FriendDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.FriendsActivity" />
+        <activity android:name=".activities.GroupDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".activities.NewGroupActivity" />
         <activity
             android:name=".activities.GroupInfoActivity"

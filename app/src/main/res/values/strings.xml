@@ -17,6 +17,8 @@
     <string name="photo">Photo</string>
     <string name="save">Save</string>
     <string name="owes_you">OWES YOU</string>
+    <string name="you_should_receive">"YOU SHOULD RECEIVE"</string>
+    <string name="no_debts">NO DEBTS</string>
     <string name="edit_description_hint">Insert expense description</string>
     <string name="edit_amount_hint">Insert amount</string>
     <string name="expense_saved">Expense saved</string>
@@ -30,9 +32,15 @@
     <string name="prompt_registered_user">Already a member? Login</string>
     <string name="auth_failed">Authentication failed</string>
     <string name="required">This filed is required</string>
-    <string name="emailVerification_text">A verification email has been sent to your email address.\\n\\nPlease, look for the verification email in your inbox and click the link in the email</string>
+    <string name="emailVerification_text">A verification email has been sent to your email address.\n\nPlease, look for the verification email in your inbox and click the link in the email</string>
     <string name="invitemember_hint">Insert email to invite a friend</string>
     <string name="shared_groups">Shared Groups</string>
+    <string name="verify_email">Verify Email</string>
+    <string name="login">Login</string>
+    <string name="expenses">Expenses</string>
+    <string name="balance">Balance</string>
+    <string name="history">History</string>
+    <string name="members">Members</string>
 
     <string-array name="currencies">
         <item>€</item>
