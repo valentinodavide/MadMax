@@ -264,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-//                GroupsActivity.this.startActivity(myIntent);
+                Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
+                MainActivity.this.startActivity(myIntent);
 
             }
         });

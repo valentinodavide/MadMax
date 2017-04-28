@@ -95,6 +95,9 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         //mydebt = mio debito con il gruppo
         Double mygroupdebt = myself.getBalanceWithGroups().get(groupViewHolder.ID);
+        if (mygroupdebt == null) {
+            return;
+        }
 
         DecimalFormat df = new DecimalFormat("#.##");
 
