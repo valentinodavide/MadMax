@@ -3,16 +3,13 @@ package com.polito.mad17.madmax.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,16 +25,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import static com.polito.mad17.madmax.activities.MainActivity.groups;
 
@@ -65,18 +59,18 @@ public class NewGroupActivity extends AppCompatActivity {
         nameGroup = (EditText) findViewById(R.id.et_name_group);
         descriptionGroup = (EditText) findViewById(R.id.et_description_group);
         imageGroup = (ImageView) findViewById(R.id.group_image);
-        imageGroup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // allow to choose the group image
-                Intent intent = new Intent();
-                // Show only images, no videos or anything else
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                // Always show the chooser (if there are multiple options available)
-                startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_IMAGE_REQUEST);
-            }
-        });
+//        imageGroup.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // allow to choose the group image
+//                Intent intent = new Intent();
+//                // Show only images, no videos or anything else
+//                intent.setType("image/*");
+//                intent.setAction(Intent.ACTION_GET_CONTENT);
+//                // Always show the chooser (if there are multiple options available)
+//                startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_IMAGE_REQUEST);
+//            }
+//        });
 
         Intent intent = getIntent();
         tempGroupID = intent.getStringExtra("groupID");
@@ -255,22 +249,22 @@ public class NewGroupActivity extends AppCompatActivity {
 
 
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // first of all control if is the requested result and if it return something
-        if(requestCode==PICK_IMAGE_REQUEST && data != null && data.getData()!=null){
-            Uri uri = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                imageGroup.setImageBitmap(bitmap);
-                imageString = BitMapToString(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // first of all control if is the requested result and if it return something
+//        if(requestCode==PICK_IMAGE_REQUEST && data != null && data.getData()!=null){
+//            Uri uri = data.getData();
+//            try {
+//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//                imageGroup.setImageBitmap(bitmap);
+//                imageString = BitMapToString(bitmap);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream baos=new  ByteArrayOutputStream();
