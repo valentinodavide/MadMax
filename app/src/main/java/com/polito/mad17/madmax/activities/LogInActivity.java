@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.polito.mad17.madmax.R;
 
 public class LogInActivity extends AppCompatActivity {
@@ -48,17 +49,18 @@ public class LogInActivity extends AppCompatActivity {
 
                 String subTag = "onAuthStateChanged";
 
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
                 // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
-                if(firebaseAuth.getCurrentUser()!=null && auth.getCurrentUser().isEmailVerified()){
+                if(currentUser != null && currentUser.isEmailVerified())  {
                     Log.d(TAG, subTag+" user is logged, go to GroupsActivity");
-     //               Intent intent = new Intent(getApplicationContext(), GroupsActivity.class);
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
                 else {
                     // if the user is already logged but has not verified the mail redirect him to the email verification
-                    if(firebaseAuth.getCurrentUser()!=null && !auth.getCurrentUser().isEmailVerified()) {
+                    if(currentUser != null && !currentUser.isEmailVerified()) {
                         Log.d(TAG, subTag+" user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
                         Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
                         startActivity(intent);
