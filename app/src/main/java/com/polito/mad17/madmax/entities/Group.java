@@ -11,7 +11,10 @@ public class Group implements Parcelable {
     private String name;
     private String image;                       // optional, URL dell'immagine su Firebase
     private String description;                 // optional
+
+    // todo da eliminare?
     private Integer counterAddedExpenses;       // numero di spese aggiunte dall'ultima apertura del gruppo
+
     private HashMap<String, User> members;      // String: userID,      User: oggetto
     private HashMap<String, Expense> expenses;  // String: expenseID,   Expense: oggetto
 
