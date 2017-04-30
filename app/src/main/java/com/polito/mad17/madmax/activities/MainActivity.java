@@ -238,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     finish();
                 }
                 else if(position == 0){
+                    // todo bugfix resultCode=3 => aggiungere sha1 key
                     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                             .setMessage(getString(R.string.invitation_message))
      //                       .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
@@ -279,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // todo diverse azioni a seconda del fragment in cui mi trovo
+                // getSupportFragmentManager().findFragmentByTag()
                 Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
                 String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
                 //inizialmente l'unico user è il creatore del gruppo stesso

@@ -219,7 +219,11 @@ public class NewMemberActivity extends AppCompatActivity {
                     Context context = NewMemberActivity.this;
                     Class destinationActivity = NewGroupActivity.class;
                     Intent intent = new Intent(context, destinationActivity);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("userAdded", item);
                     intent.putExtra("groupID", groupID);
+                    intent.putExtra("newUserAdded", bundle);
                     startActivity(intent);
 
 
