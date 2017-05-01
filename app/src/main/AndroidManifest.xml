@@ -9,33 +9,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.LogInActivity">
+
+        <activity android:name=".activities.login.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.GroupExpensesActivity" />
-        <activity android:name=".activities.NewExpenseActivity" />
-        <activity
-            android:name=".activities.FriendDetailActivity"
+
+        <activity android:name=".activities.groups.GroupExpensesActivity" />
+
+        <activity android:name=".activities.expenses.NewExpenseActivity" />
+
+        <activity android:name=".activities.users.FriendDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.GroupDetailActivity"
+
+        <activity android:name=".activities.groups.GroupDetailActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".activities.NewGroupActivity" />
-        <activity
-            android:name=".activities.GroupInfoActivity"
+
+        <activity android:name=".activities.groups.NewGroupActivity" />
+
+        <activity android:name=".activities.groups.GroupInfoActivity"
             android:label="@string/title_activity_group_info"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.NewMemberActivity"
+
+        <activity android:name=".activities.users.NewMemberActivity"
             android:label="@string/title_activity_new_member"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.EmailVerificationActivity" />
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity android:name=".activities.login.SignUpActivity" />
+
+        <activity android:name=".activities.login.EmailVerificationActivity" />
+
         <activity android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

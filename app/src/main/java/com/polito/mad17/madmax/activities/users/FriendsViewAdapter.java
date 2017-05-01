@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
 import android.graphics.Color;

@@ -1,7 +1,6 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,12 +11,8 @@ import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.User;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
-
-import static com.polito.mad17.madmax.R.string.friends;
 
 public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemFriendsViewHolder> {
 

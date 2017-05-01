@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="@dimen/padding_expense"
     android:orientation="vertical"
-    tools:context="com.polito.mad17.madmax.activities.NewExpenseActivity">
+    tools:context="com.polito.mad17.madmax.activities.expenses.NewExpenseActivity">
 
     <EditText android:id="@+id/edit_description"
         android:layout_width="match_parent"

@@ -28,6 +28,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
+import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
+import com.polito.mad17.madmax.activities.groups.GroupsFragment;
+import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
+import com.polito.mad17.madmax.activities.login.LogInActivity;
+import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
+import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
@@ -35,23 +42,33 @@ import com.polito.mad17.madmax.entities.User;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.polito.mad17.madmax.R.string.friends;
+import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
+import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.myself;
+
 public class MainActivity extends AppCompatActivity implements OnItemClickInterface {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private DatabaseReference mDatabase;
-
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
     private String[] drawerOptions;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
+
  //   private ActionBarDrawerToggle drawerToggle;
+
     private FirebaseAuth auth;
     private static final int REQUEST_INVITE = 0;
 
+
+    public static User myself;
+
+    /*
     public static HashMap<String, Group> groups = new HashMap<>();
     public static HashMap<String, User> users = new HashMap<>();
-    public static User myself;
+
 
     Integer[] imgid={
             R.drawable.ale,
@@ -76,15 +93,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             R.drawable.expense6,
             R.drawable.expense7
     };
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // todo persistenza da testare
-        //FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-
+        /*
         if (users.isEmpty())
         {
             //Create users
@@ -212,11 +225,199 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
             myself = u0;
         }
+        */
+
+
 
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
+
         setContentView(R.layout.activity_main);
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference();
+
         auth = FirebaseAuth.getInstance();
+
+        // getting currenUID from Intent (from LogInActivity or EmailVerificationActivity)
+        Intent i = getIntent();
+        final String currentUID = i.getStringExtra("UID");
+
+        final DatabaseReference usersRef = databaseReference.child("users");
+        final DatabaseReference groupRef = databaseReference.child("groups");
+
+        // getting currentUserRef from db
+        DatabaseReference currentUserRef = usersRef.child(currentUID);
+        if (currentUserRef == null) {
+            Log.e(TAG, "unable to retrieve logged user from db");
+
+            Toast.makeText(MainActivity.this, "unable to retrieve logged user from db", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // creating an object for current user
+        final User currentUser = new User(
+                currentUserRef.getKey(),
+                currentUserRef.child("username").toString(),
+                currentUserRef.child("name").toString(),
+                currentUserRef.child("surname").toString(),
+                currentUserRef.child("email").toString(),
+                currentUserRef.child("password").toString(),
+                currentUserRef.child("profileImage").toString()
+        );
+
+
+        final HashMap<String, Double> balanceWithUsers = currentUser.getBalanceWithUsers();
+        final HashMap<String, User> userFriends = currentUser.getUserFriends();
+
+        // retrieving friends of the logged user from db
+        usersRef.child("friends").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot friendsSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                for (DataSnapshot friendSnapshot : friendsSnapshot.getChildren()) {
+                    // populate balanceWithUsers for the logged User
+                    String friendID = friendSnapshot.getKey();
+                    DatabaseReference friendRef = friendSnapshot.getRef();
+
+                    balanceWithUsers.put(
+                            friendID,
+                            Double.parseDouble(friendRef.child("balanceWithUser").toString())
+                    );
+
+                    // populate userFriends of the logged User
+                    DatabaseReference userFriendsRef = usersRef.child(friendID);
+                    User userFriend = new User(
+                            friendID,
+                            userFriendsRef.child("username").toString(),
+                            userFriendsRef.child("name").toString(),
+                            userFriendsRef.child("surname").toString(),
+                            userFriendsRef.child("email").toString(),
+                            userFriendsRef.child("profileImage").toString()
+                    );
+
+                    userFriends.put(
+                            friendID,
+                            userFriend
+                    );
+
+                    // todo siamo sicuri di volere shared_groups? sono da recuperare qui da db
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+
+        final HashMap<String, Double> balanceWithGroups = currentUser.getBalanceWithGroups();
+        final HashMap<String, Group> userGroups = currentUser.getUserGroups();
+
+        // retrieving groups of the logged user from db
+        usersRef.child("groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot groupsSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                for (DataSnapshot groupSnapshot : groupsSnapshot.getChildren()) {
+                    // populate balanceWithUsers for the logged User
+                    String groupID = groupSnapshot.getKey();
+                    DatabaseReference userGroupRef = groupSnapshot.getRef();
+
+                    balanceWithGroups.put(
+                            groupID,
+                            Double.parseDouble(userGroupRef.child("balanceWithGroup").toString())
+                    );
+
+                    // populate userGroups of the logged User
+                    DatabaseReference userGroupsRef = groupRef.child(groupID);
+                    Group userGroup = new Group(
+                            groupID,
+                            userGroupsRef.child("name").toString(),
+                            userGroupsRef.child("image").toString(),
+                            userGroupsRef.child("description").toString()
+                    );
+
+                    // todo qui ci sono ancora da recuperare le spese e i membri del gruppo corrente
+
+                    userGroups.put(
+                            groupID,
+                            userGroup
+                    );
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+
+        myself = currentUser;
+
+        /*
+
+        README!
+
+        a questo punto il solito myself dovrebbe essere caricato con tutte le info dell'utente loggato
+        recuperate da db: per il momento invece di passarlo in tutti i punti in cui serve (non saprei
+        bene come al momento), l'ho dichiarato pubblico com'era prima e recuperato i dati direttamente
+        da lì negli altri file, non ho avuto molto tempo per ricontrollare tutto ma alla veloce ho cambiato
+        tutti i punti in cui ad esempio si caricavano i gruppi facendo MainActivity.groups ->
+        MainActivity.myself.getUserGroups() eccetera anche per gli amici => se avete idee migliori e
+        correzioni varie fate pure
+
+        a questo punto dentro myself ci sono caricate tutte le info che servono nell'app: tutti i suoi
+        amici e tutti i suoi gruppi (che prima erano l'HashMap users e l'HashMap groups), a parte le cose
+        che ho segnalato che non sono riuscito a finire di recuperare da db (sharedGroups per i friends,
+        expenses e users per i groups) => i bug che ci sono ora credo siano dovuto a questo, ovvero che
+        a volte il codice fa accesso a punti che ancora non sono stati recuperati da db (perchè non ho
+        finito la query) ma per darvi codice funzionante ho preferito cominciare a darvi questo che è
+        tutto il giorno che ci lavoro, almeno da qui potete ripartire per continuare in settimana visto
+        che io non riesco ad esserci quando vi vedete
+
+        per il momento non ho ottimizzato un granchè e penso che si possa ottimizzare in questo senso:
+        per ora viene caricato tutto appena si carica la MainActivity ma può essere che sia meglio
+        caricare fragment per fragment le info di cui c'è bisogno: cioè per il fragment della lista
+        degli amici si caricano i friends dello user loggato con la query che ho fatto sopra, e all'interno
+        del fragment della lista dei gruppi si caricano i groups, eccetera => vedete se riuscite a farlo
+        voi, ma se funziona così possiamo pure lasciar perdere per ora
+
+        ora non si vedono più liste di amici o di gruppi se vi loggate nell'app perchè non ho avuto
+        tempo di creare nel formato giusto del db che abbiamo fatto l'altro giorno le entry di prova
+        che avevamo fatto a codice staticamente, se avete tempo di sistemarle quando vi vedete, avendo
+        il JSON del db corretto sottomano (quello che vi ho passato l'altro giorno) e riuscite a passarmele,
+        magari di nuovo con un JSON io appena riesco le carico => per "sistemarle" intendo se riuscite
+        a fare le associazioni "di default" in modo che senza dover aggiungere gruppi a mano nell'app
+        ad esempio io possa caricarli direttamente a db e per ogni utente loggato si vedranno le rispettive
+        info (i suoi gruppi, i suoi amici eccetera)
+
+        il db agganciato ovviamente è il mio, con le modifiche che ho fatto ora si salvano anche le
+        immagini caricate nello Storage di Firebase, ma non ho avuto tempo di vedere come recuperarle
+        per farle vedere (ad esempio nel drawer di sinistra mostrare l'immagina dell'utente loggato)
+
+        poi come vi dicevo su whataspp ora funziona l'invito degli amici perchè ho aggiunto la chiave
+        sha1 nel mio db (quindi se riagganciate un vostro db per fare altre prove non andrà di nuovo)
+
+        mi sembra più o meno di avervi detto tutto, ho modificato per lo più la parte di Ricky del login
+        perché da li ora quando un utente si registra (SignUp) viene caricato a db con l'UID corrispondente
+        a quello fornito dal FirebaseAuth; in più nello User ho aggiunto un costruttore che era utile
+        per la lista degli amici dello user loggato
+
+        infine nello User ho aggiunto codice per salvare le password criptate in MD5: l'ho messo in un
+        metodo; ma non ho messo in un metodo ad esempio la parte per salvare le immagini (se volete per
+        adesso lasciatela perdere e commentatela se vi da problemi visto che è messa lì un po' a caso),
+        se aveste bisogno se qualcuno di voi continuerà a lavorare su quella parte poi vi aggiorno
+
+        ho anche sistemato i file in cartelle all'interno delle activities perchè non ci stavo capendo
+        più un cazzo, se avete soluzioni migliori fate pure ;)
+
+         */
 
         drawerOptions = getResources().getStringArray(R.array.drawerItem);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -238,7 +439,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     finish();
                 }
                 else if(position == 0){
-                    // todo bugfix resultCode=3 => aggiungere sha1 key
                     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                             .setMessage(getString(R.string.invitation_message))
      //                       .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
@@ -254,15 +454,17 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         setSupportActionBar(toolbar);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.friends));
+        tabLayout.addTab(tabLayout.newTab().setText(friends));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -283,12 +485,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 // todo diverse azioni a seconda del fragment in cui mi trovo
                 // getSupportFragmentManager().findFragmentByTag()
                 Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-                String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
+                String tempGroupID = databaseReference.child("temporarygroups").push().getKey();
                 //inizialmente l'unico user è il creatore del gruppo stesso
                 NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
                 User myself = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
-                mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
-                mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
+                databaseReference.child("temporarygroups").child(tempGroupID).child("members").push();
+                databaseReference.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
                 NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
                 myIntent.putExtra("groupID", tempGroupID);
                 MainActivity.this.startActivity(myIntent);
@@ -301,21 +503,24 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+        Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
 
         if(requestCode == REQUEST_INVITE){
             if(resultCode == RESULT_OK){
                 // Get the invitation IDs of all sent messages
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
                 for (String id : ids) {
-                    Log.d(TAG, "onActivityResult: sent invitation " + id);
+                    Log.i(TAG, "onActivityResult: sent invitation " + id);
                 }
             } else {
                 // Sending failed or it was canceled, show failure message to the user
-                Log.d(TAG, "onActivityResult: failed sent");
+                Log.e(TAG, "onActivityResult: failed sent");
+
+                Toast.makeText(MainActivity.this, "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
     }
+
 
     public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -330,15 +535,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         public Fragment getItem(int position) {
             switch(position) {
                 case 0:
-                    Log.d(TAG, "here in case 0");
+                    Log.i(TAG, "here in case 0: FriendsFragment");
                     FriendsFragment friendsFragment = new FriendsFragment();
                     return friendsFragment;
                 case 1:
-                    Log.d(TAG, "here in case 1");
+                    Log.i(TAG, "here in case 1: GroupsFragment");
                     GroupsFragment groups1Fragment = new GroupsFragment();
                     return groups1Fragment;
                 case 2:
-                    Log.d(TAG, "here in case 2");
+                    Log.i(TAG, "here in case 2: PendingExpensesFragment");
                     PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
                     return pendingExpensesFragment;
                 default:
@@ -355,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     @Override
     public void itemClicked(String fragmentName, String itemID) {
 
-        Log.d(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
+        Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -365,7 +570,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         switch(fragmentName) {
             case "FriendsFragment":
-                User friendDetail = users.get(itemID);
+                User friendDetail = myself.getUserFriends().get(itemID);
                 bundle.putParcelable("friendDetail", friendDetail);
 
                 intent = new Intent(this, FriendDetailActivity.class);
@@ -395,11 +600,16 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
     }
 
-    public void joinGroupFirebase (final User u, Group g)
-    {
+
+
+
+
+
+
+    public void joinGroupFirebase (final User u, Group g) {
         //Creo istanza del gruppo nella lista gruppi dello user
-        mDatabase.child("users").child(u.getID()).child("groups").push();
-        mDatabase.child("groups").child(g.getID()).child("members").push();
+        databaseReference.child("users").child(u.getID()).child("groups").push();
+        databaseReference.child("groups").child(g.getID()).child("members").push();
 
         Map<String, Object> groupValues = g.toMap();
         Map <String, Object> userValues = u.toMap();
@@ -409,12 +619,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         childUpdates.put("/users/" + u.getID() + "/groups/" + g.getID(), groupValues);
         childUpdates.put("/groups/" + g.getID() + "/members/" + u.getID(), userValues);
 
-        mDatabase.updateChildren(childUpdates);
+        databaseReference.updateChildren(childUpdates);
 
         //creo un debito verso il gruppo
-        mDatabase.child("users").child(u.getID()).child("groups").child(g.getID()).child("balanceWithGroup").setValue(0);
+        databaseReference.child("users").child(u.getID()).child("groups").child(g.getID()).child("balanceWithGroup").setValue(0);
 
-        Query query = mDatabase.child("groups").child(g.getID()).child("members").orderByKey();
+        Query query = databaseReference.child("groups").child(g.getID()).child("members").orderByKey();
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -431,9 +641,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                             if (!memberSnapshot.child("balancesWithUsers").hasChild(u.getID()))
                             {
                                 //creo bilancio da membro a nuovo user
-                                mDatabase.child("users").child(memberSnapshot.getKey()).child("balancesWithUsers").child(u.getID()).setValue(0);
+                                databaseReference.child("users").child(memberSnapshot.getKey()).child("balancesWithUsers").child(u.getID()).setValue(0);
                                 //creo bilancio da nuovo user a membro
-                                mDatabase.child("users").child(u.getID()).child("balancesWithUsers").child(memberSnapshot.getKey()).setValue(0);
+                                databaseReference.child("users").child(u.getID()).child("balancesWithUsers").child(memberSnapshot.getKey()).setValue(0);
                             }
 
                         }
@@ -468,8 +678,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         }
 
         //Creo istanza della spesa nella lista spese dello user e del gruppo
-        mDatabase.child("users").child(u.getID()).child("expenses").push();
-        mDatabase.child("groups").child(expense.getGroupID()).child("expenses").push();
+        databaseReference.child("users").child(u.getID()).child("expenses").push();
+        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
 
         Map <String, Object> expensesValues = expense.toMap();
 
@@ -479,17 +689,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         childUpdates.put("/groups/" + expense.getGroupID() + "/expenses/" + expense.getID(), expensesValues);
 
         //aggiungo la spesa nella lista spese dello user e del group su Firebase
-        mDatabase.updateChildren(childUpdates);
+        databaseReference.updateChildren(childUpdates);
 
 
         u.updateBalance(expense);
         updateBalanceFirebase(u, expense);
     }
-
-
-
-
-
 
     // update balance among other users and among the group this user is part of
     private void updateBalanceFirebase (final User u, final Expense expense) {
@@ -500,8 +705,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         final String groupID = expense.getGroupID();
 
 
-        Query query = mDatabase.child("groups").child(groupID);
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query query = databaseReference.child("groups").child(groupID);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -523,7 +728,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 if (actualdebts != null) {
                     //aggiorno il mio debito verso il gruppo
-                    mDatabase.child("users").child(u.getID()).child("groups").child(groupID).child("balanceWithGroup").setValue(actualdebts+totalcredit);
+                    databaseReference.child("users").child(u.getID()).child("groups").child(groupID).child("balanceWithGroup").setValue(actualdebts+totalcredit);
                 }
                 else {
                     System.out.println("Group not found");
@@ -536,7 +741,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     {
                         Double balance = dataSnapshot.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).getValue(Double.class);
                         if (balance != null) {
-                            mDatabase.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
+                            databaseReference.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
                         }
                     }
 
@@ -547,14 +752,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                     if (balance != null)
                     {
-                        mDatabase.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(balance-singlecredit);
+                        databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(balance-singlecredit);
 
                     }
                     else
                     {
                         System.out.println("Io non risulto tra i suoi debiti");
                         // => allora devo aggiungermi
-                        mDatabase.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(-singlecredit);
+                        databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(-singlecredit);
                     }
 
                     //aggiorno il debito dell'amico verso il gruppo
@@ -562,13 +767,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                     if (balance != null)
                     {
-                        mDatabase.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(balance-singlecredit);
+                        databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(balance-singlecredit);
                     }
                     else
                     {
                         System.out.println("Gruppo non risulta tra i suoi debiti");
                         // => allora lo devo aggiungere
-                        mDatabase.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
+                        databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
                     }
 
 

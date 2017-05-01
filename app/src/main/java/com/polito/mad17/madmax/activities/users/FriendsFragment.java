@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
 
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener {
 
@@ -49,7 +51,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         friendsViewAdapter = new FriendsViewAdapter(this);
         recyclerView.setAdapter(friendsViewAdapter);
 
-        friendsViewAdapter.setFriendsData(MainActivity.users, MainActivity.myself);
+        friendsViewAdapter.setFriendsData(MainActivity.myself.getUserFriends(), MainActivity.myself);
 
         Log.d(TAG, "dopo setAdapter");
 

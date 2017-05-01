@@ -1,11 +1,10 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +15,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class GroupExpensesActivity extends AppCompatActivity {
     public static HashMap<String, Expense> expenses = new HashMap<>();
@@ -42,7 +41,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
             String currency = intent.getStringExtra("currency");
 //            expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
 
-            Group group = MainActivity.groups.get(IDGroup);
+            Group group = MainActivity.myself.getUserGroups().get(IDGroup);
             expenses = group.getExpenses();
 
             Expense e = new Expense(
@@ -61,7 +60,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
         else {
             IDGroup = intent.getStringExtra("IDGroup");
 
-            Group group = MainActivity.groups.get(IDGroup);
+            Group group = MainActivity.myself.getUserGroups().get(IDGroup);
             expenses = group.getExpenses();
         }
 

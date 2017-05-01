@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -19,11 +19,16 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 
 public class LogInActivity extends AppCompatActivity {
 
-    private static final String TAG = "LogInActivity";
+    private static final String TAG = LogInActivity.class.getSimpleName();
+
+    private FirebaseDatabase firebaseDatabase;
+
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
 
@@ -37,7 +42,10 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
 
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase.setPersistenceEnabled(true);
 
         auth = FirebaseAuth.getInstance();
 
@@ -53,22 +61,25 @@ public class LogInActivity extends AppCompatActivity {
 
                 // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
                 if(currentUser != null && currentUser.isEmailVerified())  {
-                    Log.d(TAG, subTag+" user is logged, go to GroupsActivity");
+                    Log.i(TAG, subTag+" user is logged, go to MainActivity");
+
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("UID", currentUser.getUid());
                     startActivity(intent);
                     finish();
                 }
                 else {
                     // if the user is already logged but has not verified the mail redirect him to the email verification
                     if(currentUser != null && !currentUser.isEmailVerified()) {
-                        Log.d(TAG, subTag+" user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
+                        Log.i(TAG, subTag+" user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
+
                         Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
                         startActivity(intent);
                         finish();
                     }
                     else{
                         // if the user has done the logout
-                        Log.d(TAG, subTag+" user has done the logout");
+                        Log.i(TAG, subTag+" user has done the logout");
                     }
                 }
 
@@ -93,9 +104,12 @@ public class LogInActivity extends AppCompatActivity {
                 return true;
             }
         });
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG,"login clicked");
+
                 signIn(emailView.getText().toString(), passwordView.getText().toString());
             }
         });
@@ -103,10 +117,11 @@ public class LogInActivity extends AppCompatActivity {
         signupView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG,"link to signup clicked");
+                Log.i(TAG,"link to signup clicked");
+
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
-                finish();
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -115,20 +130,30 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.i(TAG, "onStart");
+
         auth.addAuthStateListener(authListener); // attach the listener to the FirebaseAuth instance
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        Log.i(TAG, "onStop");
+
         if (authListener != null)  // detach the listener to the FirebaseAuth instance
             auth.removeAuthStateListener(authListener);
     }
 
     private void signIn(String email, String password){
-        if (!validateForm()) {
+        Log.i(TAG, "signIn");
+
+        if(!validateForm()) {
+            Log.i(TAG, "submitted form is not valid");
+
+            Toast.makeText(LogInActivity.this, "Invalid form!", Toast.LENGTH_SHORT).show();
             return;
         }
+
         progressDialog.setMessage("Authentication, please wait...");
         progressDialog.show();
 
@@ -138,7 +163,8 @@ public class LogInActivity extends AppCompatActivity {
             public void onFailure(@NonNull Exception e) {
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
-                Log.d(TAG,e.toString());
+
+                Log.i(TAG, "authentication failed, exception: " + e.toString());
                 Toast.makeText(LogInActivity.this, "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
             }
         });
@@ -146,6 +172,8 @@ public class LogInActivity extends AppCompatActivity {
 
     // check if both email and password form are filled
     private boolean validateForm() {
+        Log.i(TAG, "validateForm");
+
         boolean valid  = true;
 
         String email = emailView.getText().toString();

@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
 
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
@@ -35,6 +37,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
 
         setInterface((OnItemClickInterface) getActivity());
 
@@ -49,7 +52,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         groupsViewAdapter = new GroupsViewAdapter(this);
         recyclerView.setAdapter(groupsViewAdapter);
 
-        groupsViewAdapter.setGroupsData(MainActivity.groups, MainActivity.myself);
+        groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
 
         Log.d(TAG, "dopo setAdapter");
 

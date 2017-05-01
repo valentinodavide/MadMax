@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.users;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

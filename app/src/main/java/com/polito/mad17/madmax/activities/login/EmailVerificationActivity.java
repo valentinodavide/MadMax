@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -8,18 +8,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 
 public class EmailVerificationActivity extends AppCompatActivity {
 
-    private static final String TAG = "EmailVerificatActivity";
+    private static final String TAG = EmailVerificationActivity.class.getSimpleName();
+
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
+
     private Button verifyEmailButton;
     private Button goToLoginButton;
     private ProgressDialog progressDialog;
@@ -27,6 +31,8 @@ public class EmailVerificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate");
+
         setContentView(R.layout.activity_email_verification);
 
         progressDialog = new ProgressDialog(this);
@@ -35,19 +41,28 @@ public class EmailVerificationActivity extends AppCompatActivity {
         verifyEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "Sending email verification...");
+                Log.i(TAG, "verify email clicked");
+
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user == null) {
+                    Log.e(TAG, "Error while retriving current user from db");
+
+                    Toast.makeText(EmailVerificationActivity.this, "Error while retriving current user from db",Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 progressDialog.setMessage("Sending email verification, please wait...");
                 progressDialog.show();
+
                 user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         progressDialog.dismiss();
                         if(task.isSuccessful()){
-                            Log.d(TAG, "verification email successful sent");
+                            Log.i(TAG, "verification email successful sent");
                         }
                         else {
-                            // delete the account and restart the activity
+                            // todo delete the account and restart the activity
                             Log.d(TAG, "verification email not sent, exception: "+task.getException());
                         }
                     }
@@ -59,6 +74,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
         goToLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i(TAG, "login clicked");
                 auth.signOut();
             }
         });
@@ -67,20 +83,24 @@ public class EmailVerificationActivity extends AppCompatActivity {
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser currentUser = auth.getCurrentUser();
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
                 if(currentUser!=null){
                     if(currentUser.isEmailVerified()){
-                        Log.d(TAG, "email has been verified");
+                        Log.i(TAG, "email has been verified");
+
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        finish();
+                        intent.putExtra("UID", currentUser.getUid());
                         startActivity(intent);
+                        finish();
                     }
                 }
                 else{
-                    Log.d(TAG, "user signed out");
+                    Log.i(TAG, "user signed out");
+
                     Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
-                    finish();
                     startActivity(intent);
+                    finish();
                 }
             }
         };

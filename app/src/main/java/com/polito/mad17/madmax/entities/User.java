@@ -6,44 +6,69 @@ import android.util.Log;
 
 import com.polito.mad17.madmax.activities.MainActivity;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import static android.R.attr.tag;
-
 public class User implements Parcelable {
-    private String ID;
 
+    private String ID;
     private String username;
     private String name;
     private String surname;
     private String email;
     private String password;
     private String profileImage; // optional, URL dell'immagine da Firebase
-    private HashMap<String, Double> balanceWithUsers;    //String = userID,  Double = debito(-) o credito (+) verso gli altri utenti
-    private HashMap<String, Double> balanceWithGroups;   //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
+
+    private HashMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
+    private HashMap<String, User> userFriends;  //String = UID, User = friend of this user
+
+    private HashMap<String, Double> balanceWithUsers;   //String = userID,  Double = debito(-) o credito (+) verso gli altri utenti
+    private HashMap<String, Double> balanceWithGroups;  //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
     private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
-    private HashMap<String, Group> userGroups;          //String = groupID, Group = oggetto Group di cui user fa parte
 
-    public User() {}
+    // todo siamo sicuri di fare sharedGroup?
+    private HashMap<String, HashMap<String, Group>> sharedGroupPerFriend;   //String = UID of the friend, HashMap<String, Group> : String = GID of the shared group, Group = shared group
 
+    // constructor typically for creting the current user logged in
     public User(String ID, String username, String name, String surname, String email, String password, String profileImage) {
         this.ID = ID;
         this.username = username;
         this.name = name;
         this.surname = surname;
         this.email = email;
-        // todo criptare password
-        this.password = password;
+        this.password = encryptPassword(password);
         this.profileImage = profileImage;
-        this.addedExpenses = new TreeMap<>();
+
         this.userGroups = new HashMap<>();
+        this.userFriends = new HashMap<>();
+
         this.balanceWithUsers = new HashMap<>();
         this.balanceWithGroups = new HashMap<>();
+        this.addedExpenses = new TreeMap<>();
+
+        // todo siamo sicuri di fare sharedGroup?
+        this.sharedGroupPerFriend = new HashMap<>();
     }
+
+    // constructor typically used for populet userFriends of current User
+    public User(String ID, String username, String name, String surname, String email, String profileImage) {
+        this.ID = ID;
+        this.username = username;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
+        this.profileImage = profileImage;
+    }
+
+    /*
+        PARCELABLE
+     */
+    public User() {}
 
     protected User(Parcel in) {
         ID = in.readString();
@@ -78,7 +103,14 @@ public class User implements Parcelable {
         dest.writeString(profileImage);
 
     }
+    /*
+        END PARCELABLE
+     */
 
+
+    /*
+        GETTERS & SETTERS
+     */
     public String getID() { return ID; }
 
     public void setID(String ID) { this.ID = ID; }
@@ -131,6 +163,22 @@ public class User implements Parcelable {
         this.profileImage = profileImage;
     }
 
+    public HashMap<String, Group> getUserGroups() {
+        return userGroups;
+    }
+
+    public void setUserGroups(HashMap<String, Group> userGroups) {
+        this.userGroups = userGroups;
+    }
+
+    public HashMap<String, User> getUserFriends() {
+        return userFriends;
+    }
+
+    public void setUserFriends(HashMap<String, User> friends) {
+        this.userFriends = friends;
+    }
+
     public HashMap<String, Double> getBalanceWithUsers() {
         return balanceWithUsers;
     }
@@ -155,12 +203,45 @@ public class User implements Parcelable {
         this.addedExpenses = addedExpenses;
     }
 
-    public HashMap<String, Group> getUserGroups() {
-        return userGroups;
+    // todo siamo sicuri di fare sharedGroup?
+    public HashMap<String, HashMap<String, Group>> getSharedGroupPerFriend() {
+        return sharedGroupPerFriend;
     }
 
-    public void setUserGroups(HashMap<String, Group> userGroups) {
-        this.userGroups = userGroups;
+    // todo siamo sicuri di fare sharedGroup?
+    public void setSharedGroupPerFriend(HashMap<String, HashMap<String, Group>> sharedGroupPerFriend) {
+        this.sharedGroupPerFriend = sharedGroupPerFriend;
+    }
+    /*
+        END GETTERS & SETTERS
+     */
+
+
+    // method to encrypt password (Davide found on the internet)
+    public String encryptPassword (String passwordToHash) {
+        String generatedPassword = null;
+
+        try {
+            // create MessageDigest instance for MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // add password bytes to digest
+            md.update(passwordToHash.getBytes());
+            // get the hash's bytes
+            byte[] bytes = md.digest();
+            // this bytes[] has bytes in decimal format;
+            // convert it to hexadecimal format
+            StringBuilder sb = new StringBuilder();
+            for(int i=0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            // get complete hashed password in hex format
+            generatedPassword = sb.toString();
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            e.printStackTrace();
+        }
+        return generatedPassword;
     }
 
 
@@ -318,7 +399,7 @@ public class User implements Parcelable {
         // todo     membri del gruppo (cioè come se expense.equallyDivided fosse sempre = true
 
         String groupID = expense.getGroupID();   //gruppo in cui è stato inserita la spesa
-        Group g = MainActivity.groups.get(groupID);
+        Group g = MainActivity.myself.getUserGroups().get(groupID);
 
         Double total = g.getTotalExpense(); //spesa totale del gruppo aggiornata
         Double singlecredit = expense.getAmount() / g.getMembers().size();   //credito che io ho verso ogni singolo utente in virtù della spesa che ho fatto

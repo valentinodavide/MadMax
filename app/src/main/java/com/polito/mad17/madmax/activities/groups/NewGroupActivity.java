@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.users.NewMemberActivity;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
@@ -33,7 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.polito.mad17.madmax.activities.MainActivity.groups;
+import static com.polito.mad17.madmax.activities.MainActivity.myself;
 
 public class NewGroupActivity extends AppCompatActivity {
 
@@ -47,6 +49,7 @@ public class NewGroupActivity extends AppCompatActivity {
     String tempGroupID;
     public static HashMap<String, User> newmembers = new HashMap<>();
 
+    public static HashMap<String, Group> groups = myself.getUserGroups();
 
 
     @Override

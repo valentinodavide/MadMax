@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,18 +11,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
+import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
+import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
-
-import java.text.DecimalFormat;
-import java.util.Map;
-
-import static com.polito.mad17.madmax.activities.MainActivity.users;
 
 public class GroupDetailActivity extends AppCompatActivity implements OnItemClickInterface {
 

@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.polito.mad17.madmax.activities.EmailVerificationActivity">
+    tools:context="com.polito.mad17.madmax.activities.login.EmailVerificationActivity">
 
     <TextView
         android:id="@+id/verify_email_text"
