@@ -45,7 +45,7 @@ public class LogInActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate");
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseDatabase.setPersistenceEnabled(true);
+        //firebaseDatabase.setPersistenceEnabled(true);
 
         auth = FirebaseAuth.getInstance();
 

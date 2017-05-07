@@ -61,12 +61,19 @@
         android:layout_below="@id/addmember"
         android:text="Members of group"/>
 
-    <ListView
+    <!--<android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/members"
         android:layout_below="@id/memberstext"
-        />
+        />-->
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/members"
+            android:layout_below="@id/memberstext"
+            />
+
 
 
 

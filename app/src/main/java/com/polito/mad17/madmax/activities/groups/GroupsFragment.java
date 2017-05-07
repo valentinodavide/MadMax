@@ -9,16 +9,30 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
+import com.polito.mad17.madmax.entities.Group;
+
+import java.util.HashMap;
 
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
     private static final String TAG = GroupsFragment.class.getSimpleName();
-
+    private DatabaseReference mDatabase;
     private OnItemClickInterface onClickGroupInterface;
+    private HashMap<String, Group> groups = new HashMap<>();
+    private ListView lv;
+    private HashMapGroupsAdapter adapter;
+
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
@@ -41,8 +55,35 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         setInterface((OnItemClickInterface) getActivity());
 
-        View view = inflater.inflate(R.layout.skeleton_list, container, false);
+        final View view = inflater.inflate(R.layout.skeleton_listview, container, false);
+        lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
+        String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+
+        mDatabase.child("users").child(myselfID).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
+                {
+                    getGroup(groupSnapshot.getKey());
+                }
+
+                adapter = new HashMapGroupsAdapter(groups);
+                lv.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        /*
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
@@ -55,6 +96,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
 
         Log.d(TAG, "dopo setAdapter");
+        */
 
         return view;
     }
@@ -83,5 +125,29 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     public void onListItemClick(String groupID) {
         Log.d(TAG, "clickedItemIndex " + groupID);
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
+    }
+
+    public void getGroup(final String id)
+    {
+        mDatabase.child("groups").child(id).addValueEventListener(new ValueEventListener()
+        {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Group g = new Group();
+                g.setName(dataSnapshot.child("name").getValue(String.class));
+                groups.put(id, g);
+                adapter.update(groups);
+                adapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 }

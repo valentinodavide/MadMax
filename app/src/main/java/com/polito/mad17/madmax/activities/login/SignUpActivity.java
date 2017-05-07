@@ -193,7 +193,8 @@ public class SignUpActivity extends AppCompatActivity {
                 surnameView.getText().toString(),
                 emailView.getText().toString(),
                 passwordView.getText().toString(),
-                "");
+                "",
+                "€");
 
 
 

@@ -65,7 +65,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-
         View view = layoutInflater.inflate(R.layout.item_friend, parent, false);
 
         ItemFriendsViewHolder itemFriendsViewHolder = new ItemFriendsViewHolder(view);
@@ -75,6 +74,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
     @Override
     public void onBindViewHolder(final FriendsViewAdapter.ItemFriendsViewHolder holder, int position) {
+
 
         User friend = null;
 
@@ -86,8 +86,12 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         Log.d(TAG, friend.toString());
 
         String photo = friend.getProfileImage();
-        int photoUserId = Integer.parseInt(photo);
-        holder.imageView.setImageResource(photoUserId);
+        if (photo != null)
+        {
+            int photoUserId = Integer.parseInt(photo);
+            holder.imageView.setImageResource(photoUserId);
+        }
+
 
         holder.nameTextView.setText(friend.getName() + " " + friend.getSurname());
         holder.ID = friend.getID();
@@ -97,23 +101,28 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
         DecimalFormat df = new DecimalFormat("#.##");
 
-        if (mydebt > 0)
+        if (mydebt != null)
         {
-            holder.smallTextView.setText("+ " + df.format(mydebt) + " €");
-            holder.smallTextView.setBackgroundResource(R.color.greenBalance);
+            if (mydebt > 0)
+            {
+                holder.smallTextView.setText("+ " + df.format(mydebt) + " €");
+                holder.smallTextView.setBackgroundResource(R.color.greenBalance);
 
-        }
-        else if (mydebt < 0)
-        {
-            holder.smallTextView.setText("- " + df.format(Math.abs(mydebt)) + " €");
-            holder.smallTextView.setBackgroundColor(Color.rgb(255,0,0));
-        }
-        else
-        {
-            holder.smallTextView.setText("" + df.format(mydebt) + " €");
-            holder.smallTextView.setBackgroundResource(R.color.greenBalance);
+            }
+            else if (mydebt < 0)
+            {
+                holder.smallTextView.setText("- " + df.format(Math.abs(mydebt)) + " €");
+                holder.smallTextView.setBackgroundColor(Color.rgb(255,0,0));
+            }
+            else
+            {
+                holder.smallTextView.setText("" + df.format(mydebt) + " €");
+                holder.smallTextView.setBackgroundResource(R.color.greenBalance);
 
+            }
         }
+
+
 
     }
 
@@ -125,6 +134,12 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     public void setFriendsData(HashMap<String, User> users, User myself) {
         friends = users;
         friends.remove("0");
+        this.myself = myself;
+    }
+
+    //serve per stampare la lista dei membri aggiunti a un nuovo gruppo che si sta creando
+    public void setMembersData(HashMap<String, User> users, User myself) {
+        friends = users;
         this.myself = myself;
     }
 

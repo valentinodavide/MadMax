@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -27,18 +29,23 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
+import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
 import com.polito.mad17.madmax.activities.users.NewMemberActivity;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.polito.mad17.madmax.activities.MainActivity.myself;
 
-public class NewGroupActivity extends AppCompatActivity {
+public class NewGroupActivity extends AppCompatActivity implements FriendsViewAdapter.ListItemClickListener {
 
+    private static final String TAG = "NewGroupActivity";
     private EditText nameGroup;
     private EditText descriptionGroup;
     private ImageView imageGroup;
@@ -48,6 +55,15 @@ public class NewGroupActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     String tempGroupID;
     public static HashMap<String, User> newmembers = new HashMap<>();
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private FriendsViewAdapter friendsViewAdapter;
+    private OnItemClickInterface onClickFriendInterface;
+    private User userAdded;
+    private HashMapFriendsAdapter adapter;
+    private String myselfID;
+
+
 
     public static HashMap<String, Group> groups = myself.getUserGroups();
 
@@ -58,6 +74,8 @@ public class NewGroupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_group);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        lv = (ListView) findViewById(R.id.members);
 
         nameGroup = (EditText) findViewById(R.id.et_name_group);
         descriptionGroup = (EditText) findViewById(R.id.et_description_group);
@@ -76,7 +94,12 @@ public class NewGroupActivity extends AppCompatActivity {
 //        });
 
         Intent intent = getIntent();
-        tempGroupID = intent.getStringExtra("groupID");
+        myselfID = intent.getStringExtra("UID");
+        Bundle b = getIntent().getExtras();
+        if (b != null)
+            userAdded = b.getParcelable("userAdded");
+        if (userAdded != null)
+            newmembers.put(userAdded.getID(), userAdded);
 
 
 
@@ -91,7 +114,8 @@ public class NewGroupActivity extends AppCompatActivity {
                 Context context = NewGroupActivity.this;
                 Class destinationActivity = NewMemberActivity.class;
                 Intent intent = new Intent(context, destinationActivity);
-                intent.putExtra("groupID", tempGroupID);
+                intent.putExtra("UID", myselfID);
+                //intent.putExtra("groupID", tempGroupID);
                 //startActivity(intent);
                 startActivityForResult(intent, 1);
 
@@ -100,29 +124,32 @@ public class NewGroupActivity extends AppCompatActivity {
         });
 
 
-        lv = (ListView) findViewById(R.id.members);
+        adapter = new HashMapFriendsAdapter(newmembers);
+        lv.setAdapter(adapter);
 
 
 
+        /*
+        recyclerView = (RecyclerView) findViewById(R.id.members);
 
-        FirebaseListAdapter<User> firebaseListAdapter = new FirebaseListAdapter<User>(
-                this,   //activity contentente la ListView
-                User.class,   //classe in cui viene messo il dato letto (?)
-                R.layout.item_friend,   //layout del singolo item
-                mDatabase.child("temporarygroups").child(tempGroupID).child("members")  //nodo del db da cui leggo
-        ) {
-            @Override
-            protected void populateView(View v, User model, int position) {
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
 
-                Log.d("DEBUG", model.toString());
-                TextView nametext = (TextView) v.findViewById(R.id.tv_friend_name);
-                nametext.setText(model.getName() + " " + model.getSurname());
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
-            }
-        };
+        // specify an adapter (see also next example)
+        friendsViewAdapter = new FriendsViewAdapter(this);
+        recyclerView.setAdapter(friendsViewAdapter);
+
+        friendsViewAdapter.setMembersData(newmembers, MainActivity.myself);
+        */
 
 
-        lv.setAdapter(firebaseListAdapter);
+        Log.d(TAG, "Arrivato alla fine della OnCreate");
+
 
 
 
@@ -148,42 +175,50 @@ public class NewGroupActivity extends AppCompatActivity {
                 nameGroup.setError(getString(R.string.required));
                 return false;
             }
-            Integer newID = groups.size();
+            //Integer newID = groups.size();
             String name = nameGroup.getText().toString();
             String description = descriptionGroup.getText().toString();
 
-            Group newGroup = new Group(newID.toString(), name, "noImage", description);
-            //Group newGroup = new Group(tempGroupID, name, "noImage", description);
+            Group newGroup = new Group("0", name, "noImage", description);  //id is useless
 
             //add new group to database
-            mDatabase.child("groups").child(tempGroupID).setValue(newGroup);
+            String newgroup_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(newgroup_id).setValue(newGroup);
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
+
 
             //add users to new group
             for(Map.Entry<String, User> user : newmembers.entrySet())
             {
-                joinGroupFirebase(user.getValue(), newGroup);
+                joinGroupFirebase(user.getValue().getID(), newgroup_id);
+
             }
 
 
             Intent intent = new Intent(NewGroupActivity.this, MainActivity.class);
+            intent.putExtra("UID", myselfID);
 
 //          Log.d("DEBUG", "groups.size() before " + groups.size());
 
+            /*
             if(imageString!=null)
                 newGroup = new Group(newID.toString(), name, imageString, description);
             else
                 newGroup = new Group(newID.toString(), name, String.valueOf(R.mipmap.group), description);
 
             groups.put(newGroup.getID(), newGroup);
+            */
 
 
             //remove group from temporary
-            mDatabase.child("temporarygroups").child(tempGroupID).removeValue();
+            //mDatabase.child("temporarygroups").child(tempGroupID).removeValue();
+
             newmembers.clear();
 
             Toast.makeText(getBaseContext(), "Saved group", Toast.LENGTH_SHORT).show();
 
-            NewGroupActivity.this.startActivity(intent);
+            startActivity(intent);
 
             return true;
         }
@@ -191,83 +226,21 @@ public class NewGroupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void joinGroupFirebase (final User u, Group g)
+    public void joinGroupFirebase (final String userID, String groupID)
     {
-        //Creo istanza del gruppo nella lista gruppi dello user
-        mDatabase.child("users").child(u.getID()).child("groups").push();
-        mDatabase.child("groups").child(g.getID()).child("members").push();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        Map <String, Object> groupValues = g.toMap();
-        Map <String, Object> userValues = u.toMap();
-
-        Map <String, Object> childUpdates = new HashMap<>();
-        //metto nella map il gruppo a cui appartiene lo user
-        childUpdates.put("/users/" + u.getID() + "/groups/" + g.getID(), groupValues);
-        childUpdates.put("/groups/" + g.getID() + "/members/" + u.getID(), userValues);
-
-        mDatabase.updateChildren(childUpdates);
-
-        //creo un debito verso il gruppo
-        mDatabase.child("users").child(u.getID()).child("groups").child(g.getID()).child("balanceWithGroup").setValue(0);
-
-        Query query = mDatabase.child("groups").child(g.getID()).child("members").orderByKey();
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists())
-                {
-                    System.out.println("There is at least one member in this group");
-                    for (DataSnapshot memberSnapshot: dataSnapshot.getChildren())
-                    {
-                        System.out.println(memberSnapshot.getKey());
-                        //se il nuovo user non è già presente nel gruppo (teoricamente impossibile)
-                        if (!memberSnapshot.getKey().equals(u.getID()))
-                        {
-                            //se il bilancio tra nuovo user e membro del gruppo non esiste già
-                            if (!memberSnapshot.child("balancesWithUsers").hasChild(u.getID()))
-                            {
-                                //creo bilancio da membro a nuovo user
-                                mDatabase.child("users").child(memberSnapshot.getKey()).child("balancesWithUsers").child(u.getID()).setValue(0);
-                                //creo bilancio da nuovo user a membro
-                                mDatabase.child("users").child(u.getID()).child("balancesWithUsers").child(memberSnapshot.getKey()).setValue(0);
-                            }
-
-                        }
-                        else
-                        {
-                            System.out.println("User is already present in the group!");
-                        }
-
-
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
+        //Aggiungo gruppo alla lista gruppi dello user
+        mDatabase.child("users").child(userID).child("groups").push();
+        mDatabase.child("users").child(userID).child("groups").child(groupID).setValue("true");
+        //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
+        mDatabase.child("groups").child(groupID).child("members").push();
+        mDatabase.child("groups").child(groupID).child("members").child(userID).push();
+        mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
+        mDatabase.child("groups").child(groupID).child("members").child(userID).push();
+        mDatabase.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
 
     }
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        // first of all control if is the requested result and if it return something
-//        if(requestCode==PICK_IMAGE_REQUEST && data != null && data.getData()!=null){
-//            Uri uri = data.getData();
-//            try {
-//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-//                imageGroup.setImageBitmap(bitmap);
-//                imageString = BitMapToString(bitmap);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public String BitMapToString(Bitmap bitmap){
         ByteArrayOutputStream baos=new  ByteArrayOutputStream();
@@ -275,5 +248,12 @@ public class NewGroupActivity extends AppCompatActivity {
         byte [] b=baos.toByteArray();
         String temp=Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
+    }
+
+    @Override
+    public void onListItemClick(String friendID) {
+        //Log.d("clickedItemIndex " + friendID);
+        System.out.println("clickedItemIndex " + friendID);
+        onClickFriendInterface.itemClicked(getClass().getSimpleName(), friendID);
     }
 }

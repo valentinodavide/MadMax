@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,11 +36,18 @@ import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.activities.login.LogInActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
+import com.polito.mad17.madmax.entities.Comment;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
+import java.security.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.polito.mad17.madmax.R.string.friends;
@@ -51,8 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
-
+    private DatabaseReference mDatabase;
     private String[] drawerOptions;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
@@ -62,170 +69,221 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     private FirebaseAuth auth;
     private static final int REQUEST_INVITE = 0;
 
-
     public static User myself;
+    //ID di Mario Rossi, preso dal db. Questo id mi serve per stampare le sue liste amici, gruppi ecc..
+    //todo da sostituire con l'id dell'utente che si è loggato
+    String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
-    /*
-    public static HashMap<String, Group> groups = new HashMap<>();
-    public static HashMap<String, User> users = new HashMap<>();
-
-
-    Integer[] imgid={
-            R.drawable.ale,
-            R.drawable.davide,
-            R.drawable.chiara,
-            R.drawable.riki,
-            R.drawable.rossella,
-            R.drawable.vacanze,
-            R.drawable.calcetto,
-            R.drawable.casa,
-            R.drawable.pasquetta,
-            R.drawable.fantacalcio,
-            R.drawable.alcolisti
-    };
-
-    Integer[] img_expense={
-            R.drawable.expense1,
-            R.drawable.expense2,
-            R.drawable.expense3,
-            R.drawable.expense4,
-            R.drawable.expense5,
-            R.drawable.expense6,
-            R.drawable.expense7
-    };
-    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabase = firebaseDatabase.getReference();
+
+        //non cancellare anche se commentato! Serve per popolare il db
         /*
-        if (users.isEmpty())
+        if (!populated)
         {
             //Create users
-            User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
-            User u1 = new User(String.valueOf(1), "Alero3",         "Alessandro", "Rota",       "email1@email.it", "password1", String.valueOf(imgid[0]));
-            User u2 = new User(String.valueOf(2), "deviz92",        "Davide", "Valentino",      "email2@email.it", "password2", String.valueOf(imgid[1]));
-            User u3 = new User(String.valueOf(3), "missArmstrong",  "Chiara", "Di Nardo",       "email3@email.it", "password3", String.valueOf(imgid[2]));
-            User u4 = new User(String.valueOf(4), "rickydivi",      "Riccardo", "Di Vittorio",  "email4@email.it", "password4", String.valueOf(imgid[3]));
-            User u5 = new User(String.valueOf(5), "roxy",           "Rossella", "Mangiardi",    "email5@email.it", "password5", String.valueOf(imgid[4]));
+            User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", "url", "€");
+            User u1 = new User(String.valueOf(1), "Alero3",         "Alessandro", "Rota",       "email1@email.it", "password1", "url", "€" );
+            User u2 = new User(String.valueOf(2), "deviz92",        "Davide", "Valentino",      "email2@email.it", "password2", "url", "€");
+            User u3 = new User(String.valueOf(3), "missArmstrong",  "Chiara", "Di Nardo",       "email3@email.it", "password3", "url", "€");
+            User u4 = new User(String.valueOf(4), "rickydivi",      "Riccardo", "Di Vittorio",  "email4@email.it", "password4", "url", "€");
+            User u5 = new User(String.valueOf(5), "roxy",           "Rossella", "Mangiardi",    "email5@email.it", "password5", "url", "€");
 
-            //Add users to database
-            mDatabase.child("users").child(u0.getID()).setValue(u0);
-            mDatabase.child("users").child(u1.getID()).setValue(u1);
-            mDatabase.child("users").child(u2.getID()).setValue(u2);
-            mDatabase.child("users").child(u3.getID()).setValue(u3);
-            mDatabase.child("users").child(u4.getID()).setValue(u4);
-            mDatabase.child("users").child(u5.getID()).setValue(u5);
+            //Add users to Firebase
+            String u0_id = mDatabase.child("users").push().getKey();
+            mDatabase.child("users").child(u0_id).setValue(u0);
+            String u1_id = mDatabase.child("users").push().getKey();
+            mDatabase.child("users").child(u1_id).setValue(u1);
+            String u2_id = mDatabase.child("users").push().getKey();
+            mDatabase.child("users").child(u2_id).setValue(u2);
+            String u3_id = mDatabase.child("users").push().getKey();
+            mDatabase.child("users").child(u3_id).setValue(u3);
+            String u4_id = mDatabase.child("users").push().getKey();
+            mDatabase.child("users").child(u4_id).setValue(u4);
+            String u5_id = mDatabase.child("users").push().getKey();
+            mDatabase.child("users").child(u5_id).setValue(u5);
 
-            //Add to users list (needed to share data with other activities)
-            users.put(u0.getID(), u0);
-            users.put(u1.getID(), u1);
-            users.put(u2.getID(), u2);
-            users.put(u3.getID(), u3);
-            users.put(u4.getID(), u4);
-            users.put(u4.getID(), u5);
+            //Create groups
+            Group g1 = new Group(String.valueOf(0), "Vacanze",      "url", "description0");
+            Group g2 = new Group(String.valueOf(1), "Calcetto",     "url", "description1");
+            Group g3 = new Group(String.valueOf(2), "Spese Casa",   "url", "description2");
+            Group g4 = new Group(String.valueOf(3), "Pasquetta",   "url", "description3");
+            Group g5 = new Group(String.valueOf(4), "Fantacalcio",   "url", "description4");
+            Group g6 = new Group(String.valueOf(5), "Alcolisti Anonimi",   "url", "description5");
 
-            Group g1 = new Group(String.valueOf(0), "Vacanze",      String.valueOf(imgid[5]), "description0");
-            Group g2 = new Group(String.valueOf(1), "Calcetto",     String.valueOf(imgid[6]), "description1");
-            Group g3 = new Group(String.valueOf(2), "Spese Casa",   String.valueOf(imgid[7]), "description2");
-            Group g4 = new Group(String.valueOf(3), "Pasquetta",   String.valueOf(imgid[8]), "description3");
-            Group g5 = new Group(String.valueOf(4), "Fantacalcio",   String.valueOf(imgid[9]), "description4");
-            Group g6 = new Group(String.valueOf(5), "Alcolisti Anonimi",   String.valueOf(imgid[10]), "description5");
+            //Add groups to Firebase
+            String g1_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(g1_id).setValue(g1);
+            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(g1_id).child("timestamp").setValue(timeStamp);
 
-            //Add groups to database
-            mDatabase.child("groups").child(g1.getID()).setValue(g1);
-            mDatabase.child("groups").child(g2.getID()).setValue(g2);
-            mDatabase.child("groups").child(g3.getID()).setValue(g3);
-            mDatabase.child("groups").child(g4.getID()).setValue(g4);
-            mDatabase.child("groups").child(g5.getID()).setValue(g5);
-            mDatabase.child("groups").child(g6.getID()).setValue(g6);
+            String g2_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(g2_id).setValue(g2);
+            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(g2_id).child("timestamp").setValue(timeStamp);
+
+            String g3_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(g3_id).setValue(g3);
+            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(g3_id).child("timestamp").setValue(timeStamp);
+
+            String g4_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(g4_id).setValue(g4);
+            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(g4_id).child("timestamp").setValue(timeStamp);
+
+            String g5_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(g5_id).setValue(g5);
+            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(g5_id).child("timestamp").setValue(timeStamp);
+
+            String g6_id = mDatabase.child("groups").push().getKey();
+            mDatabase.child("groups").child(g6_id).setValue(g6);
+            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            mDatabase.child("groups").child(g6_id).child("timestamp").setValue(timeStamp);
+
 
             //Aggiungo utente a lista membri del gruppo e gruppo a lista gruppi nell'utente in Firebase
-            joinGroupFirebase(u0,g1);
-            joinGroupFirebase(u1,g1);
-            joinGroupFirebase(u2,g1);
-            joinGroupFirebase(u3,g1);
-            joinGroupFirebase(u4,g1);
-            joinGroupFirebase(u5,g1);
+            joinGroupFirebase(u0_id,g1_id);
+            joinGroupFirebase(u1_id,g1_id);
+            joinGroupFirebase(u2_id,g1_id);
+            joinGroupFirebase(u3_id,g1_id);
+            joinGroupFirebase(u4_id,g1_id);
+            joinGroupFirebase(u5_id,g1_id);
 
 
-            joinGroupFirebase(u0,g2);
-            joinGroupFirebase(u1,g2);
-            joinGroupFirebase(u2,g2);
-            joinGroupFirebase(u4,g2);
+            joinGroupFirebase(u0_id,g2_id);
+            joinGroupFirebase(u1_id,g2_id);
+            joinGroupFirebase(u2_id,g2_id);
+            joinGroupFirebase(u4_id,g2_id);
 
-            joinGroupFirebase(u0,g3);
-            joinGroupFirebase(u4,g3);
+            joinGroupFirebase(u0_id,g3_id);
+            joinGroupFirebase(u4_id,g3_id);
 
-            joinGroupFirebase(u0,g4);
-            joinGroupFirebase(u2,g4);
+            joinGroupFirebase(u0_id,g4_id);
+            joinGroupFirebase(u2_id,g4_id);
 
-            joinGroupFirebase(u0,g5);
-            joinGroupFirebase(u2,g5);
+            joinGroupFirebase(u0_id,g5_id);
+            joinGroupFirebase(u2_id,g5_id);
 
-            joinGroupFirebase(u0,g6);
-            joinGroupFirebase(u2,g6);
+            joinGroupFirebase(u0_id,g6_id);
+            joinGroupFirebase(u2_id,g6_id);
+
+            //Add friends to users
+            //u0 is friend of u1,u2,u3,u4,u5
+            addFriendFirebase(u0_id,u1_id);
+            addFriendFirebase(u0_id,u2_id);
+            addFriendFirebase(u0_id,u3_id);
+            addFriendFirebase(u0_id,u4_id);
+            addFriendFirebase(u0_id,u5_id);
 
 
-            //Add users to group
-            u0.joinGroup(g1);
-            u1.joinGroup(g1);
-            u2.joinGroup(g1);
-            u3.joinGroup(g1);
-            u4.joinGroup(g1);
-            u5.joinGroup(g1);
 
-            u0.joinGroup(g2);
-            u1.joinGroup(g2);
-            u2.joinGroup(g2);
-            u4.joinGroup(g2);
-
-            u0.joinGroup(g3);
-            u4.joinGroup(g3);
-
-            u0.joinGroup(g4);
-            u2.joinGroup(g4);
-
-            u0.joinGroup(g5);
-            u2.joinGroup(g5);
-
-            u0.joinGroup(g6);
-            u2.joinGroup(g6);
-
-            groups.put(g1.getID(), g1);
-            groups.put(g2.getID(), g2);
-            groups.put(g3.getID(), g3);
-            groups.put(g4.getID(), g4);
-            groups.put(g5.getID(), g5);
-            groups.put(g6.getID(), g6);
 
             //Spese in g1
-            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€",   String.valueOf(img_expense[0]), true, g1.getID());
-            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",   String.valueOf(img_expense[1]), true, g1.getID());
-            //u0.addExpense(e1);
-            //u3.addExpense(e2);
-            addExpenseFirebase(u0,e1);
-            addExpenseFirebase(u3,e2);
+            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€", "urlBill",  "url", true, g1_id, u0_id);
+            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
+            e1.getParticipants().put(u0_id, 0d);
+            e1.getParticipants().put(u1_id, 0d);
+            e1.getParticipants().put(u2_id, 0d);
+            e1.getParticipants().put(u3_id, 0d);
+            e1.getParticipants().put(u4_id, 0d);
+            e1.getParticipants().put(u5_id, 0d);
+            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
+            Integer t = e1.getParticipants().size();
+            double percentage = (1 / (double) e1.getParticipants().size());
+
+            for (Map.Entry<String, Double> participant : e1.getParticipants().entrySet())
+            {
+                participant.setValue(percentage);
+            }
+
+
+
+            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",  "urlBill", "url", true, g1_id, u3_id);
+            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
+            e2.getParticipants().put(u0_id, 0d);
+            e2.getParticipants().put(u1_id, 0d);
+            e2.getParticipants().put(u2_id, 0d);
+            e2.getParticipants().put(u3_id, 0d);
+            e2.getParticipants().put(u4_id, 0d);
+            e2.getParticipants().put(u5_id, 0d);
+            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
+            percentage = (1 / (double) e2.getParticipants().size());
+
+            for (Map.Entry<String, Double> participant : e2.getParticipants().entrySet())
+            {
+                participant.setValue(percentage);
+            }
+
+            //returns id of the expense in db
+            String e1_id = addExpenseFirebase(e1);
+            String e2_id = addExpenseFirebase(e2);
 
             //Spese in g2
-            Expense e3 = new Expense(String.valueOf(2), "Partita", "Sport",         5d, "€",    String.valueOf(img_expense[2]), true, g2.getID());
-            //u0.addExpense(e3);
-            addExpenseFirebase(u0,e3);
+            Expense e3 = new Expense(String.valueOf(2), "Partita", "Sport",         5d, "€",  "urlBill",  "url", true, g2_id, u0_id);
+            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
+            e3.getParticipants().put(u0_id, 0d);
+            e3.getParticipants().put(u1_id, 0d);
+            e3.getParticipants().put(u2_id, 0d);
+            e3.getParticipants().put(u4_id, 0d);
+            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
+            percentage = (1 / (double) e3.getParticipants().size());
+            for (Map.Entry<String, Double> participant : e3.getParticipants().entrySet())
+            {
+                participant.setValue(percentage);
+            }
+
+            String e3_id = addExpenseFirebase(e3);
+
 
             //Spese in g3
-            Expense e4 = new Expense(String.valueOf(3), "Affitto", "Altro",         500d, "€",  String.valueOf(img_expense[3]), true, g3.getID());
-            //u4.addExpense(e4);
-            addExpenseFirebase(u4,e4);
+            Expense e4 = new Expense(String.valueOf(3), "Affitto", "Altro",         500d, "€", "urlBill",  "url", true, g3_id, u4_id);
+            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
+            e4.getParticipants().put(u0_id, 0d);
+            e4.getParticipants().put(u4_id, 0d);
+            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
+            percentage = (1 / (double) e4.getParticipants().size());
+            for (Map.Entry<String, Double> participant : e4.getParticipants().entrySet())
+            {
+                participant.setValue(percentage);
+            }
+            String e4_id = addExpenseFirebase(e4);
 
-            //Add expenses to Firebase
+            //Create comments
+            String timestamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            Comment c1 = new Comment(u0_id, "This expense was not necessary", timestamp);
+            Comment c2 = new Comment(u1_id, "Wow, that's great!", timestamp);
+            Comment c3 = new Comment(u4_id, "No, it's a shit", timestamp);
 
-            mDatabase.child("expenses").child(e1.getID()).setValue(e1);
-            mDatabase.child("expenses").child(e2.getID()).setValue(e2);
-            mDatabase.child("expenses").child(e3.getID()).setValue(e3);
-            mDatabase.child("expenses").child(e4.getID()).setValue(e4);
+            //Add comment to expense 1
+            String c1_id = mDatabase.child("comments").child(e1_id).push().getKey();
+            mDatabase.child("comments").child(e1_id).child(c1_id).setValue(c1);
+
+
+            //Add comments to expense 2
+            String c2_id = mDatabase.child("comments").child(e2_id).push().getKey();
+            mDatabase.child("comments").child(e2_id).child(c2_id).setValue(c2);
+            String c3_id = mDatabase.child("comments").child(e2_id).push().getKey();
+            mDatabase.child("comments").child(e2_id).child(c3_id).setValue(c3);
+
+
+
+
 
             myself = u0;
+            populated = true;
         }
         */
+
+
+
+
+
 
 
 
@@ -234,8 +292,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         setContentView(R.layout.activity_main);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+
 
         auth = FirebaseAuth.getInstance();
 
@@ -243,8 +300,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         Intent i = getIntent();
         final String currentUID = i.getStringExtra("UID");
 
-        final DatabaseReference usersRef = databaseReference.child("users");
-        final DatabaseReference groupRef = databaseReference.child("groups");
+        final DatabaseReference usersRef = mDatabase.child("users");
+        final DatabaseReference groupRef = mDatabase.child("groups");
 
         // getting currentUserRef from db
         DatabaseReference currentUserRef = usersRef.child(currentUID);
@@ -263,7 +320,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 currentUserRef.child("surname").toString(),
                 currentUserRef.child("email").toString(),
                 currentUserRef.child("password").toString(),
-                currentUserRef.child("profileImage").toString()
+                currentUserRef.child("profileImage").toString(),
+                currentUserRef.child("defaultCurrency").toString()
         );
 
 
@@ -485,14 +543,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 // todo diverse azioni a seconda del fragment in cui mi trovo
                 // getSupportFragmentManager().findFragmentByTag()
                 Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-                String tempGroupID = databaseReference.child("temporarygroups").push().getKey();
+                myIntent.putExtra("UID", myselfID);
+                //String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
                 //inizialmente l'unico user è il creatore del gruppo stesso
+                User myself = new User(myselfID, "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null, "€");
+                //mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
+                //mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
                 NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
-                User myself = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null);
-                databaseReference.child("temporarygroups").child(tempGroupID).child("members").push();
-                databaseReference.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
-                NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
-                myIntent.putExtra("groupID", tempGroupID);
+                //myIntent.putExtra("groupID", tempGroupID);
                 MainActivity.this.startActivity(myIntent);
 
             }
@@ -602,98 +660,23 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
 
+    public String addExpenseFirebase(Expense expense) {
+
+        //Aggiungo spesa a Firebase
+        String eID = mDatabase.child("expenses").push().getKey();
+        mDatabase.child("expenses").child(eID).setValue(expense);
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        mDatabase.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
 
 
+        //Aggiungo spesa alla lista spese del gruppo
+        mDatabase.child("groups").child(expense.getGroupID()).child("expenses").push();
+        mDatabase.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue("true");
 
+        return eID;
 
-    public void joinGroupFirebase (final User u, Group g) {
-        //Creo istanza del gruppo nella lista gruppi dello user
-        databaseReference.child("users").child(u.getID()).child("groups").push();
-        databaseReference.child("groups").child(g.getID()).child("members").push();
-
-        Map<String, Object> groupValues = g.toMap();
-        Map <String, Object> userValues = u.toMap();
-
-        Map <String, Object> childUpdates = new HashMap<>();
-        //metto nella map il gruppo a cui appartiene lo user
-        childUpdates.put("/users/" + u.getID() + "/groups/" + g.getID(), groupValues);
-        childUpdates.put("/groups/" + g.getID() + "/members/" + u.getID(), userValues);
-
-        databaseReference.updateChildren(childUpdates);
-
-        //creo un debito verso il gruppo
-        databaseReference.child("users").child(u.getID()).child("groups").child(g.getID()).child("balanceWithGroup").setValue(0);
-
-        Query query = databaseReference.child("groups").child(g.getID()).child("members").orderByKey();
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists())
-                {
-                    System.out.println("There is at least one member in this group");
-                    for (DataSnapshot memberSnapshot: dataSnapshot.getChildren())
-                    {
-                        System.out.println(memberSnapshot.getKey());
-                        //se il nuovo user non è già presente nel gruppo (teoricamente impossibile)
-                        if (!memberSnapshot.getKey().equals(u.getID()))
-                        {
-                            //se il bilancio tra nuovo user e membro del gruppo non esiste già
-                            if (!memberSnapshot.child("balancesWithUsers").hasChild(u.getID()))
-                            {
-                                //creo bilancio da membro a nuovo user
-                                databaseReference.child("users").child(memberSnapshot.getKey()).child("balancesWithUsers").child(u.getID()).setValue(0);
-                                //creo bilancio da nuovo user a membro
-                                databaseReference.child("users").child(u.getID()).child("balancesWithUsers").child(memberSnapshot.getKey()).setValue(0);
-                            }
-
-                        }
-                        else
-                        {
-                            System.out.println("User is already present in the group!");
-                        }
-
-
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-    }
-
-    public void addExpenseFirebase(User u, Expense expense) {
-        u.getAddedExpenses().put(expense.getID(), expense);  //spesa aggiunta alla lista spese utente
-        //expense.getGroup().getExpenses().put(expense.getID(), expense);   //spesa aggiunta alla lista spese del gruppo
-        String groupID = expense.getGroupID();
-        Group g = groups.get(groupID);
-        if ( g != null)
-        {
-            g.getExpenses().put(expense.getID(), expense);
-        }
-
-        //Creo istanza della spesa nella lista spese dello user e del gruppo
-        databaseReference.child("users").child(u.getID()).child("expenses").push();
-        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
-
-        Map <String, Object> expensesValues = expense.toMap();
-
-        Map <String, Object> childUpdates = new HashMap<>();
-        //metto nella map la spesa
-        childUpdates.put("/users/" + u.getID() + "/expenses/" + expense.getID(), expensesValues);
-        childUpdates.put("/groups/" + expense.getGroupID() + "/expenses/" + expense.getID(), expensesValues);
-
-        //aggiungo la spesa nella lista spese dello user e del group su Firebase
-        databaseReference.updateChildren(childUpdates);
-
-
-        u.updateBalance(expense);
-        updateBalanceFirebase(u, expense);
+        //u.updateBalance(expense);
+        //updateBalanceFirebase(u, expense);
     }
 
     // update balance among other users and among the group this user is part of
@@ -705,8 +688,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         final String groupID = expense.getGroupID();
 
 
-        Query query = databaseReference.child("groups").child(groupID);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query query = mDatabase.child("groups").child(groupID);
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -728,7 +711,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 if (actualdebts != null) {
                     //aggiorno il mio debito verso il gruppo
-                    databaseReference.child("users").child(u.getID()).child("groups").child(groupID).child("balanceWithGroup").setValue(actualdebts+totalcredit);
+                    mDatabase.child("users").child(u.getID()).child("groups").child(groupID).child("balanceWithGroup").setValue(actualdebts+totalcredit);
                 }
                 else {
                     System.out.println("Group not found");
@@ -741,7 +724,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     {
                         Double balance = dataSnapshot.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).getValue(Double.class);
                         if (balance != null) {
-                            databaseReference.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
+                            mDatabase.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
                         }
                     }
 
@@ -752,14 +735,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                     if (balance != null)
                     {
-                        databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(balance-singlecredit);
+                        mDatabase.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(balance-singlecredit);
 
                     }
                     else
                     {
                         System.out.println("Io non risulto tra i suoi debiti");
                         // => allora devo aggiungermi
-                        databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(-singlecredit);
+                        mDatabase.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(-singlecredit);
                     }
 
                     //aggiorno il debito dell'amico verso il gruppo
@@ -767,13 +750,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                     if (balance != null)
                     {
-                        databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(balance-singlecredit);
+                        mDatabase.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(balance-singlecredit);
                     }
                     else
                     {
                         System.out.println("Gruppo non risulta tra i suoi debiti");
                         // => allora lo devo aggiungere
-                        databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
+                        mDatabase.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
                     }
 
 
@@ -892,4 +875,85 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
     }
+
+    public void joinGroupFirebase (final String userID, String groupID)
+    {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //Aggiungo gruppo alla lista gruppi dello user
+        mDatabase.child("users").child(userID).child("groups").push();
+        mDatabase.child("users").child(userID).child("groups").child(groupID).setValue("true");
+        //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
+        mDatabase.child("groups").child(groupID).child("members").push();
+        mDatabase.child("groups").child(groupID).child("members").child(userID).push();
+        mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
+        mDatabase.child("groups").child(groupID).child("members").child(userID).push();
+        mDatabase.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
+
+    }
+
+    public void addFriendFirebase (final String user1ID, final String user2ID)
+    {
+        //Add u2 to friend list of u1
+        mDatabase.child("users").child(user1ID).child("friends").push();
+        mDatabase.child("users").child(user1ID).child("friends").child(user2ID).setValue("true");
+        //Add u1 to friend list of u2
+        mDatabase.child("users").child(user2ID).child("friends").push();
+        mDatabase.child("users").child(user2ID).child("friends").child(user1ID).setValue("true");
+
+        //Read groups u1 belongs to
+        Query query = mDatabase.child("users").child(user1ID).child("groups");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                final ArrayList<String> u1Groups = new ArrayList<String>();
+
+                for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
+                {
+                    u1Groups.add(groupSnapshot.getKey());
+                }
+
+                Query query = mDatabase.child("users").child(user2ID).child("groups");
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        ArrayList<String> sharedGroups = new ArrayList<String>();
+
+
+                        for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
+                        {
+                            if (u1Groups.contains(groupSnapshot.getKey()))
+                                sharedGroups.add(groupSnapshot.getKey());
+                        }
+
+                        //ora in sharedGroups ci sono solo i gruppi di cui fanno parte entrambi gli utenti
+                        for (String groupID : sharedGroups)
+                        {
+                            mDatabase.child("users").child(user1ID).child("friends").child(user2ID).child(groupID).setValue("true");
+                            mDatabase.child("users").child(user2ID).child("friends").child(user1ID).child(groupID).setValue("true");
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
 }

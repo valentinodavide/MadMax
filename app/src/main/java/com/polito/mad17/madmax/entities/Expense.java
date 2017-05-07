@@ -11,23 +11,26 @@ public class Expense {
     private Double amount;
     private String currency;        // €, $ ...
     private String image;           // optional, URL dell'immagine su Firebase (può essere lo scontrino o una foto del prodotto)
+    private String billPhoto;
     private String groupID;
+    private String creatorID;       //ID of the user who added the expense
     private Boolean equallyDivided; // se vero la spesa viene divisa equamente fra tutti gli utenti del gruppo
-                                    // altrimenti viene suddivisa come specificato in partitions ->
-    private HashMap<String, Double> partitions;     // String: userID, Double: frazione corrispondente a quello User
+                                    // altrimenti viene suddivisa come specificato in participants ->
+    private HashMap<String, Double> participants;     // String: userID, Double: frazione corrispondente a quello user
 
 
-    public Expense (String ID, String description, String category, Double amount, String currency, String image, Boolean equallyDivided, String groupID) {
+    public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String image, Boolean equallyDivided, String groupID, String creatorID) {
         this.ID = ID;
         this.description = description;
         this.category = category;
         this.amount = amount;
         this.currency = currency;
+        this.billPhoto = billPhoto;
         this.image = image;
         this.equallyDivided = equallyDivided;
-        this.partitions = new HashMap<>();
-        this.partitions = new HashMap<>();
+        this.participants = new HashMap<>();
         this.groupID = groupID;
+        this.creatorID = creatorID;
     }
 
 
@@ -87,17 +90,26 @@ public class Expense {
         this.equallyDivided = equallyDivided;
     }
 
-    public HashMap<String, Double> getPartitions() {
-        return partitions;
+    public HashMap<String, Double> getParticipants() {
+        return participants;
     }
 
-    public void setPartitions(HashMap<String, Double> partitions) {
-        this.partitions = partitions;
+    public void setParticipants(HashMap<String, Double> participants) {
+        this.participants = participants;
     }
 
     public String getGroupID() {return groupID;}
 
     public void setGroupID(String groupID) {this.groupID = groupID;}
+
+    public String getBillPhoto() {return billPhoto;}
+
+    public void setBillPhoto(String billPhoto) {this.billPhoto = billPhoto;}
+
+    public String getCreatorID() {return creatorID;}
+
+    public void setCreatorID(String creatorID) {this.creatorID = creatorID;}
+
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
