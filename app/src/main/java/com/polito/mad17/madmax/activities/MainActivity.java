@@ -51,7 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static com.polito.mad17.madmax.R.string.friends;
-import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
+//import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
 import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.myself;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickInterface {
@@ -646,11 +646,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 break;
 
             case "GroupsFragment":
-                Group groupDetail = groups.get(itemID);
-                bundle.putParcelable("groupDetails", groupDetail);
+                //todo mettere a posto
+                Group groupDetail = null; // groups.get(itemID);
+                //bundle.putParcelable("groupDetails", groupDetail);
 
                 intent = new Intent(this, GroupDetailActivity.class);
-                intent.putExtra("groupDetails", groupDetail);
+                intent.putExtra("groupID", itemID);
                 startActivity(intent);
 
                 break;

@@ -65,7 +65,8 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
 //        groupsViewAdapter = new GroupsViewAdapter(this);
         recyclerView.setAdapter(groupsViewAdapter);
 
-        groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
+        //todo mettere a posto
+        //groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
 
         /* Preso dalla vecchia activity
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
@@ -75,8 +76,23 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
         TextView balance=(TextView) view.findViewById(R.id.balance);
         */
 
+
+
+        //nameTextView.setText(friendDetail.getName() + " " + friendDetail.getSurname());
+        nameTextView =(TextView)view.findViewById(R.id.tv_group_name);
+
+        nameTextView.setText("Nome Gruppo");
+
+
+
+
+
+
+
+
+
         //Extract data from bundle
-        Bundle bundle = this.getArguments();
+       /* Bundle bundle = this.getArguments();
         User friendDetail = null;
         if(bundle != null) {
             friendDetail = (User) bundle.getParcelable("friendDetails");
@@ -107,7 +123,7 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
             } else {
                 balanceTextTextView.setText(R.string.no_debts);
             }
-        }
+        }*/
 
         return view;
     }

@@ -15,17 +15,21 @@ import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    private final ArrayList mData;
     private static final String TAG = GroupsViewAdapter.class.getSimpleName();
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
 
-    public static HashMap<String, Group> groups = new HashMap<>();
+    //public static HashMap<String, Group> groups = new HashMap<>();
     public static User myself;
+
 
 
     // The interface that receives the onClick messages
@@ -33,8 +37,17 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onListItemClick(String clickedItemIndex);
     }
 
-    public GroupsViewAdapter(ListItemClickListener listener) {
+    public GroupsViewAdapter(ListItemClickListener listener, Map<String, Group> map) {
         itemClickListener = listener;
+        mData = new ArrayList();
+        mData.addAll(map.entrySet());
+
+
+    }
+
+    public void update(Map<String, Group> map) {
+        mData.clear();
+        mData.addAll(map.entrySet());
     }
 
     class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -55,9 +68,16 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            Log.d(TAG, "clickedGroup " + groups.get(String.valueOf(clickedPosition)).getID());
+            //Log.d(TAG, "clickedGroup " + groups.get(String.valueOf(clickedPosition)).getID());
+            //Map.Entry<String, Group> itemClicked = (Map.Entry) mData.get(clickedPosition);
+            Map.Entry<String, Group> itemClicked = getItem(clickedPosition);
 
-            itemClickListener.onListItemClick(groups.get(String.valueOf(clickedPosition)).getID());
+            Log.d(TAG, "clickedGroup " + itemClicked.getKey());
+
+
+            //itemClickListener.onListItemClick(groups.get(String.valueOf(clickedPosition)).getID());
+            itemClickListener.onListItemClick(itemClicked.getKey());
+
 
         }
     }
@@ -86,14 +106,25 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         final ItemGroupViewHolder groupViewHolder = (ItemGroupViewHolder) holder;
 
-        String p = groups.get(String.valueOf(position)).getImage();
-        int photoId = Integer.parseInt(p);
-        groupViewHolder.imageView.setImageResource(photoId);
+        Map.Entry<String, Group> item = getItem(position);
 
-        groupViewHolder.nameTextView.setText(groups.get(String.valueOf(position)).getName());
-        groupViewHolder.ID = groups.get(String.valueOf(position)).getID();
+
+        //String p = groups.get(String.valueOf(position)).getImage();
+        String p = item.getValue().getImage();
+        if (p!= null)
+        {
+            int photoId = Integer.parseInt(p);
+            groupViewHolder.imageView.setImageResource(photoId);
+        }
+
+
+        //groupViewHolder.nameTextView.setText(groups.get(String.valueOf(position)).getName());
+        //groupViewHolder.ID = groups.get(String.valueOf(position)).getID();
+        groupViewHolder.nameTextView.setText(item.getValue().getName());
+        groupViewHolder.ID = item.getValue().getID();
 
         //mydebt = mio debito con il gruppo
+        /*
         Double mygroupdebt = myself.getBalanceWithGroups().get(groupViewHolder.ID);
         if (mygroupdebt == null) {
             return;
@@ -117,15 +148,18 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             groupViewHolder.smallTextView.setText("" + df.format(mygroupdebt) + " €");
             groupViewHolder.smallTextView.setBackgroundResource(R.color.greenBalance);
         }
+        */
+    }
+
+
+    public Map.Entry<String, Group> getItem(int position) {
+        return (Map.Entry) mData.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return groups.size();
+        return mData.size();
     }
 
-    public void setGroupsData(HashMap<String, Group> data, User user) {
-        groups = data;
-        myself = user;
-    }
+
 }

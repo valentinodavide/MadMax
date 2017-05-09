@@ -66,10 +66,12 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        groupsViewAdapter = new GroupsViewAdapter(this);
+        //todo mettere a posto
+        groupsViewAdapter = new GroupsViewAdapter(this, null);
         recyclerView.setAdapter(groupsViewAdapter);
 
-        groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
+        //todo mettere a posto
+        //groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
 
 
         //Extract data from bundle

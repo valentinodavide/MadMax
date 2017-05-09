@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities.groups;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +49,7 @@ public class HashMapGroupsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         final View result;
 
@@ -63,8 +64,20 @@ public class HashMapGroupsAdapter extends BaseAdapter {
         TextView name=(TextView)result.findViewById(R.id.tv_group_name);
         name.setText(item.getValue().getName());
 
+        result.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String groupID = getItem(position).getKey();
+            }
+        });
+
+
+
 
 
         return result;
     }
+
+
 }
