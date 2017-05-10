@@ -54,8 +54,6 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
 
         View view = inflater.inflate(R.layout.fragment_group_detail, container, false);
 
-
-
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
@@ -82,13 +80,6 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
         nameTextView =(TextView)view.findViewById(R.id.tv_group_name);
 
         nameTextView.setText("Nome Gruppo");
-
-
-
-
-
-
-
 
 
         //Extract data from bundle

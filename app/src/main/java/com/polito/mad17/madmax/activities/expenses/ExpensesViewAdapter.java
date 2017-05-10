@@ -11,36 +11,40 @@ import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemFriendsViewHolder> {
+public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemExpensesViewHolder> {
 
     private static final String TAG = ExpensesViewAdapter.class.getSimpleName();
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
 
-    private static HashMap<String, Expense> expenses = new HashMap<>();
-    private int currentFriend = 0;
-
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
         void onListItemClick(String clickedItemIndex);
     }
 
-    public ExpensesViewAdapter(ListItemClickListener listener) {
+    private final ArrayList expenses;
+
+    public ExpensesViewAdapter(ListItemClickListener listener, Map<String, Expense> expensesMap) {
         itemClickListener = listener;
+        this.expenses = new ArrayList<>();
+        expenses.addAll(expensesMap.entrySet());
     }
 
-    class ItemFriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView imageView;
         private TextView nameTextView;
         private TextView smallTextView;
         private String ID;
 
-        public ItemFriendsViewHolder(View itemView) {
+        public ItemExpensesViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
@@ -51,40 +55,43 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            Log.d(TAG, "clickedFriend " + expenses.get(String.valueOf(clickedPosition+1)).getID());
+            Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getValue().getID());
 
-            itemClickListener.onListItemClick(expenses.get(String.valueOf(clickedPosition+1)).getID());
+            itemClickListener.onListItemClick(getItem(clickedPosition).getValue().getID());
         }
     }
 
     @Override
-    public ExpensesViewAdapter.ItemFriendsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ExpensesViewAdapter.ItemExpensesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
-        ItemFriendsViewHolder itemFriendsViewHolder = new ItemFriendsViewHolder(view);
+        ItemExpensesViewHolder itemExpensesViewHolder = new ItemExpensesViewHolder(view);
 
-        return itemFriendsViewHolder;
+        Log.d(TAG, "dopo aver istanziato il view holder");
+        return itemExpensesViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final ExpensesViewAdapter.ItemFriendsViewHolder holder, int position) {
+    public void onBindViewHolder(final ExpensesViewAdapter.ItemExpensesViewHolder holder, int position) {
 
-        Expense expense = expenses.get(position);
+        Expense expense = getItem(position).getValue();
 
         Log.d(TAG, expense.toString());
 
-        String photo = expense.getImage();
-        int photoUserId = Integer.parseInt(photo);
-        holder.imageView.setImageResource(photoUserId);
+        if(expense.getImage() != null) {
+            String photo = expense.getImage();
+            int photoUserId = Integer.parseInt(photo);
+            holder.imageView.setImageResource(photoUserId);
+        }
 
         holder.nameTextView.setText(expense.getDescription());
         holder.ID = expense.getID();
 
-        holder.smallTextView.setText(expense.getAmount() + " €");
+        holder.smallTextView.setText(expense.getAmount() + " " + expense.getCurrency());
 
     }
 
@@ -93,8 +100,13 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         return expenses.size();
     }
 
-    public void setExpensesData(HashMap<String, Expense> expenses) {
-        this.expenses = expenses;
+    public Map.Entry<String, Expense> getItem(int position) {
+        return (Map.Entry) expenses.get(position);
+    }
+
+    public void update(Map<String, Expense> map) {
+        expenses.clear();
+        expenses.addAll(map.entrySet());
     }
 
 }

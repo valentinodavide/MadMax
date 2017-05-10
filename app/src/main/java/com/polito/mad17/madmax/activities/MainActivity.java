@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         mDatabase = firebaseDatabase.getReference();
+        auth = FirebaseAuth.getInstance();
 
         //non cancellare anche se commentato! Serve per popolare il db
         /*
@@ -268,37 +269,21 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             String c1_id = mDatabase.child("comments").child(e1_id).push().getKey();
             mDatabase.child("comments").child(e1_id).child(c1_id).setValue(c1);
 
-
             //Add comments to expense 2
             String c2_id = mDatabase.child("comments").child(e2_id).push().getKey();
             mDatabase.child("comments").child(e2_id).child(c2_id).setValue(c2);
             String c3_id = mDatabase.child("comments").child(e2_id).push().getKey();
             mDatabase.child("comments").child(e2_id).child(c3_id).setValue(c3);
 
-
-
-
-
             myself = u0;
             populated = true;
         }
         */
 
-
-
-
-
-
-
-
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
 
         setContentView(R.layout.activity_main);
-
-
-
-        auth = FirebaseAuth.getInstance();
 
         // getting currenUID from Intent (from LogInActivity or EmailVerificationActivity)
         Intent i = getIntent();
@@ -603,13 +588,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             return super.instantiateItem(container, position);
-
         }
 
         @Override
         public Fragment getItem(int position) {
-
-            Log.d(TAG, position + "");
 
             switch(position) {
                 case 0:
@@ -628,11 +610,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     return null;
             }
         }
-
-//        @Override
-//        public void destroyItem(ViewGroup container, int position, Object object) {
-//            super.destroyItem(container, position, object);
-//        }
 
         @Override
         public int getCount() {
@@ -676,9 +653,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 break;
 
             case "GroupsFragment":
-                //todo mettere a posto
-                Group groupDetail = null; // groups.get(itemID);
-                //bundle.putParcelable("groupDetails", groupDetail);
 
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", itemID);
@@ -688,8 +662,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         }
 
     }
-
-
 
     public String addExpenseFirebase(Expense expense) {
 

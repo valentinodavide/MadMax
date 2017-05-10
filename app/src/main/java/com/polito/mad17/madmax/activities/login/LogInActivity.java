@@ -138,6 +138,7 @@ public class LogInActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i(TAG,"link to signup clicked");
 
+                // todo aggiustare back button
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 PendingIntent pendingIntent = TaskStackBuilder.create(getApplicationContext())
                                                         .addNextIntentWithParentStack(intent)

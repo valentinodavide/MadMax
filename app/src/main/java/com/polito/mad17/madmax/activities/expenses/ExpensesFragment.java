@@ -10,9 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
+
+import java.util.HashMap;
+
+import static com.polito.mad17.madmax.activities.groups.GroupExpensesActivity.expenses;
+import static com.polito.mad17.madmax.activities.groups.NewGroupActivity.groups;
 
 public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener {
 
@@ -28,13 +39,22 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     private RecyclerView.LayoutManager layoutManager;
     private ExpensesViewAdapter expensesViewAdapter;
 
-    //private Group groupDetails = null;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference mDatabase;
+    private DatabaseReference groupRef;
+
+    private String groupID = null;
+
+    private HashMap<String, Expense> expensesMap = new HashMap<>();
 
     public ExpensesFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabase = firebaseDatabase.getReference();
     }
 
     @Override
@@ -44,8 +64,8 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
         View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
-        //Bundle bundle = getArguments();
-        //groupDetails = bundle.getParcelable("groupDetails");
+        Bundle bundle = getArguments();
+        groupID = bundle.getString("groupID");
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
@@ -53,10 +73,32 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        expensesViewAdapter = new ExpensesViewAdapter(this);
+        expensesViewAdapter = new ExpensesViewAdapter(this, expensesMap);
         recyclerView.setAdapter(expensesViewAdapter);
 
-        //expensesViewAdapter.setExpensesData(groupDetails.getExpenses());
+        groupRef = mDatabase.child("groups");
+
+        Log.d(TAG, groupID);
+        // retrieving group details for current group
+        groupRef.child(groupID).child("expenses").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot expensesSnapshot) {
+
+                for(DataSnapshot expense : expensesSnapshot.getChildren())
+                {
+                    getExpense(expense.getKey());
+                    Log.d(TAG, expense.getKey());
+                }
+
+                expensesViewAdapter.update(expensesMap);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
 
         Log.d(TAG, "dopo setAdapter");
 
@@ -84,8 +126,27 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     }
 
     @Override
-    public void onListItemClick(String friendID) {
-        Log.d(TAG, "clickedItemIndex " + friendID);
-        onClickFriendInterface.itemClicked(getClass().getSimpleName(), friendID);
+    public void onListItemClick(String expenseID) {
+        Log.d(TAG, "clickedItemIndex " + expenseID);
+        onClickFriendInterface.itemClicked(getClass().getSimpleName(), expenseID);
+    }
+
+    public void getExpense(final String id) {
+        mDatabase.child("expenses").child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Expense expense = new Expense();
+                expense.setDescription(dataSnapshot.child("description").getValue(String.class));
+                expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+                expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
+                expensesMap.put(id, expense);
+                expensesViewAdapter.update(expensesMap);
+                expensesViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }

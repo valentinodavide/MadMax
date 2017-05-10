@@ -89,14 +89,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                 //lv.setAdapter(adapter);
 
 
-
-
-
                 //groupsViewAdapter.setGroupsData(groups, MainActivity.myself);
                 groupsViewAdapter.update(groups);
-
-
-
 
             }
 
@@ -105,8 +99,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
             }
         });
-
-
 
 
         /*

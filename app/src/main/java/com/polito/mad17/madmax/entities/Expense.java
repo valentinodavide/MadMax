@@ -18,6 +18,7 @@ public class Expense {
                                     // altrimenti viene suddivisa come specificato in participants ->
     private HashMap<String, Double> participants;     // String: userID, Double: frazione corrispondente a quello user
 
+    public Expense() {}
 
     public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String image, Boolean equallyDivided, String groupID, String creatorID) {
         this.ID = ID;
