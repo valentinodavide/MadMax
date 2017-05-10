@@ -28,7 +28,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     private RecyclerView.LayoutManager layoutManager;
     private ExpensesViewAdapter expensesViewAdapter;
 
-    private Group groupDetails = null;
+    //private Group groupDetails = null;
 
     public ExpensesFragment() {}
 
@@ -44,8 +44,8 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
         View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
-        Bundle bundle = getArguments();
-        groupDetails = bundle.getParcelable("groupDetails");
+        //Bundle bundle = getArguments();
+        //groupDetails = bundle.getParcelable("groupDetails");
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
@@ -56,7 +56,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         expensesViewAdapter = new ExpensesViewAdapter(this);
         recyclerView.setAdapter(expensesViewAdapter);
 
-        expensesViewAdapter.setExpensesData(groupDetails.getExpenses());
+        //expensesViewAdapter.setExpensesData(groupDetails.getExpenses());
 
         Log.d(TAG, "dopo setAdapter");
 

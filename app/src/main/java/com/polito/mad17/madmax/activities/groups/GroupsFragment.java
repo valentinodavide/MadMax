@@ -1,6 +1,8 @@
 package com.polito.mad17.madmax.activities.groups;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -55,13 +58,24 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         setInterface((OnItemClickInterface) getActivity());
 
-        final View view = inflater.inflate(R.layout.skeleton_listview, container, false);
-        lv = (ListView) view.findViewById(R.id.rv_skeleton);
+        //final View view = inflater.inflate(R.layout.skeleton_listview, container, false);
+        final View view = inflater.inflate(R.layout.skeleton_list, container, false);
+
+        //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
         String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        groupsViewAdapter = new GroupsViewAdapter(this, groups);
+        recyclerView.setAdapter(groupsViewAdapter);
 
         mDatabase.child("users").child(myselfID).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -71,8 +85,18 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                     getGroup(groupSnapshot.getKey());
                 }
 
-                adapter = new HashMapGroupsAdapter(groups);
-                lv.setAdapter(adapter);
+                //adapter = new HashMapGroupsAdapter(groups);
+                //lv.setAdapter(adapter);
+
+
+
+
+
+                //groupsViewAdapter.setGroupsData(groups, MainActivity.myself);
+                groupsViewAdapter.update(groups);
+
+
+
 
             }
 
@@ -81,6 +105,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
             }
         });
+
+
 
 
         /*
@@ -138,8 +164,13 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                 Group g = new Group();
                 g.setName(dataSnapshot.child("name").getValue(String.class));
                 groups.put(id, g);
-                adapter.update(groups);
-                adapter.notifyDataSetChanged();
+                //adapter.update(groups);
+                //adapter.notifyDataSetChanged();
+
+                //groupsViewAdapter.setGroupsData(groups, MainActivity.myself);
+                groupsViewAdapter.update(groups);
+                groupsViewAdapter.notifyDataSetChanged();
+
 
             }
 
@@ -150,4 +181,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
             }
         });
     }
+
+
 }

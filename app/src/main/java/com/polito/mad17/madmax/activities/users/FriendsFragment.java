@@ -62,6 +62,10 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
         setInterface((OnItemClickInterface) getActivity());
 
+        String activityName = getActivity().getClass().getSimpleName();
+        Log.d (TAG, "Sono nella activity: " + activityName);
+
+
 
         mDatabase.child("users").child(myselfID).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

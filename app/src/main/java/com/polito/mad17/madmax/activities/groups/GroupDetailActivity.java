@@ -40,7 +40,10 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         nameTextView = (TextView) findViewById(R.id.tv_group_name);
         balanceTextView = (TextView) findViewById(R.id.tv_balance);
 
-        Bundle bundle = getIntent().getExtras();
+        nameTextView.setText("Nome Gruppo");
+
+        //Bundle bundle = getIntent().getExtras();
+        /*
         Group groupDetail = null;
         if(bundle != null) {
             if(bundle.containsKey("groupDetails")) {
@@ -57,6 +60,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 //                balanceTextView.setText();
             }
         }
+        */
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -68,7 +72,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        final GroupDetailActivity.PagerAdapter adapter = new GroupDetailActivity.PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), bundle);
+        final GroupDetailActivity.PagerAdapter adapter = new GroupDetailActivity.PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -88,12 +92,10 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
     public class PagerAdapter extends FragmentStatePagerAdapter {
 
         int numberOfTabs;
-        Bundle details;
 
-        public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs, Bundle details) {
+        public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
             super(fragmentManager);
             this.numberOfTabs = numberOfTabs;
-            this.details = details;
         }
 
         @Override
@@ -102,7 +104,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                 case 0:
                     Log.d(TAG, "here in case 0");
                     ExpensesFragment expensesFragment = new ExpensesFragment();
-                    expensesFragment.setArguments(details);
+                    //expensesFragment.setArguments(details);
                     return expensesFragment;
                 case 1:
                     Log.d(TAG, "here in case 1");
