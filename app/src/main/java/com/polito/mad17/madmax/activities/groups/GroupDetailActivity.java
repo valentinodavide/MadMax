@@ -27,6 +27,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
+import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Group;
 
 public class GroupDetailActivity extends AppCompatActivity implements OnItemClickInterface {
@@ -36,6 +37,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
     private ImageView imageView;
     private TextView nameTextView;
     private TextView balanceTextView;
+    private String groupID;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference mDatabase;
@@ -49,39 +51,67 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_group_detail);
 
-        Log.d(TAG, "onCreate di GroupDetailActivity");
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+        Intent intent = getIntent();
+        groupID = intent.getStringExtra("groupID");
+
+        Log.d(TAG, "onCreate di GroupDetailActivity. Group: " + groupID);
+
 
         imageView = (ImageView) findViewById(R.id.img_photo);
         nameTextView = (TextView) findViewById(R.id.tv_group_name);
         balanceTextView = (TextView) findViewById(R.id.tv_balance);
 
-        Intent intent = getIntent();
-        String groupID = intent.getStringExtra("groupID");
         Log.d(TAG, groupID);
 
+        //Show data of group (di Ale)
+        mDatabase.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String name = dataSnapshot.child("name").getValue(String.class);
+                nameTextView.setText(name);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // retrieving group details for current group (di Chiara)
         firebaseDatabase = FirebaseDatabase.getInstance();
         mDatabase = firebaseDatabase.getReference();
         groupRef = mDatabase.child("groups");
-
-        // retrieving group details for current group
         groupRef.child(groupID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot groupSnapshot) {
 
-                groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
-                groupDetails.setID(groupSnapshot.getKey());
-                Log.d(TAG, groupDetails.toString());
 
-                nameTextView.setText(groupDetails.getName());
-                bundle.putString("groupID", groupDetails.getID());
-            }
+                    groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
+                    groupDetails.setID(groupSnapshot.getKey());
+                    Log.d(TAG, groupDetails.toString());
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
+                    nameTextView.setText(groupDetails.getName());
+                    //bundle.putString("groupID", groupDetails.getID());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+
+        //Abbiamo due listener che fanno la stessa cosa! Togliere uno dei due
+
+
+
+
+
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -131,6 +161,10 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                 case 0:
                     Log.d(TAG, "here in case 0");
                     ExpensesFragment expensesFragment = new ExpensesFragment();
+                    //riga qui sotto aggiunta da Ale...prima il bundle veniva caricato nella OnDataChange quindi
+                    //qui era ancora null e mi crashava, non so come potesse funzionare prima...
+                    //in generale non usare i dati settati nella OnDataChange fuori dalla OnDataChange
+                    bundle.putString("groupID", groupID);
                     expensesFragment.setArguments(bundle);
                     return expensesFragment;
                 case 1:
@@ -139,8 +173,12 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                     return pendingExpensesFragment;
                 case 2:
                     Log.d(TAG, "here in case 2");
-                    PendingExpensesFragment pendingExpensesFragment2 = new PendingExpensesFragment();
-                    return pendingExpensesFragment2;
+                    FriendsFragment membersFragment = new FriendsFragment();
+                    Bundle b = new Bundle();
+                    b.putString("groupID", groupID);
+                    membersFragment.setArguments(b);
+                    //setargument creo bundle bunfle.setstring
+                    return membersFragment;
                 default:
                     return null;
             }

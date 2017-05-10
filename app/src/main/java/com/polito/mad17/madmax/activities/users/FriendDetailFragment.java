@@ -13,13 +13,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
@@ -37,10 +44,16 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     private TextView balanceTextView;
     private TextView balanceTextTextView;
     private Button payButton;
-
+    private String friendID;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
+    private String myselfID = "-KjTCeDmpYY7gEOlYuSo"; //todo prendere id dell'utente loggato
+    private DatabaseReference mDatabase;
+    private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
+
+
+
 
     public FriendDetailFragment() {}
 
@@ -51,6 +64,9 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
 
         View view = inflater.inflate(R.layout.fragment_friend_detail, container, false);
 
@@ -67,16 +83,50 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         recyclerView.setLayoutManager(layoutManager);
 
         //todo mettere a posto
-        groupsViewAdapter = new GroupsViewAdapter(this, null);
+        groupsViewAdapter = new GroupsViewAdapter(this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
-
-        //todo mettere a posto
-        //groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
-
 
         //Extract data from bundle
         Bundle bundle = this.getArguments();
-        User friendDetail = null;
+        friendID = bundle.getString("friendID");
+
+
+        //Show data of friend
+        mDatabase.child("users").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String name = dataSnapshot.child("name").getValue(String.class);
+                String surname = dataSnapshot.child("surname").getValue(String.class);
+                nameTextView.setText(name + " " + surname);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //Show shared groups
+        mDatabase.child("users").child(myselfID).child("friends").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot sharedGroupSnapshot: dataSnapshot.getChildren())
+                {
+                    getGroup(sharedGroupSnapshot.getKey());
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+/*        User friendDetail = null;
         if(bundle != null) {
             friendDetail = bundle.getParcelable("friendDetails");
 
@@ -106,7 +156,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
             } else {
                 balanceTextTextView.setText(R.string.no_debts);
             }
-        }
+        }*/
 
         return view;
     }
@@ -135,6 +185,31 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     public void onListItemClick(String groupID) {
         Log.d(TAG, "clickedItemIndex " + groupID);
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
+    }
+
+    //todo metodo ripetuto in diverse activity, correggere
+    public void getGroup(final String id)
+    {
+        mDatabase.child("groups").child(id).addValueEventListener(new ValueEventListener()
+        {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                Group g = new Group();
+                g.setName(dataSnapshot.child("name").getValue(String.class));
+                groups.put(id, g);
+                groupsViewAdapter.update(groups);
+                groupsViewAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError)
+            {
+
+            }
+        });
     }
 
 }

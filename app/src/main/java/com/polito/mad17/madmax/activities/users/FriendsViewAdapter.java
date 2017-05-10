@@ -11,10 +11,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.ItemFriendsViewHolder> {
 
@@ -26,37 +29,50 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     private static HashMap<String, User> friends = new HashMap<>();
     private static User myself;
     private int currentFriend = 0;
+    private final ArrayList mData;
+
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
         void onListItemClick(String clickedItemIndex);
     }
 
-    public FriendsViewAdapter(ListItemClickListener listener) {
+    public FriendsViewAdapter(ListItemClickListener listener, Map<String, User> map) {
         itemClickListener = listener;
+        mData = new ArrayList();
+        mData.addAll(map.entrySet());
+    }
+
+    public void update(Map<String, User> map) {
+        mData.clear();
+        mData.addAll(map.entrySet());
     }
 
     class ItemFriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView imageView;
         private TextView nameTextView;
-        private TextView smallTextView;
+        private TextView balanceTextView;
         private String ID;
 
         public ItemFriendsViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
-            smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
+            balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            Log.d(TAG, "clickedFriend " + friends.get(String.valueOf(clickedPosition+1)).getID());
+            //Log.d(TAG, "clickedFriend " + friends.get(String.valueOf(clickedPosition+1)).getID());
+            Map.Entry<String, User> itemClicked = getItem(clickedPosition);
 
-            itemClickListener.onListItemClick(friends.get(String.valueOf(clickedPosition+1)).getID());
+            Log.d(TAG, "clickedGroup " + itemClicked.getKey());
+
+            itemClickListener.onListItemClick(itemClicked.getKey());
+
         }
     }
 
@@ -75,17 +91,10 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     @Override
     public void onBindViewHolder(final FriendsViewAdapter.ItemFriendsViewHolder holder, int position) {
 
+        Map.Entry<String, User> item = getItem(position);
 
-        User friend = null;
 
-        while (friend == null) {
-            friend = friends.get(String.valueOf(currentFriend));
-            currentFriend++;
-        }
-
-        Log.d(TAG, friend.toString());
-
-        String photo = friend.getProfileImage();
+        String photo = item.getValue().getProfileImage();
         if (photo != null)
         {
             int photoUserId = Integer.parseInt(photo);
@@ -93,10 +102,12 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         }
 
 
-        holder.nameTextView.setText(friend.getName() + " " + friend.getSurname());
-        holder.ID = friend.getID();
+        holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
+        holder.ID = item.getValue().getID();
+        holder.balanceTextView.setVisibility(View.GONE);
 
         //mydebt = mio debito con il membro f
+        /*
         Double mydebt = myself.getBalanceWithUsers().get(friend.getID());
 
         DecimalFormat df = new DecimalFormat("#.##");
@@ -121,26 +132,21 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
             }
         }
+        */
 
 
 
+    }
+
+    public Map.Entry<String, User> getItem(int position) {
+        return (Map.Entry) mData.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return friends.size();
+        return mData.size();
     }
 
-    public void setFriendsData(HashMap<String, User> users, User myself) {
-        friends = users;
-        friends.remove("0");
-        this.myself = myself;
-    }
 
-    //serve per stampare la lista dei membri aggiunti a un nuovo gruppo che si sta creando
-    public void setMembersData(HashMap<String, User> users, User myself) {
-        friends = users;
-        this.myself = myself;
-    }
 
 }

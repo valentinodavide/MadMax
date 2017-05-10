@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             String c1_id = mDatabase.child("comments").child(e1_id).push().getKey();
             mDatabase.child("comments").child(e1_id).child(c1_id).setValue(c1);
 
+
             //Add comments to expense 2
             String c2_id = mDatabase.child("comments").child(e2_id).push().getKey();
             mDatabase.child("comments").child(e2_id).child(c2_id).setValue(c2);
@@ -635,11 +636,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         switch(fragmentName) {
             case "FriendsFragment":
-                User friendDetail = myself.getUserFriends().get(itemID);
-                bundle.putParcelable("friendDetail", friendDetail);
+                //User friendDetail = myself.getUserFriends().get(itemID);
+                //bundle.putParcelable("friendDetail", friendDetail);
 
                 intent = new Intent(this, FriendDetailActivity.class);
-                intent.putExtra("friendDetails", friendDetail);
+                intent.putExtra("friendID", itemID);
                 startActivity(intent);
 
 //                FriendDetailFragment friendDetailFragment = new FriendDetailFragment();
@@ -653,6 +654,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 break;
 
             case "GroupsFragment":
+                //todo mettere a posto
+                //Group groupDetail = null; // groups.get(itemID);
+                //bundle.putParcelable("groupDetails", groupDetail);
 
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", itemID);

@@ -123,6 +123,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         groupViewHolder.nameTextView.setText(item.getValue().getName());
         groupViewHolder.ID = item.getValue().getID();
 
+        //todo mettere debito verso il gruppo
         //mydebt = mio debito con il gruppo
         /*
         Double mygroupdebt = myself.getBalanceWithGroups().get(groupViewHolder.ID);

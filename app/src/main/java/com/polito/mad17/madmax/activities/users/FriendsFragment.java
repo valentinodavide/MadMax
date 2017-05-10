@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.users;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
@@ -28,6 +30,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private HashMap<String, User> friends = new HashMap<>();
     private ListView lv;
     private HashMapFriendsAdapter adapter;
+    private Query query;
 
 
     private OnItemClickInterface onClickFriendInterface;
@@ -50,24 +53,44 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        final View view = inflater.inflate(R.layout.skeleton_listview, container, false);
-        lv = (ListView) view.findViewById(R.id.rv_skeleton);
+        final View view = inflater.inflate(R.layout.skeleton_list, container, false);
+        //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
 
         //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
         String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
-
         setInterface((OnItemClickInterface) getActivity());
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        friendsViewAdapter = new FriendsViewAdapter(this, friends);
+        recyclerView.setAdapter(friendsViewAdapter);
 
         String activityName = getActivity().getClass().getSimpleName();
         Log.d (TAG, "Sono nella activity: " + activityName);
 
+        //Se sono in MainActivity visualizzo lista degli amici
+        if (activityName.equals("MainActivity"))
+            query = mDatabase.child("users").child(myselfID).child("friends");
 
+        //Se sono dentro un gruppo, visualizzo lista membri del gruppo
+        else if (activityName.equals("GroupDetailActivity"))
+        {
+            Bundle b = this.getArguments();
+            if (b != null)
+            {
+                String groupID = b.getString("groupID");
+                query = mDatabase.child("groups").child(groupID).child("members");
+            }
+        }
 
-        mDatabase.child("users").child(myselfID).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot friendSnapshot: dataSnapshot.getChildren())
@@ -75,8 +98,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                     getFriend(friendSnapshot.getKey());
                 }
 
-                adapter = new HashMapFriendsAdapter(friends);
-                lv.setAdapter(adapter);
+                friendsViewAdapter.update(friends);
 
             }
 
@@ -86,17 +108,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             }
         });
 
-        /*
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-
-        friendsViewAdapter = new FriendsViewAdapter(this);
-        recyclerView.setAdapter(friendsViewAdapter);
-
-        friendsViewAdapter.setFriendsData(MainActivity.myself.getUserFriends(), MainActivity.myself);*/
 
         Log.d(TAG, "dopo setAdapter");
 
@@ -141,8 +152,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 friends.put(id, u);
-                adapter.update(friends);
-                adapter.notifyDataSetChanged();
+                friendsViewAdapter.update(friends);
+                friendsViewAdapter.notifyDataSetChanged();
 
             }
 
