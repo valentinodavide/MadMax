@@ -1,11 +1,13 @@
 package com.polito.mad17.madmax.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -15,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
@@ -497,10 +501,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     finish();
                 }
                 else if(position == 0){
+                    Log.d(TAG, "my ID is " + myself.getID());
+                    String deepLink = R.string.invitation_deep_link + "?inviterUID=" + myself.getID();
+
                     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                            .setMessage(getString(R.string.invitation_message))
-     //                       .setDeepLink(Uri.parse(getString(R.string.invitation_deep_link)))
-     //                       .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                            .setDeepLink(Uri.parse(deepLink))
+     //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
                             .setCallToActionText(getString(R.string.invitation_cta))
                             .build();
                     startActivityForResult(intent, REQUEST_INVITE);
@@ -522,10 +528,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
+        viewPager.setCurrentItem(0);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, tab.getPosition() + "");
                 viewPager.setCurrentItem(tab.getPosition());
             }
 
@@ -580,9 +587,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     }
 
 
-    public class PagerAdapter extends FragmentStatePagerAdapter {
+    public class PagerAdapter extends FragmentPagerAdapter {
 
         int numberOfTabs;
+
+        FriendsFragment friendsFragment = null;
+        GroupsFragment groups1Fragment = null;
+        PendingExpensesFragment pendingExpensesFragment = null;
 
         public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
             super(fragmentManager);
@@ -590,28 +601,47 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         }
 
         @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            return super.instantiateItem(container, position);
+
+        }
+
+        @Override
         public Fragment getItem(int position) {
+
+            Log.d(TAG, position + "");
+
             switch(position) {
                 case 0:
                     Log.i(TAG, "here in case 0: FriendsFragment");
-                    FriendsFragment friendsFragment = new FriendsFragment();
+                    friendsFragment = new FriendsFragment();
                     return friendsFragment;
                 case 1:
                     Log.i(TAG, "here in case 1: GroupsFragment");
-                    GroupsFragment groups1Fragment = new GroupsFragment();
+                    groups1Fragment = new GroupsFragment();
                     return groups1Fragment;
                 case 2:
                     Log.i(TAG, "here in case 2: PendingExpensesFragment");
-                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
+                    pendingExpensesFragment = new PendingExpensesFragment();
                     return pendingExpensesFragment;
                 default:
                     return null;
             }
         }
 
+//        @Override
+//        public void destroyItem(ViewGroup container, int position, Object object) {
+//            super.destroyItem(container, position, object);
+//        }
+
         @Override
         public int getCount() {
             return numberOfTabs;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return super.isViewFromObject(view, object);
         }
     }
 

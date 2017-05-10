@@ -57,14 +57,14 @@ public class HashMapFriendsAdapter extends BaseAdapter {
         final View result;
 
         if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_friend, parent, false);
+            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         } else {
             result = convertView;
         }
 
         Map.Entry<String, User> item = getItem(position);
 
-        TextView name=(TextView)result.findViewById(R.id.tv_friend_name);
+        TextView name=(TextView)result.findViewById(R.id.tv_name);
         name.setText(item.getValue().getName() + " " + item.getValue().getSurname());
 
 

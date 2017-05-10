@@ -257,7 +257,7 @@ public class GroupsActivity extends AppCompatActivity {
 /* final FirebaseListAdapter<Group> firebaseListAdapter = new FirebaseListAdapter<Group>(
                 this,   //activity contentente la ListView
                 Group.class,   //classe in cui viene messo il dato letto (?)
-                R.layout.item_group,   //layout del singolo item
+                R.layout.item_list,   //layout del singolo item
                 mDatabase.child("groups") //nodo del db da cui leggo
         ) {
             @Override
@@ -265,7 +265,7 @@ public class GroupsActivity extends AppCompatActivity {
 
                 Log.d("DEBUG", model.toString());
 
-                TextView groupName = (TextView) v.findViewById(R.id.tv_group_name);
+                TextView groupName = (TextView) v.findViewById(R.id.tv_name);
                 groupName.setText(model.getName());
                 groupName.setTag(model.getID());
 
@@ -324,13 +324,13 @@ public class GroupsActivity extends AppCompatActivity {
             public View getView(int position, View convertView, ViewGroup parent) {
 
                 if(convertView == null) {
-                    convertView = getLayoutInflater().inflate(R.layout.item_group, parent, false);
+                    convertView = getLayoutInflater().inflate(R.layout.list_item, parent, false);
                 }
 
                 //Log.d("DEBUG", groups.get(String.valueOf(position)).toString());
                 Group group = groups.get(String.valueOf(position));
 
-                ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_group);
+                ImageView groupImage = (ImageView) convertView.findViewById(R.id.img_photo);
                 String p = group.getImage();
                 if (!p.equals("noImage"))
                 {
@@ -339,7 +339,7 @@ public class GroupsActivity extends AppCompatActivity {
                 }
 
 
-                TextView groupName = (TextView) convertView.findViewById(R.id.tv_group_name);
+                TextView groupName = (TextView) convertView.findViewById(R.id.tv_name);
                 groupName.setText(group.getName());
                 groupName.setTag(group.getID());
 

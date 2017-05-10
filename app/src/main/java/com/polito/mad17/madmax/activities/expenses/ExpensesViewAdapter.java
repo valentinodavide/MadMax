@@ -42,9 +42,9 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
         public ItemFriendsViewHolder(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.img_friend);
-            nameTextView = (TextView) itemView.findViewById(R.id.tv_friend_name);
-            smallTextView = (TextView) itemView.findViewById(R.id.tv_friend_balance);
+            imageView = (ImageView) itemView.findViewById(R.id.img_photo);
+            nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
+            smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
         }
 
@@ -63,7 +63,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
-        View view = layoutInflater.inflate(R.layout.item_friend, parent, false);
+        View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
         ItemFriendsViewHolder itemFriendsViewHolder = new ItemFriendsViewHolder(view);
 

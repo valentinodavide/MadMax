@@ -132,14 +132,14 @@ public class GroupExpensesActivity extends AppCompatActivity {
                     LayoutInflater inflater = LayoutInflater.from(GroupExpensesActivity.this);
 
                     // last parameter is very important: for now we don't want to attach our view to the parent view
-                    convertView = inflater.inflate(R.layout.item_expense, parent, false);
+                    convertView = inflater.inflate(R.layout.list_item, parent, false);
                 }
 
                 Expense expense = expenses.get(String.valueOf(position));
 
-                ImageView photo = (ImageView) convertView.findViewById(R.id.photo);
-                TextView description = (TextView) convertView.findViewById(R.id.description);
-                TextView amount = (TextView) convertView.findViewById(R.id.amount);
+                ImageView photo = (ImageView) convertView.findViewById(R.id.img_photo);
+                TextView description = (TextView) convertView.findViewById(R.id.tv_name);
+                TextView amount = (TextView) convertView.findViewById(R.id.tv_balance);
 
                 if (expense.getImage() != null)
                     photo.setImageResource(Integer.parseInt(expense.getImage()));

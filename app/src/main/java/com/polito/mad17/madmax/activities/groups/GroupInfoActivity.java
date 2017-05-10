@@ -65,7 +65,7 @@ public class GroupInfoActivity extends AppCompatActivity {
         FirebaseListAdapter<User> firebaseListAdapter = new FirebaseListAdapter<User>(
                 this,   //activity contentente la ListView
                 User.class,   //classe in cui viene messo il dato letto (?)
-                R.layout.item_friend,   //layout del singolo item
+                R.layout.list_item,   //layout del singolo item
                 mDatabase.child("groups").child(groupID).child("members")  //nodo del db da cui leggo
                 ) {
             @Override

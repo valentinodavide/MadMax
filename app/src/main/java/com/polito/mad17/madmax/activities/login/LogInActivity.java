@@ -1,10 +1,14 @@
 package com.polito.mad17.madmax.activities.login;
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,10 +43,22 @@ public class LogInActivity extends AppCompatActivity {
     private Button loginButton; // login button
     private TextView signupView;    // link to the sign up activity
 
+    private String inviterUID = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        Log.d(TAG, "action " + action);
+        Uri data = intent.getData();
+        if(data != null) {
+            inviterUID = data.getQueryParameter("inviterUID");
+
+            Log.d(TAG, "inviterUID " + inviterUID);
+        }
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         //firebaseDatabase.setPersistenceEnabled(true);
@@ -65,6 +81,9 @@ public class LogInActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("UID", currentUser.getUid());
+                    if(inviterUID != null) {
+                        intent.putExtra("inviterUID", inviterUID);
+                    }
                     startActivity(intent);
                     finish();
                 }
@@ -120,6 +139,12 @@ public class LogInActivity extends AppCompatActivity {
                 Log.i(TAG,"link to signup clicked");
 
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                PendingIntent pendingIntent = TaskStackBuilder.create(getApplicationContext())
+                                                        .addNextIntentWithParentStack(intent)
+                                                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+                builder.setContentIntent(pendingIntent);
                 startActivity(intent);
                 finish();
             }
@@ -135,14 +160,14 @@ public class LogInActivity extends AppCompatActivity {
         auth.addAuthStateListener(authListener); // attach the listener to the FirebaseAuth instance
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG, "onStop");
-
-        if (authListener != null)  // detach the listener to the FirebaseAuth instance
-            auth.removeAuthStateListener(authListener);
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        Log.i(TAG, "onStop");
+//
+//        if (authListener != null)  // detach the listener to the FirebaseAuth instance
+//            auth.removeAuthStateListener(authListener);
+//    }
 
     private void signIn(String email, String password){
         Log.i(TAG, "signIn");

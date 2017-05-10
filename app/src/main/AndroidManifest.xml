@@ -15,9 +15,28 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:label="MadMaxInvitiationFilter">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data android:scheme="http"
+                    android:host="www.madmax.com"
+                    android:pathPrefix="/expensivetastes" />
+                <!-- note that the leading "/" is required for pathPrefix-->
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <data android:scheme="madmax"
+                    android:host="expensivetastes" />
+            </intent-filter>
         </activity>
 
-        <activity android:name=".activities.groups.GroupExpensesActivity" />
+        <activity android:name=".activities.groups.GroupExpensesActivity"
+            android:parentActivityName=".activities.MainActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
 
         <activity android:name=".activities.expenses.NewExpenseActivity" />
 
@@ -37,9 +56,21 @@
             android:label="@string/title_activity_new_member"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <activity android:name=".activities.login.SignUpActivity" />
+        <activity android:name=".activities.login.SignUpActivity"
+            android:parentActivityName=".activities.login.LogInActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.login.LogInActivity" />
+        </activity>
 
-        <activity android:name=".activities.login.EmailVerificationActivity" />
+        <activity android:name=".activities.login.EmailVerificationActivity"
+            android:parentActivityName=".activities.login.LogInActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.login.LogInActivity" />
+        </activity>
 
         <activity android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />

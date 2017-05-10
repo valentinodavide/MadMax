@@ -53,14 +53,14 @@ public class HashMapGroupsAdapter extends BaseAdapter {
         final View result;
 
         if (convertView == null) {
-            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group, parent, false);
+            result = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         } else {
             result = convertView;
         }
 
         Map.Entry<String, Group> item = getItem(position);
 
-        TextView name=(TextView)result.findViewById(R.id.tv_group_name);
+        TextView name=(TextView)result.findViewById(R.id.tv_name);
         name.setText(item.getValue().getName());
 
 

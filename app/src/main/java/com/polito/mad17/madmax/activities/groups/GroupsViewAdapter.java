@@ -46,9 +46,9 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         public ItemGroupViewHolder(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.img_group);
-            nameTextView = (TextView) itemView.findViewById(R.id.tv_group_name);
-            smallTextView = (TextView) itemView.findViewById(R.id.tv_group_balance);
+            imageView = (ImageView) itemView.findViewById(R.id.img_photo);
+            nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
+            smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
         }
 
@@ -68,7 +68,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         Context context = parent.getContext();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
 
-        View view = layoutInflater.inflate(R.layout.item_group, parent, false);
+        View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
         ItemGroupViewHolder itemGroupViewHolder = new ItemGroupViewHolder(view);
         Log.d(TAG, "created new itemGroupViewHolder, viewType " + viewType);

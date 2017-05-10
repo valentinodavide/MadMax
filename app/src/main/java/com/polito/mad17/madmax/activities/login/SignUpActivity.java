@@ -8,9 +8,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,10 +61,19 @@ public class SignUpActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Button signupButton;
 
+    private String inviterUID = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getActionBar()
+
+        Intent intent = getIntent();
+        inviterUID = intent.getStringExtra("inviterUID");
 
         setContentView(R.layout.activity_sign_up);
 
@@ -195,7 +207,9 @@ public class SignUpActivity extends AppCompatActivity {
                 passwordView.getText().toString(),
                 "",
                 "€");
-
+        if(inviterUID != null) {
+            u.getUserFriends().put(inviterUID, null);
+        }
 
 
         // for saving image
@@ -222,13 +236,10 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                u.setProfileImage(taskSnapshot.getDownloadUrl().toString());
+
+                u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
             }
         });
-
-
-
-
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
@@ -264,6 +275,34 @@ public class SignUpActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                Log.d(TAG, "created intent " + upIntent);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                    Log.d(TAG, "shouldUpRecreateTask");
+                    // This activity is NOT part of this app's task, so create a new task
+                    // when navigating up, with a synthesized back stack.
+                    TaskStackBuilder.create(this)
+                            // Add all of this activity's parents to the back stack
+                            .addNextIntentWithParentStack(upIntent)
+                            // Navigate up to the closest parent
+                            .startActivities();
+                } else {
+                    Log.d(TAG, "else");
+                    // This activity is part of this app's task, so simply
+                    // navigate up to the logical parent activity.
+                    NavUtils.navigateUpTo(this, upIntent);
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
