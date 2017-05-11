@@ -394,7 +394,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", itemID);
-                intent.putExtra("userID", myself.getID());
+                //intent.putExtra("userID", myself.getID());
+                //todo a fare la spesa per ora è sempre Mario Rossi, correggere
+                intent.putExtra("userID", myselfID);
                 startActivity(intent);
 
                 break;

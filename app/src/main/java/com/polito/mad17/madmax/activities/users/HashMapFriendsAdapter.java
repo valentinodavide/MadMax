@@ -65,7 +65,9 @@ public class HashMapFriendsAdapter extends BaseAdapter {
         Map.Entry<String, User> item = getItem(position);
 
         TextView name=(TextView)result.findViewById(R.id.tv_name);
+        TextView balance=(TextView)result.findViewById(R.id.tv_balance);
         name.setText(item.getValue().getName() + " " + item.getValue().getSurname());
+        balance.setVisibility(View.GONE);
 
 
 

@@ -66,6 +66,8 @@ public class NewExpenseActivity extends AppCompatActivity {
     private int PICK_BILL_PHOTO_REQUEST = 1;
     private int EXPENSE_SAVED = 2;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

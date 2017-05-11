@@ -184,11 +184,13 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         totBalance = 0d;
 
 
-        mDatabase.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
 
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
+                totalBalance.put(userID,0d);
 
                 final String groupName = dataSnapshot.child("name").getValue(String.class);
 
