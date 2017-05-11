@@ -10,7 +10,7 @@
                 android:orientation="vertical"
                 tools:context="com.polito.mad17.madmax.activities.groups.NewGroupActivity">
 
-    <ImageView android:src="@mipmap/group"
+    <ImageView android:src="@drawable/group"
         android:id="@+id/group_image"
         android:layout_width="wrap_content"
         android:layout_height="72dp"

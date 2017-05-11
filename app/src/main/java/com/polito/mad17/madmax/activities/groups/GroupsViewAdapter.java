@@ -68,17 +68,12 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            //Log.d(TAG, "clickedGroup " + groups.get(String.valueOf(clickedPosition)).getID());
-            //Map.Entry<String, Group> itemClicked = (Map.Entry) mData.get(clickedPosition);
+
             Map.Entry<String, Group> itemClicked = getItem(clickedPosition);
 
             Log.d(TAG, "clickedGroup " + itemClicked.getKey());
 
-
-            //itemClickListener.onListItemClick(groups.get(String.valueOf(clickedPosition)).getID());
             itemClickListener.onListItemClick(itemClicked.getKey());
-
-
         }
     }
 

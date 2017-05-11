@@ -213,7 +213,6 @@ public class SignUpActivity extends AppCompatActivity {
 
 
         // for saving image
-
         StorageReference uProfileImageFilenameRef = storageReference.child("users").child(UID).child(UID+"_profileImage.jpg");
 
         // Get the data from an ImageView as bytes

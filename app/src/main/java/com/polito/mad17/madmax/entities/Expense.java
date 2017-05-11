@@ -10,7 +10,7 @@ public class Expense {
     private String category;        // optional, corrisponde al categoryID della categoria a cui corrisponde la spesa
     private Double amount;
     private String currency;        // €, $ ...
-    private String image;           // optional, URL dell'immagine su Firebase (può essere lo scontrino o una foto del prodotto)
+    private String expensePhoto;           // optional, URL dell'immagine su Firebase (può essere lo scontrino o una foto del prodotto)
     private String billPhoto;
     private String groupID;
     private String creatorID;       //ID of the user who added the expense
@@ -18,20 +18,20 @@ public class Expense {
                                     // altrimenti viene suddivisa come specificato in participants ->
     private HashMap<String, Double> participants;     // String: userID, Double: frazione corrispondente a quello user
 
-    public Expense() {}
+    public Expense() { this.participants = new HashMap<>(); }
 
-    public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String image, Boolean equallyDivided, String groupID, String creatorID) {
+    public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String expensePhoto, Boolean equallyDivided, String groupID, String creatorID) {
         this.ID = ID;
         this.description = description;
         this.category = category;
         this.amount = amount;
         this.currency = currency;
         this.billPhoto = billPhoto;
-        this.image = image;
+        this.expensePhoto = expensePhoto;
         this.equallyDivided = equallyDivided;
-        this.participants = new HashMap<>();
         this.groupID = groupID;
         this.creatorID = creatorID;
+        this.participants = new HashMap<>();
     }
 
 
@@ -75,13 +75,17 @@ public class Expense {
         this.currency = currency;
     }
 
-    public String getImage() {
-        return image;
+    public String getExpensePhoto() {
+        return expensePhoto;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setExpensePhoto(String expensePhoto) {
+        this.expensePhoto = expensePhoto;
     }
+
+    public String getBillPhoto() {return billPhoto;}
+
+    public void setBillPhoto(String billPhoto) {this.billPhoto = billPhoto;}
 
     public Boolean getEquallyDivided() {
         return equallyDivided;
@@ -103,10 +107,6 @@ public class Expense {
 
     public void setGroupID(String groupID) {this.groupID = groupID;}
 
-    public String getBillPhoto() {return billPhoto;}
-
-    public void setBillPhoto(String billPhoto) {this.billPhoto = billPhoto;}
-
     public String getCreatorID() {return creatorID;}
 
     public void setCreatorID(String creatorID) {this.creatorID = creatorID;}
@@ -119,7 +119,7 @@ public class Expense {
         result.put("category", category);
         result.put("amount", amount);
         result.put ("currency", currency);
-        result.put("image", image);
+        result.put("expensePhoto", expensePhoto);
         result.put("equallyDivided", equallyDivided);
         result.put("groupID", groupID);
 

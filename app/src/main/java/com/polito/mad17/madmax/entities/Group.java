@@ -145,7 +145,7 @@ public class Group implements Parcelable {
     // todo     il numero di spese aggiunte dall'ultima apertura del gruppo deve essere azzerato
 
     public String toString() {
-        return ID + " " + name + " " + image;
+        return ID + " " + name;
     }
 
     public Map<String, Object> toMap() {

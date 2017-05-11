@@ -81,7 +81,7 @@
                 android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:scaleType="centerInside"
-                android:src="@drawable/anonymous" />
+                android:src="@drawable/group" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -93,13 +93,14 @@
                 android:textSize="20sp"
                 />
 
-            <ImageView android:src="@drawable/anonymous"
+            <ImageView
                 android:id="@+id/img_bill"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_marginBottom="24dp"
                 android:layout_gravity="center"
                 android:scaleType="centerInside"
+                android:src="@drawable/group"
                 android:clickable="true"/>
         </LinearLayout>
     </ScrollView>

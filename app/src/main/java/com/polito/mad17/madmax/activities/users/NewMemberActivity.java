@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.users;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
@@ -14,11 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +39,8 @@ import java.util.Map;
 
 public class NewMemberActivity extends AppCompatActivity {
 
+    private static final String TAG = NewMemberActivity.class.getSimpleName();
+
     private ListView lv;
     private DatabaseReference mDatabase;
     private HashMap<String, User> friends = new HashMap<>();
@@ -44,9 +49,9 @@ public class NewMemberActivity extends AppCompatActivity {
     private HashMapFriendsAdapter adapter;
     private String myselfID;
 
+    private Button buttonInvite;
 
-
-
+    private static final int REQUEST_INVITE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +60,9 @@ public class NewMemberActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        buttonInvite = (Button) findViewById(R.id.btn_new_friend);
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         myselfID = intent.getStringExtra("UID");
@@ -110,6 +116,22 @@ public class NewMemberActivity extends AppCompatActivity {
 
                     startActivity(intent);
 
+            }
+        });
+
+        buttonInvite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "button clicked");
+                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + myselfID;
+
+                Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                        .setDeepLink(Uri.parse(deepLink))
+                        //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                        .setCallToActionText(getString(R.string.invitation_cta))
+                        .build();
+
+                startActivityForResult(intent, REQUEST_INVITE);
             }
         });
 

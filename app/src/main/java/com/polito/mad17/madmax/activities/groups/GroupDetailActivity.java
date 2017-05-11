@@ -98,7 +98,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                 groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
                 groupDetails.setID(groupSnapshot.getKey());
                 groupDetails.setNumberMembers(groupSnapshot.child("numberMembers").getValue(Integer.class));
-                Log.d(TAG, groupDetails.toString());
+                Log.d(TAG, "groupDetails " +  groupDetails.toString());
 
                 nameTextView.setText(groupDetails.getName());
             }
@@ -148,7 +148,6 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                 Intent myIntent = new Intent(GroupDetailActivity.this, NewExpenseActivity.class);
                 myIntent.putExtra("groupID", groupID);
                 myIntent.putExtra("userID", userID);
-                myIntent.putExtra("numberMembers", groupDetails.getNumberMembers().intValue());
                 startActivity(myIntent);
             }
         });

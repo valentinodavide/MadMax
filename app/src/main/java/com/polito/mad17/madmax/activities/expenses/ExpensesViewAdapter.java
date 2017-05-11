@@ -80,10 +80,8 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
         Expense expense = getItem(position).getValue();
 
-        Log.d(TAG, expense.toString());
-
-        if(expense.getImage() != null) {
-            String photo = expense.getImage();
+        if(expense.getExpensePhoto() != null) {
+            String photo = expense.getExpensePhoto();
             int photoUserId = Integer.parseInt(photo);
             holder.imageView.setImageResource(photoUserId);
         }

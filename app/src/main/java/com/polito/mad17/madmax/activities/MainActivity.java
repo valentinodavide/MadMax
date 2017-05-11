@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private FirebaseDatabase firebaseDatabase;
+    private FirebaseDatabase firebaseDatabase = null;
     private DatabaseReference mDatabase;
     private String[] drawerOptions;
     private DrawerLayout drawerLayout;
@@ -78,209 +78,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     //todo da sostituire con l'id dell'utente che si è loggato
     String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         mDatabase = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
-
-        //non cancellare anche se commentato! Serve per popolare il db
-
-            //Create users
-  /*          User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", "url", "€");
-            User u1 = new User(String.valueOf(1), "Alero3",         "Alessandro", "Rota",       "email1@email.it", "password1", "url", "€" );
-            User u2 = new User(String.valueOf(2), "deviz92",        "Davide", "Valentino",      "email2@email.it", "password2", "url", "€");
-            User u3 = new User(String.valueOf(3), "missArmstrong",  "Chiara", "Di Nardo",       "email3@email.it", "password3", "url", "€");
-            User u4 = new User(String.valueOf(4), "rickydivi",      "Riccardo", "Di Vittorio",  "email4@email.it", "password4", "url", "€");
-            User u5 = new User(String.valueOf(5), "roxy",           "Rossella", "Mangiardi",    "email5@email.it", "password5", "url", "€");
-
-            //Add users to Firebase
-            String u0_id = myselfID;
-            mDatabase.child("users").push();
-            mDatabase.child("users").child(myselfID).setValue(u0);  //per comodità il primo user ha sempre stesso id
-            String u1_id = mDatabase.child("users").push().getKey();
-            mDatabase.child("users").child(u1_id).setValue(u1);
-            String u2_id = mDatabase.child("users").push().getKey();
-            mDatabase.child("users").child(u2_id).setValue(u2);
-            String u3_id = mDatabase.child("users").push().getKey();
-            mDatabase.child("users").child(u3_id).setValue(u3);
-            String u4_id = mDatabase.child("users").push().getKey();
-            mDatabase.child("users").child(u4_id).setValue(u4);
-            String u5_id = mDatabase.child("users").push().getKey();
-            mDatabase.child("users").child(u5_id).setValue(u5);
-
-            //Create groups
-            Group g1 = new Group(String.valueOf(0), "Vacanze",      "url", "description0");
-            Group g2 = new Group(String.valueOf(1), "Calcetto",     "url", "description1");
-            Group g3 = new Group(String.valueOf(2), "Spese Casa",   "url", "description2");
-            Group g4 = new Group(String.valueOf(3), "Pasquetta",   "url", "description3");
-            Group g5 = new Group(String.valueOf(4), "Fantacalcio",   "url", "description4");
-            Group g6 = new Group(String.valueOf(5), "Alcolisti Anonimi",   "url", "description5");
-
-            //Add groups to Firebase
-            String g1_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(g1_id).setValue(g1);
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(g1_id).child("timestamp").setValue(timeStamp);
-
-            String g2_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(g2_id).setValue(g2);
-            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(g2_id).child("timestamp").setValue(timeStamp);
-
-            String g3_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(g3_id).setValue(g3);
-            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(g3_id).child("timestamp").setValue(timeStamp);
-
-            String g4_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(g4_id).setValue(g4);
-            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(g4_id).child("timestamp").setValue(timeStamp);
-
-            String g5_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(g5_id).setValue(g5);
-            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(g5_id).child("timestamp").setValue(timeStamp);
-
-            String g6_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(g6_id).setValue(g6);
-            timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(g6_id).child("timestamp").setValue(timeStamp);
-
-
-            //Aggiungo utente a lista membri del gruppo e gruppo a lista gruppi nell'utente in Firebase
-            joinGroupFirebase(u0_id,g1_id);
-            joinGroupFirebase(u1_id,g1_id);
-            joinGroupFirebase(u2_id,g1_id);
-            joinGroupFirebase(u3_id,g1_id);
-            joinGroupFirebase(u4_id,g1_id);
-            joinGroupFirebase(u5_id,g1_id);
-
-
-            joinGroupFirebase(u0_id,g2_id);
-            joinGroupFirebase(u1_id,g2_id);
-            joinGroupFirebase(u2_id,g2_id);
-            joinGroupFirebase(u4_id,g2_id);
-
-            joinGroupFirebase(u0_id,g3_id);
-            joinGroupFirebase(u4_id,g3_id);
-
-            joinGroupFirebase(u0_id,g4_id);
-            joinGroupFirebase(u2_id,g4_id);
-
-            joinGroupFirebase(u0_id,g5_id);
-            joinGroupFirebase(u2_id,g5_id);
-
-            joinGroupFirebase(u0_id,g6_id);
-            joinGroupFirebase(u2_id,g6_id);
-
-            //Add friends to users
-            //u0 is friend of u1,u2,u3,u4,u5
-            addFriendFirebase(u0_id,u1_id);
-            addFriendFirebase(u0_id,u2_id);
-            addFriendFirebase(u0_id,u3_id);
-            addFriendFirebase(u0_id,u4_id);
-            addFriendFirebase(u0_id,u5_id);
-
-
-
-
-            //Spese in g1
-            Expense e1 = new Expense(String.valueOf(0), "Nutella", "Cibo",          30d, "€", "urlBill",  "url", true, g1_id, u0_id);
-            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
-            e1.getParticipants().put(u0_id, 0d);
-            e1.getParticipants().put(u1_id, 0d);
-            e1.getParticipants().put(u2_id, 0d);
-            e1.getParticipants().put(u3_id, 0d);
-            e1.getParticipants().put(u4_id, 0d);
-            e1.getParticipants().put(u5_id, 0d);
-            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
-            Integer t = e1.getParticipants().size();
-            double percentage = (1 / (double) e1.getParticipants().size());
-
-            for (Map.Entry<String, Double> participant : e1.getParticipants().entrySet())
-            {
-                participant.setValue(percentage);
-            }
-            //todo aggiungere per ogni partecipante il campo alreadypaid
-
-
-
-
-        Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",  "urlBill", "url", true, g1_id, u3_id);
-            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
-            e2.getParticipants().put(u0_id, 0d);
-            e2.getParticipants().put(u1_id, 0d);
-            e2.getParticipants().put(u2_id, 0d);
-            e2.getParticipants().put(u3_id, 0d);
-            e2.getParticipants().put(u4_id, 0d);
-            e2.getParticipants().put(u5_id, 0d);
-            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
-            percentage = (1 / (double) e2.getParticipants().size());
-
-            for (Map.Entry<String, Double> participant : e2.getParticipants().entrySet())
-            {
-                participant.setValue(percentage);
-            }
-
-            //returns id of the expense in db
-            String e1_id = addExpenseFirebase(e1);
-            String e2_id = addExpenseFirebase(e2);
-            //todo spesaID aggiunto a elenco spese di ogni participant
-
-            //Spese in g2
-            Expense e3 = new Expense(String.valueOf(2), "Partita", "Sport",         5d, "€",  "urlBill",  "url", true, g2_id, u0_id);
-            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
-            e3.getParticipants().put(u0_id, 0d);
-            e3.getParticipants().put(u1_id, 0d);
-            e3.getParticipants().put(u2_id, 0d);
-            e3.getParticipants().put(u4_id, 0d);
-            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
-            percentage = (1 / (double) e3.getParticipants().size());
-            for (Map.Entry<String, Double> participant : e3.getParticipants().entrySet())
-            {
-                participant.setValue(percentage);
-            }
-
-            String e3_id = addExpenseFirebase(e3);
-
-
-            //Spese in g3
-            Expense e4 = new Expense(String.valueOf(3), "Affitto", "Altro",         500d, "€", "urlBill",  "url", true, g3_id, u4_id);
-            //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
-            e4.getParticipants().put(u0_id, 0d);
-            e4.getParticipants().put(u4_id, 0d);
-            //Setto le percentuali da pagare di ogni participant, supponendo equallyDivided
-            percentage = (1 / (double) e4.getParticipants().size());
-            for (Map.Entry<String, Double> participant : e4.getParticipants().entrySet())
-            {
-                participant.setValue(percentage);
-            }
-            String e4_id = addExpenseFirebase(e4);
-
-            //Create comments
-            String timestamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            Comment c1 = new Comment(u0_id, "This expense was not necessary", timestamp);
-            Comment c2 = new Comment(u1_id, "Wow, that's great!", timestamp);
-            Comment c3 = new Comment(u4_id, "No, it's a shit", timestamp);
-
-            //Add comment to expense 1
-            String c1_id = mDatabase.child("comments").child(e1_id).push().getKey();
-            mDatabase.child("comments").child(e1_id).child(c1_id).setValue(c1);
-
-
-            //Add comments to expense 2
-            String c2_id = mDatabase.child("comments").child(e2_id).push().getKey();
-            mDatabase.child("comments").child(e2_id).child(c2_id).setValue(c2);
-            String c3_id = mDatabase.child("comments").child(e2_id).push().getKey();
-            mDatabase.child("comments").child(e2_id).child(c3_id).setValue(c3);
-
-            myself = u0;*/
-
-
 
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
@@ -409,65 +212,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         });
 
         myself = currentUser;
-
-        /*
-
-        README!
-
-        a questo punto il solito myself dovrebbe essere caricato con tutte le info dell'utente loggato
-        recuperate da db: per il momento invece di passarlo in tutti i punti in cui serve (non saprei
-        bene come al momento), l'ho dichiarato pubblico com'era prima e recuperato i dati direttamente
-        da lì negli altri file, non ho avuto molto tempo per ricontrollare tutto ma alla veloce ho cambiato
-        tutti i punti in cui ad esempio si caricavano i gruppi facendo MainActivity.groups ->
-        MainActivity.myself.getUserGroups() eccetera anche per gli amici => se avete idee migliori e
-        correzioni varie fate pure
-
-        a questo punto dentro myself ci sono caricate tutte le info che servono nell'app: tutti i suoi
-        amici e tutti i suoi gruppi (che prima erano l'HashMap users e l'HashMap groups), a parte le cose
-        che ho segnalato che non sono riuscito a finire di recuperare da db (sharedGroups per i friends,
-        expenses e users per i groups) => i bug che ci sono ora credo siano dovuto a questo, ovvero che
-        a volte il codice fa accesso a punti che ancora non sono stati recuperati da db (perchè non ho
-        finito la query) ma per darvi codice funzionante ho preferito cominciare a darvi questo che è
-        tutto il giorno che ci lavoro, almeno da qui potete ripartire per continuare in settimana visto
-        che io non riesco ad esserci quando vi vedete
-
-        per il momento non ho ottimizzato un granchè e penso che si possa ottimizzare in questo senso:
-        per ora viene caricato tutto appena si carica la MainActivity ma può essere che sia meglio
-        caricare fragment per fragment le info di cui c'è bisogno: cioè per il fragment della lista
-        degli amici si caricano i friends dello user loggato con la query che ho fatto sopra, e all'interno
-        del fragment della lista dei gruppi si caricano i groups, eccetera => vedete se riuscite a farlo
-        voi, ma se funziona così possiamo pure lasciar perdere per ora
-
-        ora non si vedono più liste di amici o di gruppi se vi loggate nell'app perchè non ho avuto
-        tempo di creare nel formato giusto del db che abbiamo fatto l'altro giorno le entry di prova
-        che avevamo fatto a codice staticamente, se avete tempo di sistemarle quando vi vedete, avendo
-        il JSON del db corretto sottomano (quello che vi ho passato l'altro giorno) e riuscite a passarmele,
-        magari di nuovo con un JSON io appena riesco le carico => per "sistemarle" intendo se riuscite
-        a fare le associazioni "di default" in modo che senza dover aggiungere gruppi a mano nell'app
-        ad esempio io possa caricarli direttamente a db e per ogni utente loggato si vedranno le rispettive
-        info (i suoi gruppi, i suoi amici eccetera)
-
-        il db agganciato ovviamente è il mio, con le modifiche che ho fatto ora si salvano anche le
-        immagini caricate nello Storage di Firebase, ma non ho avuto tempo di vedere come recuperarle
-        per farle vedere (ad esempio nel drawer di sinistra mostrare l'immagina dell'utente loggato)
-
-        poi come vi dicevo su whataspp ora funziona l'invito degli amici perchè ho aggiunto la chiave
-        sha1 nel mio db (quindi se riagganciate un vostro db per fare altre prove non andrà di nuovo)
-
-        mi sembra più o meno di avervi detto tutto, ho modificato per lo più la parte di Ricky del login
-        perché da li ora quando un utente si registra (SignUp) viene caricato a db con l'UID corrispondente
-        a quello fornito dal FirebaseAuth; in più nello User ho aggiunto un costruttore che era utile
-        per la lista degli amici dello user loggato
-
-        infine nello User ho aggiunto codice per salvare le password criptate in MD5: l'ho messo in un
-        metodo; ma non ho messo in un metodo ad esempio la parte per salvare le immagini (se volete per
-        adesso lasciatela perdere e commentatela se vi da problemi visto che è messa lì un po' a caso),
-        se aveste bisogno se qualcuno di voi continuerà a lavorare su quella parte poi vi aggiorno
-
-        ho anche sistemato i file in cartelle all'interno delle activities perchè non ci stavo capendo
-        più un cazzo, se avete soluzioni migliori fate pure ;)
-
-         */
 
         drawerOptions = getResources().getStringArray(R.array.drawerItem);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -641,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 intent = new Intent(this, FriendDetailActivity.class);
                 intent.putExtra("friendID", itemID);
-                intent.putExtra("userID", myselfID);
+                intent.putExtra("userID", myself.getID());
                 startActivity(intent);
 
                 break;
@@ -724,7 +468,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 {
                     amount += expense.child("amount").getValue(Double.class);
                 }
-
 
                 Long membersCount = groupSnapshot.child("members").getChildrenCount();
                 Double singlecredit = expense.getAmount() / membersCount;

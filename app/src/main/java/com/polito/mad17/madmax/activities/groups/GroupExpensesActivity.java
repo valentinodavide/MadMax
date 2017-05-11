@@ -141,8 +141,8 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 TextView description = (TextView) convertView.findViewById(R.id.tv_name);
                 TextView amount = (TextView) convertView.findViewById(R.id.tv_balance);
 
-                if (expense.getImage() != null)
-                    photo.setImageResource(Integer.parseInt(expense.getImage()));
+                if (expense.getExpensePhoto() != null)
+                    photo.setImageResource(Integer.parseInt(expense.getExpensePhoto()));
                 description.setText(expense.getDescription());
                 String amountString = expense.getAmount() + " " + expense.getCurrency();
                 amount.setText(amountString);
