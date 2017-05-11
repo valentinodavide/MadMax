@@ -641,6 +641,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 intent = new Intent(this, FriendDetailActivity.class);
                 intent.putExtra("friendID", itemID);
+                intent.putExtra("userID", myselfID);
                 startActivity(intent);
 
                 break;
