@@ -33,8 +33,9 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private DatabaseReference mDatabase;
     private OnItemClickInterface onClickGroupInterface;
     private HashMap<String, Group> groups = new HashMap<>();
-    private ListView lv;
-    private HashMapGroupsAdapter adapter;
+    //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
+    String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+    Double totBalance;
 
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
@@ -44,6 +45,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
+    private Double balance;
 
     public GroupsFragment() {}
 
@@ -65,8 +67,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-        String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
@@ -82,7 +83,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
                 {
-                    getGroup(groupSnapshot.getKey());
+                    //getGroup(groupSnapshot.getKey());
+                    getGroupAndBalance(myselfID, groupSnapshot.getKey());
                 }
 
                 //adapter = new HashMapGroupsAdapter(groups);
@@ -155,11 +157,9 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
             {
                 Group g = new Group();
                 g.setName(dataSnapshot.child("name").getValue(String.class));
+                //g.setBalance(getBalanceWithGroup(myselfID, id));
                 groups.put(id, g);
-                //adapter.update(groups);
-                //adapter.notifyDataSetChanged();
 
-                //groupsViewAdapter.setGroupsData(groups, MainActivity.myself);
                 groupsViewAdapter.update(groups);
                 groupsViewAdapter.notifyDataSetChanged();
 
@@ -173,6 +173,98 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
             }
         });
     }
+
+    //versione più complessa dell getGroup. Quest'ultima non verrà più usata.
+    //oltre al nome gruppo, prende anche il bilancio dello user col gruppo
+    void getGroupAndBalance (final String userID, final String groupID)
+    {
+
+        final HashMap <String, Double> totalBalance = new HashMap<>();
+        totalBalance.put(userID,0d);
+        totBalance = 0d;
+
+
+        mDatabase.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                final String groupName = dataSnapshot.child("name").getValue(String.class);
+
+
+
+                for (DataSnapshot groupExpenseSnapshot: dataSnapshot.child("expenses").getChildren())
+                {
+                    //Ascolto ogni singola spesa del gruppo
+                    String expenseID = groupExpenseSnapshot.getKey();
+                    mDatabase.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            Boolean involved = false; //dice se user contribuisce o no a quella spesa
+
+                            for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
+                            {
+                                if (participantSnapshot.getKey().equals(userID))
+                                    involved = true;
+                            }
+
+                            //se user ha partecipato alla spesa
+                            if (involved)
+                            {
+                                //alreadyPaid = soldi già messi dallo user per quella spesa
+                                //dueImport = quota che user deve mettere per quella spesa
+                                //balance = credito/debito dello user per quella spesa
+                                Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+                                Double dueImport = dataSnapshot.child("participants").child(userID).child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
+                                Double balance = alreadyPaid - dueImport;
+                                //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                Double currentBalance = totalBalance.get(userID);
+                                totalBalance.put(userID, currentBalance+balance);
+                                totBalance += balance;
+
+                            }
+
+                            Group g = new Group();
+                            g.setName(groupName);
+                            g.setBalance(totalBalance.get(userID));
+                            //g.setBalance(totBalance);
+                            groups.put(groupID, g);
+
+                            groupsViewAdapter.update(groups);
+                            groupsViewAdapter.notifyDataSetChanged();
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                Group g = new Group();
+                g.setName(groupName);
+                g.setBalance(0d);
+                groups.put(groupID, g);
+
+                groupsViewAdapter.update(groups);
+                groupsViewAdapter.notifyDataSetChanged();
+                totBalance = 0d;
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return ;
+    }
+
 
 
 }

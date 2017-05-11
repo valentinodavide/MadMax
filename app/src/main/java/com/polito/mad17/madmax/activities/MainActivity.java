@@ -87,11 +87,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         auth = FirebaseAuth.getInstance();
 
         //non cancellare anche se commentato! Serve per popolare il db
-        /*
-        if (!populated)
-        {
+
             //Create users
-            User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", "url", "€");
+  /*          User u0 = new User(String.valueOf(0), "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", "url", "€");
             User u1 = new User(String.valueOf(1), "Alero3",         "Alessandro", "Rota",       "email1@email.it", "password1", "url", "€" );
             User u2 = new User(String.valueOf(2), "deviz92",        "Davide", "Valentino",      "email2@email.it", "password2", "url", "€");
             User u3 = new User(String.valueOf(3), "missArmstrong",  "Chiara", "Di Nardo",       "email3@email.it", "password3", "url", "€");
@@ -99,8 +97,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             User u5 = new User(String.valueOf(5), "roxy",           "Rossella", "Mangiardi",    "email5@email.it", "password5", "url", "€");
 
             //Add users to Firebase
-            String u0_id = mDatabase.child("users").push().getKey();
-            mDatabase.child("users").child(u0_id).setValue(u0);
+            String u0_id = myselfID;
+            mDatabase.child("users").push();
+            mDatabase.child("users").child(myselfID).setValue(u0);  //per comodità il primo user ha sempre stesso id
             String u1_id = mDatabase.child("users").push().getKey();
             mDatabase.child("users").child(u1_id).setValue(u1);
             String u2_id = mDatabase.child("users").push().getKey();
@@ -206,10 +205,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             {
                 participant.setValue(percentage);
             }
+            //todo aggiungere per ogni partecipante il campo alreadypaid
 
 
 
-            Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",  "urlBill", "url", true, g1_id, u3_id);
+
+        Expense e2 = new Expense(String.valueOf(1), "Spese cucina", "Altro",    20d, "€",  "urlBill", "url", true, g1_id, u3_id);
             //Aggiungo i partecipanti alla spesa (tutti i membri del gruppo in questo caso)
             e2.getParticipants().put(u0_id, 0d);
             e2.getParticipants().put(u1_id, 0d);
@@ -228,6 +229,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             //returns id of the expense in db
             String e1_id = addExpenseFirebase(e1);
             String e2_id = addExpenseFirebase(e2);
+            //todo spesaID aggiunto a elenco spese di ogni participant
 
             //Spese in g2
             Expense e3 = new Expense(String.valueOf(2), "Partita", "Sport",         5d, "€",  "urlBill",  "url", true, g2_id, u0_id);
@@ -276,10 +278,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             String c3_id = mDatabase.child("comments").child(e2_id).push().getKey();
             mDatabase.child("comments").child(e2_id).child(c3_id).setValue(c3);
 
-            myself = u0;
-            populated = true;
-        }
-        */
+            myself = u0;*/
+
+
 
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
@@ -664,6 +665,31 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
         mDatabase.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
 
+        //Per ogni participant setto la quota che ha già pagato per questa spesa
+        //e aggiungo spesa alla lista spese di ogni participant
+        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet())
+        {
+            //Se il participant corrente è il creatore della spesa
+            if (participant.getKey().equals(expense.getCreatorID()))
+            {
+                //paga tutto lui
+                mDatabase.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(expense.getAmount());
+            }
+            else
+            {
+                //gli altri participant inizialmente non pagano niente
+                mDatabase.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(0);
+            }
+
+            //risetto fraction di spesa che deve pagare l'utente, visto che prima si sputtana
+            mDatabase.child("expenses").child(eID).child("participants").child(participant.getKey()).child("fraction").setValue(expense.getParticipants().get(participant.getKey()));
+
+
+
+            //Aggiungo spesaID a elenco spese dello user
+            //todo controllare se utile
+            mDatabase.child("users").child(participant.getKey()).child("expenses").child(eID).setValue("true");
+        }
 
         //Aggiungo spesa alla lista spese del gruppo
         mDatabase.child("groups").child(expense.getGroupID()).child("expenses").push();
@@ -947,6 +973,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         });
 
     }
+
 
 
 }

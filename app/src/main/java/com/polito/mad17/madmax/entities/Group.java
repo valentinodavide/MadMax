@@ -13,6 +13,10 @@ public class Group implements Parcelable {
     private String description;                 // optional
     private Integer numberMembers;
 
+
+
+    private  Double balance;
+
     // todo da eliminare?
     private Integer counterAddedExpenses;       // numero di spese aggiunte dall'ultima apertura del gruppo
 
@@ -131,6 +135,10 @@ public class Group implements Parcelable {
     public HashMap<String, Expense> getExpenses() { return expenses; }
 
     public void setExpenses(HashMap<String, Expense> expenses) { this.expenses = expenses; }
+
+    public Double getBalance() {return balance;}
+
+    public void setBalance(Double balance) {this.balance = balance;}
 
 
     // todo updateCounterAddedExpenses: ogni volta che l'utente apre un gruppo il numerino che segna

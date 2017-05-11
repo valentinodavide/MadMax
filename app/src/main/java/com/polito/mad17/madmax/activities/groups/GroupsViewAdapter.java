@@ -122,12 +122,14 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         //groupViewHolder.ID = groups.get(String.valueOf(position)).getID();
         groupViewHolder.nameTextView.setText(item.getValue().getName());
         groupViewHolder.ID = item.getValue().getID();
+        //groupViewHolder.smallTextView.setText(item.getValue().getBalance().toString());
 
         //todo mettere debito verso il gruppo
         //mydebt = mio debito con il gruppo
-        /*
-        Double mygroupdebt = myself.getBalanceWithGroups().get(groupViewHolder.ID);
+
+        Double mygroupdebt = item.getValue().getBalance();
         if (mygroupdebt == null) {
+            groupViewHolder.smallTextView.setVisibility(View.GONE);
             return;
         }
 
@@ -149,7 +151,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             groupViewHolder.smallTextView.setText("" + df.format(mygroupdebt) + " €");
             groupViewHolder.smallTextView.setBackgroundResource(R.color.greenBalance);
         }
-        */
+
     }
 
 
