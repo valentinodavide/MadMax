@@ -65,8 +65,9 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        setInterface((OnItemClickInterface) getActivity());
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         View view = inflater.inflate(R.layout.fragment_friend_detail, container, false);
 

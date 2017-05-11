@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,12 +24,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.entities.User;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 public class GroupDetailActivity extends AppCompatActivity implements OnItemClickInterface {
 
@@ -38,6 +44,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
     private TextView nameTextView;
     private TextView balanceTextView;
     private String groupID;
+    private String userID;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference mDatabase;
@@ -53,12 +60,11 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
+        userID = intent.getStringExtra("userID");
 
         Log.d(TAG, "onCreate di GroupDetailActivity. Group: " + groupID);
-
 
         imageView = (ImageView) findViewById(R.id.img_photo);
         nameTextView = (TextView) findViewById(R.id.tv_group_name);
@@ -89,28 +95,22 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
             @Override
             public void onDataChange(DataSnapshot groupSnapshot) {
 
+                groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
+                groupDetails.setID(groupSnapshot.getKey());
+                groupDetails.setNumberMembers(groupSnapshot.child("numberMembers").getValue(Integer.class));
+                Log.d(TAG, groupDetails.toString());
 
-                    groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
-                    groupDetails.setID(groupSnapshot.getKey());
-                    Log.d(TAG, groupDetails.toString());
+                nameTextView.setText(groupDetails.getName());
+            }
 
-                    nameTextView.setText(groupDetails.getName());
-                    //bundle.putString("groupID", groupDetails.getID());
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w(TAG, "Failed to read value.", error.toException());
-                }
-            });
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
 
         //Abbiamo due listener che fanno la stessa cosa! Togliere uno dei due
-
-
-
-
-
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -118,8 +118,8 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.expenses));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.history));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.members));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.history));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
@@ -137,6 +137,20 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
+        });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // todo diverse azioni a seconda del fragment in cui mi trovo
+                // getSupportFragmentManager().findFragmentByTag()
+                Intent myIntent = new Intent(GroupDetailActivity.this, NewExpenseActivity.class);
+                myIntent.putExtra("groupID", groupID);
+                myIntent.putExtra("userID", userID);
+                myIntent.putExtra("numberMembers", groupDetails.getNumberMembers().intValue());
+                startActivity(myIntent);
+            }
         });
     }
 
@@ -168,10 +182,6 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                     expensesFragment.setArguments(bundle);
                     return expensesFragment;
                 case 1:
-                    Log.d(TAG, "here in case 1");
-                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
-                    return pendingExpensesFragment;
-                case 2:
                     Log.d(TAG, "here in case 2");
                     FriendsFragment membersFragment = new FriendsFragment();
                     Bundle b = new Bundle();
@@ -179,6 +189,10 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                     membersFragment.setArguments(b);
                     //setargument creo bundle bunfle.setstring
                     return membersFragment;
+                case 2:
+                    Log.d(TAG, "here in case 1");
+                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
+                    return pendingExpensesFragment;
                 default:
                     return null;
             }
@@ -205,6 +219,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
         switch(fragmentName) {
             case "ExpensesFragment":
+                Log.d(TAG, "expense case " + fragmentName + itemID);
                 break;
 
             case "GroupsFragment":

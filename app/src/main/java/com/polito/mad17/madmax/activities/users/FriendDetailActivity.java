@@ -16,12 +16,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
 
-public class FriendDetailActivity extends AppCompatActivity {
+public class FriendDetailActivity extends AppCompatActivity implements OnItemClickInterface {
 
     private static final String TAG = FriendDetailActivity.class.getSimpleName();
     String friendID;
@@ -61,5 +62,9 @@ public class FriendDetailActivity extends AppCompatActivity {
     }
 
 
-
+    @Override
+    public void itemClicked(String fragmentName, String itemID) {
+        Log.d(TAG, fragmentName + itemID);
+        Intent intent = new Intent();
+    }
 }

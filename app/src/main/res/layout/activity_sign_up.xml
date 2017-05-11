@@ -4,10 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="@dimen/activity_horizontal_margin"
     tools:context="com.polito.mad17.madmax.activities.login.SignUpActivity">
 
     <ScrollView
@@ -19,16 +16,15 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="56dp"
-            android:paddingLeft="24dp"
-            android:paddingRight="24dp">
+            android:padding="24dp">
 
             <ImageView android:src="@drawable/anonymous"
                 android:id="@+id/profile_image"
-                android:layout_width="wrap_content"
-                android:layout_height="72dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_marginBottom="24dp"
                 android:layout_gravity="center_horizontal"
+                android:scaleType="centerInside"
                 android:clickable="true"/>
 
             <!-- Name Label -->

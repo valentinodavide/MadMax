@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         setContentView(R.layout.activity_main);
 
-        // getting currenUID from Intent (from LogInActivity or EmailVerificationActivity)
+        // getting currentUID from Intent (from LogInActivity or EmailVerificationActivity)
         Intent i = getIntent();
         final String currentUID = i.getStringExtra("UID");
 
@@ -387,7 +387,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                             groupID,
                             userGroupsRef.child("name").toString(),
                             userGroupsRef.child("image").toString(),
-                            userGroupsRef.child("description").toString()
+                            userGroupsRef.child("description").toString(),
+                            0
                     );
 
                     // todo qui ci sono ancora da recuperare le spese e i membri del gruppo corrente
@@ -578,7 +579,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         int numberOfTabs;
 
         FriendsFragment friendsFragment = null;
-        GroupsFragment groups1Fragment = null;
+        GroupsFragment groupsFragment = null;
         PendingExpensesFragment pendingExpensesFragment = null;
 
         public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
@@ -601,8 +602,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     return friendsFragment;
                 case 1:
                     Log.i(TAG, "here in case 1: GroupsFragment");
-                    groups1Fragment = new GroupsFragment();
-                    return groups1Fragment;
+                    groupsFragment = new GroupsFragment();
+                    return groupsFragment;
                 case 2:
                     Log.i(TAG, "here in case 2: PendingExpensesFragment");
                     pendingExpensesFragment = new PendingExpensesFragment();
@@ -636,30 +637,18 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         switch(fragmentName) {
             case "FriendsFragment":
-                //User friendDetail = myself.getUserFriends().get(itemID);
-                //bundle.putParcelable("friendDetail", friendDetail);
 
                 intent = new Intent(this, FriendDetailActivity.class);
                 intent.putExtra("friendID", itemID);
                 startActivity(intent);
 
-//                FriendDetailFragment friendDetailFragment = new FriendDetailFragment();
-//                friendDetailFragment.setArguments(bundle);
-//
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.replace(R.id.main_content, friendDetailFragment);
-
-//                fragmentTransaction.commit();
-
                 break;
 
             case "GroupsFragment":
-                //todo mettere a posto
-                //Group groupDetail = null; // groups.get(itemID);
-                //bundle.putParcelable("groupDetails", groupDetail);
 
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", itemID);
+                intent.putExtra("userID", myself.getID());
                 startActivity(intent);
 
                 break;
@@ -768,9 +757,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
                 }
-
-
-
             }
 
             @Override

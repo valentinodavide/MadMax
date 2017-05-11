@@ -11,6 +11,7 @@ public class Group implements Parcelable {
     private String name;
     private String image;                       // optional, URL dell'immagine su Firebase
     private String description;                 // optional
+    private Integer numberMembers;
 
     // todo da eliminare?
     private Integer counterAddedExpenses;       // numero di spese aggiunte dall'ultima apertura del gruppo
@@ -20,11 +21,12 @@ public class Group implements Parcelable {
 
     public  Group (){};
 
-    public Group(String ID, String name, String image, String description) {
+    public Group(String ID, String name, String image, String description, Integer numberMembers) {
         this.ID = ID;
         this.name = name;
         this.image = image;
         this.description = description;
+        this.numberMembers = numberMembers;
         this.counterAddedExpenses = 0;
         this.members = new HashMap<>();
         this.expenses = new HashMap<>();
@@ -35,6 +37,7 @@ public class Group implements Parcelable {
         name = in.readString();
         image = in.readString();
         description = in.readString();
+        numberMembers = in.readInt();
         counterAddedExpenses = in.readInt();
 
         members = in.readHashMap(new ClassLoader() {
@@ -75,6 +78,7 @@ public class Group implements Parcelable {
         dest.writeString(name);
         dest.writeString(image);
         dest.writeString(description);
+        dest.writeInt(numberMembers);
         dest.writeInt(counterAddedExpenses);
     }
 
@@ -106,11 +110,19 @@ public class Group implements Parcelable {
         return this.description = description;
     }
 
-    public Integer getNumberNotifications() {
+    public Integer getNumberMembers() {
+        return numberMembers;
+    }
+
+    public void setNumberMembers(Integer numberMembers) {
+        this.numberMembers = numberMembers;
+    }
+
+    public Integer getCounterAddedExpenses() {
         return counterAddedExpenses;
     }
 
-    public void setNumberNotifications(Integer numberNotifications) { this.counterAddedExpenses = numberNotifications; }
+    public void setCounterAddedExpenses(Integer numberNotifications) { this.counterAddedExpenses = numberNotifications; }
 
     public HashMap<String, User> getMembers() { return members; }
 
@@ -134,6 +146,7 @@ public class Group implements Parcelable {
         result.put("name", name);
         result.put("image", image);
         result.put("description", description);
+        result.put("numberMembers", numberMembers);
 
         return result;
     }

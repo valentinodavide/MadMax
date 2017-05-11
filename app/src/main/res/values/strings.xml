@@ -19,8 +19,8 @@
     <string name="owes_you">OWES YOU</string>
     <string name="you_should_receive">"YOU SHOULD RECEIVE"</string>
     <string name="no_debts">NO DEBTS</string>
-    <string name="edit_description_hint">Insert expense description</string>
-    <string name="edit_amount_hint">Insert amount</string>
+    <string name="edit_description_hint">Expense Name</string>
+    <string name="edit_amount_hint">Amount</string>
     <string name="expense_saved">Expense saved</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

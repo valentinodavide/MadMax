@@ -63,10 +63,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     private HashMapFriendsAdapter adapter;
     private String myselfID;
 
-
-
     public static HashMap<String, Group> groups = myself.getUserGroups();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,9 +98,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         if (userAdded != null)
             newmembers.put(userAdded.getID(), userAdded);
 
-
-
-
         //Button to add a new member
         Button newMemberButton = (Button) findViewById(R.id.addmember);
         newMemberButton.setOnClickListener(new View.OnClickListener()
@@ -123,10 +117,8 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             }
         });
 
-
         adapter = new HashMapFriendsAdapter(newmembers);
         lv.setAdapter(adapter);
-
 
 
         /*
@@ -149,10 +141,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
 
         Log.d(TAG, "Arrivato alla fine della OnCreate");
-
-
-
-
 
     }
 
@@ -179,20 +167,19 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             String name = nameGroup.getText().toString();
             String description = descriptionGroup.getText().toString();
 
-            Group newGroup = new Group("0", name, "noImage", description);  //id is useless
+            Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
 
             //add new group to database
             String newgroup_id = mDatabase.child("groups").push().getKey();
             mDatabase.child("groups").child(newgroup_id).setValue(newGroup);
             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
             mDatabase.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-
+            mDatabase.child("groups").child(newgroup_id).child("numberMembers").setValue(newmembers.size());
 
             //add users to new group
             for(Map.Entry<String, User> user : newmembers.entrySet())
             {
                 joinGroupFirebase(user.getValue().getID(), newgroup_id);
-
             }
 
 
@@ -236,7 +223,12 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
         mDatabase.child("groups").child(groupID).child("members").push();
         mDatabase.child("groups").child(groupID).child("members").child(userID).push();
-        mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
+        if(userID.equals(myselfID)) {
+            mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("true");
+        }
+        else {
+            mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
+        }
         mDatabase.child("groups").child(groupID).child("members").child(userID).push();
         mDatabase.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
 
