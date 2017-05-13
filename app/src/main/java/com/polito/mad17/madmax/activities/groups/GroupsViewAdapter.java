@@ -28,7 +28,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     final private ListItemClickListener itemClickListener;
 
     //public static HashMap<String, Group> groups = new HashMap<>();
-    public static User myself;
+    //public static User myself;
 
 
 

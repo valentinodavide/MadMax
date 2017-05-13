@@ -8,13 +8,11 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,23 +38,16 @@ import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.activities.login.LogInActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
-import com.polito.mad17.madmax.entities.Comment;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
-import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.polito.mad17.madmax.R.string.friends;
-//import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
-import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.myself;
 
 public class MainActivity extends AppCompatActivity implements OnItemClickInterface {
 
@@ -73,10 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     private FirebaseAuth auth;
     private static final int REQUEST_INVITE = 0;
 
-    public static User myself;
-    //ID di Mario Rossi, preso dal db. Questo id mi serve per stampare le sue liste amici, gruppi ecc..
-    //todo da sostituire con l'id dell'utente che si è loggato
-    String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+    public static User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         }
 
         // creating an object for current user
-        final User currentUser = new User(
+        currentUser = new User(
                 currentUserRef.getKey(),
                 currentUserRef.child("username").toString(),
                 currentUserRef.child("name").toString(),
@@ -211,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             }
         });
 
-        myself = currentUser;
 
         drawerOptions = getResources().getStringArray(R.array.drawerItem);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
@@ -233,8 +220,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     finish();
                 }
                 else if(position == 0){
-                    Log.d(TAG, "my ID is " + myself.getID());
-                    String deepLink = R.string.invitation_deep_link + "?inviterUID=" + myself.getID();
+                    Log.d(TAG, "my ID is " + currentUser.getID());
+                    String deepLink = R.string.invitation_deep_link + "?inviterUID=" + currentUser.getID();
 
                     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                             .setDeepLink(Uri.parse(deepLink))
@@ -282,13 +269,13 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 // todo diverse azioni a seconda del fragment in cui mi trovo
                 // getSupportFragmentManager().findFragmentByTag()
                 Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-                myIntent.putExtra("UID", myselfID);
+                myIntent.putExtra("UID", currentUser.getID());
                 //String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
                 //inizialmente l'unico user è il creatore del gruppo stesso
-                User myself = new User(myselfID, "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null, "€");
+                //User myself = new User(myselfID, "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null, "€");
                 //mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
                 //mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
-                NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
+                NewGroupActivity.newmembers.put(currentUser.getID(), currentUser);  //inizialmente l'unico membro del nuovo gruppo sono io
                 //myIntent.putExtra("groupID", tempGroupID);
                 MainActivity.this.startActivity(myIntent);
 
@@ -306,6 +293,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             if(resultCode == RESULT_OK){
                 // Get the invitation IDs of all sent messages
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+
+
+                //String deepLink = AppInviteReferral.getDeepLink(data);
+                //int idPositionInDeepLink = deepLink.lastIndexOf("inviterID=");
+
+                //Log.d(TAG, "onActivityResult: deepLink: " + deepLink);
+                //Log.d(TAG, "onActivityResult: idPositionInDeepLink: " + idPositionInDeepLink);
+
+
                 for (String id : ids) {
                     Log.i(TAG, "onActivityResult: sent invitation " + id);
                 }
@@ -385,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 intent = new Intent(this, FriendDetailActivity.class);
                 intent.putExtra("friendID", itemID);
-                intent.putExtra("userID", myself.getID());
+                intent.putExtra("userID", currentUser.getID());
                 startActivity(intent);
 
                 break;
@@ -394,9 +390,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", itemID);
-                //intent.putExtra("userID", myself.getID());
-                //todo a fare la spesa per ora è sempre Mario Rossi, correggere
-                intent.putExtra("userID", myselfID);
+                intent.putExtra("userID", currentUser.getID());
                 startActivity(intent);
 
                 break;

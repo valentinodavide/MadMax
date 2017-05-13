@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -107,6 +108,14 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i(TAG, "image clicked");
 
+                if (shouldAskPermission()) {
+                    String[] perms = {"android.permission.READ_EXTERNAL_STORAGE"};
+
+                    int permsRequestCode = 200;
+
+                    // this code is accessed only if API >= 23 via shouldAskPermission() => ignore red underline
+                    requestPermissions(perms, permsRequestCode);
+                }
                 // allow to the user the choose his profile image
                 Intent intent = new Intent();
                 // Show only images, no videos or anything else
@@ -146,6 +155,11 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
+
+    // check if permissions on reading storage must be asked: true only if API >= 23
+    private boolean shouldAskPermission(){
+        return(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
 
     private void createAccount(String email, String password){
         Log.i(TAG, "createAccount");

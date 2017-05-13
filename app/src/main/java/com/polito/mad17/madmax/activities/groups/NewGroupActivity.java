@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -17,16 +16,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
@@ -41,7 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.polito.mad17.madmax.activities.MainActivity.myself;
+import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
 
 public class NewGroupActivity extends AppCompatActivity implements FriendsViewAdapter.ListItemClickListener {
 
@@ -61,9 +54,9 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     private OnItemClickInterface onClickFriendInterface;
     private User userAdded;
     private HashMapFriendsAdapter adapter;
-    private String myselfID;
+    //private String myselfID;
 
-    public static HashMap<String, Group> groups = myself.getUserGroups();
+    public static HashMap<String, Group> groups = currentUser.getUserGroups();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +84,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 //        });
 
         Intent intent = getIntent();
-        myselfID = intent.getStringExtra("UID");
+        //myselfID = intent.getStringExtra("UID");
         Bundle b = getIntent().getExtras();
         if (b != null)
             userAdded = b.getParcelable("userAdded");
@@ -108,7 +101,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 Context context = NewGroupActivity.this;
                 Class destinationActivity = NewMemberActivity.class;
                 Intent intent = new Intent(context, destinationActivity);
-                intent.putExtra("UID", myselfID);
+                intent.putExtra("UID", currentUser.getID());
                 //intent.putExtra("groupID", tempGroupID);
                 //startActivity(intent);
                 startActivityForResult(intent, 1);
@@ -184,7 +177,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
 
             Intent intent = new Intent(NewGroupActivity.this, MainActivity.class);
-            intent.putExtra("UID", myselfID);
+            intent.putExtra("UID", currentUser.getID());
 
 //          Log.d("DEBUG", "groups.size() before " + groups.size());
 
@@ -223,7 +216,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
         mDatabase.child("groups").child(groupID).child("members").push();
         mDatabase.child("groups").child(groupID).child("members").child(userID).push();
-        if(userID.equals(myselfID)) {
+        if(userID.equals(currentUser.getID())) {
             mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("true");
         }
         else {

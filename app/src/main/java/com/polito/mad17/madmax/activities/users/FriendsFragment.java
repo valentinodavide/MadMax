@@ -23,6 +23,8 @@ import com.polito.mad17.madmax.entities.User;
 
 import java.util.HashMap;
 
+import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
+
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener {
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
@@ -59,7 +61,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-        String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+        //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
         setInterface((OnItemClickInterface) getActivity());
 
@@ -77,7 +79,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
         //Se sono in MainActivity visualizzo lista degli amici
         if (activityName.equals("MainActivity"))
-            query = mDatabase.child("users").child(myselfID).child("friends");
+            query = mDatabase.child("users").child(currentUser.getID()).child("friends");
 
         //Se sono dentro un gruppo, visualizzo lista membri del gruppo
         else if (activityName.equals("GroupDetailActivity"))

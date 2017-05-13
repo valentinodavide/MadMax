@@ -11,10 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

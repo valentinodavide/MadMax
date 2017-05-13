@@ -2,40 +2,29 @@ package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.entities.User;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+
+import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
 
 public class NewMemberActivity extends AppCompatActivity {
 
@@ -47,7 +36,7 @@ public class NewMemberActivity extends AppCompatActivity {
     //todo usare SharedPreferences invece della map globale alreadySelected
     public static HashMap<String, User> alreadySelected = new HashMap<>();
     private HashMapFriendsAdapter adapter;
-    private String myselfID;
+    //private String myselfID;
 
     private Button buttonInvite;
 
@@ -65,12 +54,12 @@ public class NewMemberActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
-        myselfID = intent.getStringExtra("UID");
+        //myselfID = intent.getStringExtra("UID");
 
 
         lv = (ListView) findViewById(R.id.members);
 
-        mDatabase.child("users").child(myselfID).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(currentUser.getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot friendSnapshot: dataSnapshot.getChildren())
@@ -109,7 +98,7 @@ public class NewMemberActivity extends AppCompatActivity {
                     Context context = NewMemberActivity.this;
                     Class destinationActivity = NewGroupActivity.class;
                     Intent intent = new Intent(context, destinationActivity);
-                    intent.putExtra("UID", myselfID);
+                    intent.putExtra("UID", currentUser.getID());
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("userAdded", item);
                     intent.putExtras(bundle);
@@ -123,7 +112,7 @@ public class NewMemberActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "button clicked");
-                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + myselfID;
+                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + currentUser.getID();
 
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(Uri.parse(deepLink))

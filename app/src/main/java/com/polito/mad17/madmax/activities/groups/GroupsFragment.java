@@ -1,8 +1,6 @@
 package com.polito.mad17.madmax.activities.groups;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,12 +16,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
+
+import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
 
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
@@ -34,7 +30,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private OnItemClickInterface onClickGroupInterface;
     private HashMap<String, Group> groups = new HashMap<>();
     //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-    String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+    //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
     Double totBalance;
 
 
@@ -78,13 +74,13 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         groupsViewAdapter = new GroupsViewAdapter(this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
-        mDatabase.child("users").child(myselfID).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(currentUser.getID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
                 {
                     //getGroup(groupSnapshot.getKey());
-                    getGroupAndBalance(myselfID, groupSnapshot.getKey());
+                    getGroupAndBalance(currentUser.getID(), groupSnapshot.getKey());
                 }
 
                 //adapter = new HashMapGroupsAdapter(groups);

@@ -20,14 +20,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Map;
+
+import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
 
 public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
@@ -48,7 +46,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
-    private String myselfID = "-KjTCeDmpYY7gEOlYuSo"; //todo prendere id dell'utente loggato
+    //private String myselfID = "-KjTCeDmpYY7gEOlYuSo"; //todo prendere id dell'utente loggato
     private DatabaseReference mDatabase;
     private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
 
@@ -109,7 +107,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         });
 
         //Show shared groups
-        mDatabase.child("users").child(myselfID).child("friends").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(currentUser.getID()).child("friends").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
