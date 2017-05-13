@@ -34,18 +34,19 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
-
 public class NewGroupActivity extends AppCompatActivity implements FriendsViewAdapter.ListItemClickListener {
 
     private static final String TAG = "NewGroupActivity";
+
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     private EditText nameGroup;
     private EditText descriptionGroup;
     private ImageView imageGroup;
     private String imageString = null;
     private int PICK_IMAGE_REQUEST = 1; // to use for selecting the group image
     private ListView lv;
-    private DatabaseReference mDatabase;
     String tempGroupID;
     public static HashMap<String, User> newmembers = new HashMap<>();
     private RecyclerView recyclerView;
@@ -56,14 +57,12 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     private HashMapFriendsAdapter adapter;
     //private String myselfID;
 
-    public static HashMap<String, Group> groups = currentUser.getUserGroups();
+    public static HashMap<String, Group> groups = MainActivity.getCurrentUser().getUserGroups();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_group);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         lv = (ListView) findViewById(R.id.members);
 
@@ -101,7 +100,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 Context context = NewGroupActivity.this;
                 Class destinationActivity = NewMemberActivity.class;
                 Intent intent = new Intent(context, destinationActivity);
-                intent.putExtra("UID", currentUser.getID());
+                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
                 //intent.putExtra("groupID", tempGroupID);
                 //startActivity(intent);
                 startActivityForResult(intent, 1);
@@ -163,11 +162,11 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
 
             //add new group to database
-            String newgroup_id = mDatabase.child("groups").push().getKey();
-            mDatabase.child("groups").child(newgroup_id).setValue(newGroup);
+            String newgroup_id = databaseReference.child("groups").push().getKey();
+            databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-            mDatabase.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-            mDatabase.child("groups").child(newgroup_id).child("numberMembers").setValue(newmembers.size());
+            databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
+            databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(newmembers.size());
 
             //add users to new group
             for(Map.Entry<String, User> user : newmembers.entrySet())
@@ -177,7 +176,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
 
             Intent intent = new Intent(NewGroupActivity.this, MainActivity.class);
-            intent.putExtra("UID", currentUser.getID());
+            intent.putExtra("UID", MainActivity.getCurrentUser().getID());
 
 //          Log.d("DEBUG", "groups.size() before " + groups.size());
 
@@ -192,7 +191,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
 
             //remove group from temporary
-            //mDatabase.child("temporarygroups").child(tempGroupID).removeValue();
+            //databaseReference.child("temporarygroups").child(tempGroupID).removeValue();
 
             newmembers.clear();
 
@@ -206,24 +205,21 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         return super.onOptionsItemSelected(item);
     }
 
-    public void joinGroupFirebase (final String userID, String groupID)
-    {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
+    public void joinGroupFirebase (final String userID, String groupID) {
         //Aggiungo gruppo alla lista gruppi dello user
-        mDatabase.child("users").child(userID).child("groups").push();
-        mDatabase.child("users").child(userID).child("groups").child(groupID).setValue("true");
+        databaseReference.child("users").child(userID).child("groups").push();
+        databaseReference.child("users").child(userID).child("groups").child(groupID).setValue("true");
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
-        mDatabase.child("groups").child(groupID).child("members").push();
-        mDatabase.child("groups").child(groupID).child("members").child(userID).push();
-        if(userID.equals(currentUser.getID())) {
-            mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("true");
+        databaseReference.child("groups").child(groupID).child("members").push();
+        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
+        if(userID.equals(MainActivity.getCurrentUser().getID())) {
+            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("true");
         }
         else {
-            mDatabase.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
+            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
         }
-        mDatabase.child("groups").child(groupID).child("members").child(userID).push();
-        mDatabase.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
+        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
+        databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
 
     }
 

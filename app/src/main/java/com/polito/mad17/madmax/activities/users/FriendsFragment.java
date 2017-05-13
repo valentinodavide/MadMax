@@ -18,17 +18,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.HashMap;
 
-import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
-
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener {
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
-    private DatabaseReference mDatabase;
+
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     private HashMap<String, User> friends = new HashMap<>();
     private ListView lv;
     private HashMapFriendsAdapter adapter;
@@ -58,8 +60,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
         //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
         //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
         //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
@@ -79,7 +79,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
         //Se sono in MainActivity visualizzo lista degli amici
         if (activityName.equals("MainActivity"))
-            query = mDatabase.child("users").child(currentUser.getID()).child("friends");
+            query = databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends");
 
         //Se sono dentro un gruppo, visualizzo lista membri del gruppo
         else if (activityName.equals("GroupDetailActivity"))
@@ -88,7 +88,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             if (b != null)
             {
                 String groupID = b.getString("groupID");
-                query = mDatabase.child("groups").child(groupID).child("members");
+                query = databaseReference.child("groups").child(groupID).child("members");
             }
         }
 
@@ -144,7 +144,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
     public void getFriend(final String id)
     {
-        mDatabase.child("users").child(id).addValueEventListener(new ValueEventListener()
+        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener()
         {
 
             @Override

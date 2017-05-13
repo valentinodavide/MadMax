@@ -31,8 +31,6 @@ public class LogInActivity extends AppCompatActivity {
 
     private static final String TAG = LogInActivity.class.getSimpleName();
 
-    private FirebaseDatabase firebaseDatabase;
-
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
 
@@ -59,9 +57,6 @@ public class LogInActivity extends AppCompatActivity {
 
             Log.d(TAG, "inviterUID " + inviterUID);
         }
-
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        //firebaseDatabase.setPersistenceEnabled(true);
 
         auth = FirebaseAuth.getInstance();
 

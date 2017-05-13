@@ -3,29 +3,16 @@ package com.polito.mad17.madmax.activities.users;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
-import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
-import com.polito.mad17.madmax.entities.Group;
-
-import java.util.HashMap;
 
 public class FriendDetailActivity extends AppCompatActivity implements OnItemClickInterface {
 
     private static final String TAG = FriendDetailActivity.class.getSimpleName();
+
     private String friendID;
     private String userID;
 

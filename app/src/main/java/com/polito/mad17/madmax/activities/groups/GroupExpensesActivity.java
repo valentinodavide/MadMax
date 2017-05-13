@@ -41,7 +41,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
             String currency = intent.getStringExtra("currency");
 //            expenses.put(String.valueOf(i), new Expense(String.valueOf(i), description + " " + currency + " " + amount, (double) i+1));
 
-            Group group = MainActivity.currentUser.getUserGroups().get(IDGroup);
+            Group group = MainActivity.getCurrentUser().getUserGroups().get(IDGroup);
             expenses = group.getExpenses();
 
             //todo a cosa serve questa expense?? quale utente la fa?
@@ -61,7 +61,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
         else {
             IDGroup = intent.getStringExtra("IDGroup");
 
-            Group group = MainActivity.currentUser.getUserGroups().get(IDGroup);
+            Group group = MainActivity.getCurrentUser().getUserGroups().get(IDGroup);
             expenses = group.getExpenses();
         }
 

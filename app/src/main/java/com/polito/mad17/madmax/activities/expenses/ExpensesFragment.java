@@ -16,14 +16,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
-
-import static com.polito.mad17.madmax.activities.groups.GroupExpensesActivity.expenses;
-import static com.polito.mad17.madmax.activities.groups.NewGroupActivity.groups;
 
 public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener {
 
@@ -39,8 +36,8 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     private RecyclerView.LayoutManager layoutManager;
     private ExpensesViewAdapter expensesViewAdapter;
 
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference mDatabase;
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private DatabaseReference groupRef;
 
     private String groupID = null;
@@ -54,7 +51,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         super.onCreate(savedInstanceState);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabase = firebaseDatabase.getReference();
+        databaseReference = firebaseDatabase.getReference();
     }
 
     @Override
@@ -76,7 +73,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         expensesViewAdapter = new ExpensesViewAdapter(this, expensesMap);
         recyclerView.setAdapter(expensesViewAdapter);
 
-        groupRef = mDatabase.child("groups");
+        groupRef = databaseReference.child("groups");
 
         Log.d(TAG, groupID);
         // retrieving group details for current group
@@ -132,7 +129,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     }
 
     public void getExpense(final String id) {
-        mDatabase.child("expenses").child(id).addValueEventListener(new ValueEventListener() {
+        databaseReference.child("expenses").child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Expense expense = new Expense();

@@ -19,17 +19,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
 
-import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
-
 public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
     private static final String TAG = FriendDetailFragment.class.getSimpleName();
+
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private OnItemClickInterface onClickGroupInterface;
 
@@ -47,11 +49,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
     //private String myselfID = "-KjTCeDmpYY7gEOlYuSo"; //todo prendere id dell'utente loggato
-    private DatabaseReference mDatabase;
     private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
-
-
-
 
     public FriendDetailFragment() {}
 
@@ -64,8 +62,6 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         setInterface((OnItemClickInterface) getActivity());
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         View view = inflater.inflate(R.layout.fragment_friend_detail, container, false);
 
@@ -91,7 +87,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
 
 
         //Show data of friend
-        mDatabase.child("users").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -107,7 +103,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         });
 
         //Show shared groups
-        mDatabase.child("users").child(currentUser.getID()).child("friends").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -189,7 +185,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     //todo metodo ripetuto in diverse activity, correggere
     public void getGroup(final String id)
     {
-        mDatabase.child("groups").child(id).addValueEventListener(new ValueEventListener()
+        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
         {
 
             @Override

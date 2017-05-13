@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -29,11 +28,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
-import com.polito.mad17.madmax.activities.groups.GroupExpensesActivity;
-import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,16 +37,15 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.polito.mad17.madmax.R.string.amount;
-
 public class NewExpenseActivity extends AppCompatActivity {
 
     private static final String TAG = NewExpenseActivity.class.getSimpleName();
 
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference mDatabase;
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private DatabaseReference groupRef;
-    private StorageReference storageReference;
+
+    private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     private EditText description;
     private EditText amount;
@@ -72,10 +67,6 @@ public class NewExpenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_expense);
-
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabase = firebaseDatabase.getReference();
-        storageReference = FirebaseStorage.getInstance().getReference();
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
@@ -181,8 +172,8 @@ public class NewExpenseActivity extends AppCompatActivity {
             Log.d(TAG, "Before first access to firebase");
 
             firebaseDatabase = FirebaseDatabase.getInstance();
-            mDatabase = firebaseDatabase.getReference();
-            groupRef = mDatabase.child("groups");
+            databaseReference = firebaseDatabase.getReference();
+            groupRef = databaseReference.child("groups");
             groupRef.child(groupID).child("members").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot membersSnapshot) {
@@ -214,10 +205,10 @@ public class NewExpenseActivity extends AppCompatActivity {
         Log.d(TAG, "addExpenseFirebase");
 
         //Aggiungo spesa a Firebase
-        final String eID = mDatabase.child("expenses").push().getKey();
-        mDatabase.child("expenses").child(eID).setValue(expense);
+        final String eID = databaseReference.child("expenses").push().getKey();
+        databaseReference.child("expenses").child(eID).setValue(expense);
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-        mDatabase.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
+        databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_expensePhoto.jpg");
 
@@ -241,7 +232,7 @@ public class NewExpenseActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                mDatabase.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
+                databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
             }
         });
 
@@ -267,7 +258,7 @@ public class NewExpenseActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                mDatabase.child("expenses").child(eID).child("billPhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
+                databaseReference.child("expenses").child(eID).child("billPhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
             }
         });
 
@@ -283,26 +274,26 @@ public class NewExpenseActivity extends AppCompatActivity {
             {
 
                 //paga tutto lui
-                mDatabase.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(expense.getAmount());
+                databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(expense.getAmount());
             }
             else
             {
                 //gli altri participant inizialmente non pagano niente
-                mDatabase.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(0);
+                databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(0);
             }
 
             //risetto fraction di spesa che deve pagare l'utente, visto che prima si sputtana
-            mDatabase.child("expenses").child(eID).child("participants").child(participant.getKey()).child("fraction").setValue(expense.getParticipants().get(participant.getKey()));
+            databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("fraction").setValue(expense.getParticipants().get(participant.getKey()));
 
 
             //Aggiungo spesaID a elenco spese dello user
             //todo controllare se utile
-            mDatabase.child("users").child(participant.getKey()).child("expenses").child(eID).setValue("true");
+            databaseReference.child("users").child(participant.getKey()).child("expenses").child(eID).setValue("true");
         }
 
         //Aggiungo spesa alla lista spese del gruppo
-        mDatabase.child("groups").child(expense.getGroupID()).child("expenses").push();
-        mDatabase.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue("true");
+        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
+        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue("true");
 
         return eID;
 

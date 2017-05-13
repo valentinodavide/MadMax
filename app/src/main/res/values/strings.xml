@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Sharify</string>
+    <string name="app_name" translatable="false">Expenses Taste</string>
 
     <string name="title_activity_group_expenses">Group Expenses</string>
     <string name="title_image_expenses">Image Expenses</string>

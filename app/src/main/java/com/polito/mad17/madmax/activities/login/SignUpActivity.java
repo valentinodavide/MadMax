@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities.login;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,6 +36,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
@@ -45,10 +47,13 @@ public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = SignUpActivity.class.getSimpleName();
 
-    private FirebaseAuth auth;
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    private DatabaseReference databaseReference;
-    private StorageReference storageReference;
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private StorageReference  storageReference = firebaseStorage.getReference();;
+
+    private FirebaseAuth auth;
 
     private int PICK_IMAGE_REQUEST = 1; // to use for selecting the image profile
 
@@ -65,6 +70,9 @@ public class SignUpActivity extends AppCompatActivity {
     private String inviterUID = null;
 
     @Override
+    @TargetApi(23) // used for letting AndroidStudio know that method requestPermissions() is called
+    // in a controlled way: in particular it must be accessed only if API >= 23, and we guarantee it
+    // via the static method MainActivity.shouldAskPermission()
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
@@ -78,8 +86,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_sign_up);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        storageReference = FirebaseStorage.getInstance().getReference();
         auth = FirebaseAuth.getInstance();
 
         progressDialog = new ProgressDialog(this);
@@ -108,12 +114,10 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i(TAG, "image clicked");
 
-                if (shouldAskPermission()) {
+                if (MainActivity.shouldAskPermission()) {
                     String[] perms = {"android.permission.READ_EXTERNAL_STORAGE"};
 
                     int permsRequestCode = 200;
-
-                    // this code is accessed only if API >= 23 via shouldAskPermission() => ignore red underline
                     requestPermissions(perms, permsRequestCode);
                 }
                 // allow to the user the choose his profile image
@@ -155,12 +159,6 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-
-    // check if permissions on reading storage must be asked: true only if API >= 23
-    private boolean shouldAskPermission(){
-        return(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1);
-    }
-
     private void createAccount(String email, String password){
         Log.i(TAG, "createAccount");
 
@@ -189,6 +187,14 @@ public class SignUpActivity extends AppCompatActivity {
 
                         Toast.makeText(SignUpActivity.this, "This email is already registered...account not created",Toast.LENGTH_LONG).show();
                     }
+                    else if (task.getException() instanceof com.google.firebase.auth.FirebaseAuthWeakPasswordException) {
+                        Log.d(TAG,"account creation failed. Weak password!");
+
+                        Toast.makeText(SignUpActivity.this, "Your password is too short!",Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Log.e(TAG, task.getException().getMessage());
+                    }
                 } else {
                     Log.d(TAG,"account creation succeded.");
 
@@ -204,9 +210,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Log.e(TAG, "Error while retriving current user from db");
+            Log.e(TAG, "Error while retrieving current user from db");
 
-            Toast.makeText(SignUpActivity.this, "Error while retriving current user from db",Toast.LENGTH_LONG).show();
+            Toast.makeText(SignUpActivity.this, "Error while retrieving current user from db",Toast.LENGTH_LONG).show();
             return;
         }
 

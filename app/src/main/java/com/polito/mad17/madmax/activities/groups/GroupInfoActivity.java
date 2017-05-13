@@ -15,16 +15,18 @@ import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.users.NewMemberActivity;
 import com.polito.mad17.madmax.entities.User;
 
 public class GroupInfoActivity extends AppCompatActivity {
 
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     String groupID;
     String caller;
     private ListView lv;
-    private DatabaseReference mDatabase;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +34,6 @@ public class GroupInfoActivity extends AppCompatActivity {
         //setContentView(R.layout.activity_group_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
@@ -66,7 +65,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 this,   //activity contentente la ListView
                 User.class,   //classe in cui viene messo il dato letto (?)
                 R.layout.list_item,   //layout del singolo item
-                mDatabase.child("groups").child(groupID).child("members")  //nodo del db da cui leggo
+                databaseReference.child("groups").child(groupID).child("members")  //nodo del db da cui leggo
                 ) {
             @Override
             protected void populateView(View v, User model, int position) {

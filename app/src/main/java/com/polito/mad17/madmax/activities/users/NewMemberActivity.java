@@ -19,19 +19,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.HashMap;
 
-import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
-
 public class NewMemberActivity extends AppCompatActivity {
 
     private static final String TAG = NewMemberActivity.class.getSimpleName();
 
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     private ListView lv;
-    private DatabaseReference mDatabase;
     private HashMap<String, User> friends = new HashMap<>();
     //todo usare SharedPreferences invece della map globale alreadySelected
     public static HashMap<String, User> alreadySelected = new HashMap<>();
@@ -51,15 +52,13 @@ public class NewMemberActivity extends AppCompatActivity {
 
         buttonInvite = (Button) findViewById(R.id.btn_new_friend);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
         Intent intent = getIntent();
         //myselfID = intent.getStringExtra("UID");
 
 
         lv = (ListView) findViewById(R.id.members);
 
-        mDatabase.child("users").child(currentUser.getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot friendSnapshot: dataSnapshot.getChildren())
@@ -98,7 +97,7 @@ public class NewMemberActivity extends AppCompatActivity {
                     Context context = NewMemberActivity.this;
                     Class destinationActivity = NewGroupActivity.class;
                     Intent intent = new Intent(context, destinationActivity);
-                    intent.putExtra("UID", currentUser.getID());
+                    intent.putExtra("UID", MainActivity.getCurrentUser().getID());
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("userAdded", item);
                     intent.putExtras(bundle);
@@ -112,7 +111,7 @@ public class NewMemberActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "button clicked");
-                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + currentUser.getID();
+                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + MainActivity.getCurrentUser().getID();
 
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(Uri.parse(deepLink))
@@ -128,7 +127,7 @@ public class NewMemberActivity extends AppCompatActivity {
 
     public void getFriend(final String id)
     {
-        mDatabase.child("users").child(id).addValueEventListener(new ValueEventListener()
+        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener()
         {
 
             @Override

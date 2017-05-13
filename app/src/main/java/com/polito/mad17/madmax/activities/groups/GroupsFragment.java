@@ -16,17 +16,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
 
-import static com.polito.mad17.madmax.activities.MainActivity.currentUser;
-
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
     private static final String TAG = GroupsFragment.class.getSimpleName();
-    private DatabaseReference mDatabase;
+
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     private OnItemClickInterface onClickGroupInterface;
     private HashMap<String, Group> groups = new HashMap<>();
     //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
@@ -61,10 +63,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-
-
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
@@ -74,13 +72,13 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         groupsViewAdapter = new GroupsViewAdapter(this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
-        mDatabase.child("users").child(currentUser.getID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
                 {
                     //getGroup(groupSnapshot.getKey());
-                    getGroupAndBalance(currentUser.getID(), groupSnapshot.getKey());
+                    getGroupAndBalance(MainActivity.getCurrentUser().getID(), groupSnapshot.getKey());
                 }
 
                 //adapter = new HashMapGroupsAdapter(groups);
@@ -145,7 +143,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
     public void getGroup(final String id)
     {
-        mDatabase.child("groups").child(id).addValueEventListener(new ValueEventListener()
+        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
         {
 
             @Override
@@ -158,8 +156,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                 groupsViewAdapter.update(groups);
                 groupsViewAdapter.notifyDataSetChanged();
-
-
             }
 
             @Override
@@ -179,9 +175,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         totalBalance.put(userID,0d);
         totBalance = 0d;
 
-
-        mDatabase.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
-
+        databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -196,7 +190,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                 {
                     //Ascolto ogni singola spesa del gruppo
                     String expenseID = groupExpenseSnapshot.getKey();
-                    mDatabase.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 

@@ -7,7 +7,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -29,12 +28,8 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
-import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 public class GroupDetailActivity extends AppCompatActivity implements OnItemClickInterface {
 
@@ -46,8 +41,9 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
     private String groupID;
     private String userID;
 
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference mDatabase;
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     private DatabaseReference groupRef;
     private Group groupDetails = new Group();
 
@@ -57,8 +53,6 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_group_detail);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
@@ -73,7 +67,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         Log.d(TAG, groupID);
 
         //Show data of group (di Ale)
-        mDatabase.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -88,9 +82,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         });
 
         // retrieving group details for current group (di Chiara)
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabase = firebaseDatabase.getReference();
-        groupRef = mDatabase.child("groups");
+        groupRef = databaseReference.child("groups");
         groupRef.child(groupID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot groupSnapshot) {

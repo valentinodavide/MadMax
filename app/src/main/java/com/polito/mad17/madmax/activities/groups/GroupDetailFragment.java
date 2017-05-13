@@ -14,13 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
-import com.polito.mad17.madmax.entities.User;
-
-import java.text.DecimalFormat;
-import java.util.Map;
 
 public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener {
 

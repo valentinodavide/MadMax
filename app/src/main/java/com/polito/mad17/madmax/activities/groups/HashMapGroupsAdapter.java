@@ -14,10 +14,6 @@ import com.polito.mad17.madmax.entities.User;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by alessandro on 07/05/17.
- */
-
 public class HashMapGroupsAdapter extends BaseAdapter {
     private final ArrayList mData;
 
