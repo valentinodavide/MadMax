@@ -60,9 +60,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
         //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
-        //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-        //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
-
         setInterface((OnItemClickInterface) getActivity());
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
@@ -95,21 +92,18 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot friendSnapshot: dataSnapshot.getChildren())
-                {
+                for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
                     getFriend(friendSnapshot.getKey());
                 }
 
                 friendsViewAdapter.update(friends);
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, databaseError.getMessage());
             }
         });
-
 
         Log.d(TAG, "dopo setAdapter");
 
@@ -142,14 +136,11 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         onClickFriendInterface.itemClicked(getClass().getSimpleName(), friendID);
     }
 
-    public void getFriend(final String id)
-    {
-        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener()
-        {
+    public void getFriend(final String id) {
+        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
 
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 User u = new User();
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
@@ -160,9 +151,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, databaseError.getMessage());
             }
         });
     }

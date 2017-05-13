@@ -34,16 +34,14 @@ public class FriendDetailActivity extends AppCompatActivity implements OnItemCli
         {
             Bundle bundle = new Bundle();
             bundle.putString("friendID", friendID);
-            if(bundle != null) {
 
-                Log.d(TAG, friendID);
+            Log.d(TAG, friendID);
 
-                FriendDetailFragment friendDetailFragment = new FriendDetailFragment();
-                friendDetailFragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_containter, friendDetailFragment)
-                        .commit();
-            }
+            FriendDetailFragment friendDetailFragment = new FriendDetailFragment();
+            friendDetailFragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_containter, friendDetailFragment)
+                    .commit();
         }
     }
 

@@ -48,7 +48,6 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
-    //private String myselfID = "-KjTCeDmpYY7gEOlYuSo"; //todo prendere id dell'utente loggato
     private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
 
     public FriendDetailFragment() {}
@@ -183,28 +182,21 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
     }
 
     //todo metodo ripetuto in diverse activity, correggere
-    public void getGroup(final String id)
-    {
-        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
-        {
-
+    public void getGroup(final String id) {
+        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 Group g = new Group();
                 g.setName(dataSnapshot.child("name").getValue(String.class));
                 groups.put(id, g);
                 groupsViewAdapter.update(groups);
                 groupsViewAdapter.notifyDataSetChanged();
-
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, databaseError.getMessage());
             }
         });
     }
-
 }

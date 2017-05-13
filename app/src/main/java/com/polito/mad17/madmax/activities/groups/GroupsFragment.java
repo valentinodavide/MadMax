@@ -29,21 +29,17 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    private OnItemClickInterface onClickGroupInterface;
     private HashMap<String, Group> groups = new HashMap<>();
-    //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-    //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
     Double totBalance;
 
+    private GroupsViewAdapter groupsViewAdapter;
+    //private Double balance;
+
+    private OnItemClickInterface onClickGroupInterface;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
     }
-
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private GroupsViewAdapter groupsViewAdapter;
-    private Double balance;
 
     public GroupsFragment() {}
 
@@ -55,6 +51,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
+        RecyclerView recyclerView;
+        RecyclerView.LayoutManager layoutManager;
 
         setInterface((OnItemClickInterface) getActivity());
 
@@ -92,7 +90,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, databaseError.toException());
             }
         });
 

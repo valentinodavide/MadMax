@@ -1,6 +1,5 @@
 package com.polito.mad17.madmax.activities.groups;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,6 @@ import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -63,17 +61,10 @@ public class HashMapGroupsAdapter extends BaseAdapter {
         result.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String groupID = getItem(position).getKey();
             }
         });
 
-
-
-
-
         return result;
     }
-
-
 }

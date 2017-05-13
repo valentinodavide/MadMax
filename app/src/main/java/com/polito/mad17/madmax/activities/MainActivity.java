@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         Log.i(TAG, "onCreate");
 
         String[] drawerOptions;
-        //DrawerLayout drawerLayout; todo cos'è?
+        //DrawerLayout drawerLayout;
         ListView drawerList;
 
         getDatabase();
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
         drawerOptions = getResources().getStringArray(R.array.drawerItem);
-        //drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout); todo cos'è?
+        //drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         drawerList = (ListView)findViewById(R.id.left_drawer);
 
         // set the adapter for the Listview
@@ -366,7 +366,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     public void itemClicked(String fragmentName, String itemID) {
         Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
-        // todo cos'è?
         //FragmentManager fragmentManager = getSupportFragmentManager();
         //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -399,24 +398,19 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         //Per ogni participant setto la quota che ha già pagato per questa spesa
         //e aggiungo spesa alla lista spese di ogni participant
-        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet())
-        {
+        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet()) {
             //Se il participant corrente è il creatore della spesa
-            if (participant.getKey().equals(expense.getCreatorID()))
-            {
+            if (participant.getKey().equals(expense.getCreatorID())) {
                 //paga tutto lui
                 databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(expense.getAmount());
             }
-            else
-            {
+            else {
                 //gli altri participant inizialmente non pagano niente
                 databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(0);
             }
 
             //risetto fraction di spesa che deve pagare l'utente, visto che prima si sputtana
             databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("fraction").setValue(expense.getParticipants().get(participant.getKey()));
-
-
 
             //Aggiungo spesaID a elenco spese dello user
             //todo controllare se utile
@@ -449,8 +443,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 DataSnapshot groupSnapshot = dataSnapshot.child("groups").child(groupID);
 
-                for (DataSnapshot expense : groupSnapshot.child("expenses").getChildren())
-                {
+                for (DataSnapshot expense : groupSnapshot.child("expenses").getChildren()) {
                     amount += expense.child("amount").getValue(Double.class);
                 }
 
@@ -468,11 +461,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     System.out.println("Group not found");
                 }
 
-                for (DataSnapshot member : groupSnapshot.child("members").getChildren())
-                {
+                for (DataSnapshot member : groupSnapshot.child("members").getChildren()) {
                     //se non sono io stesso
-                    if (!member.getKey().equals(u.getID()))
-                    {
+                    if (!member.getKey().equals(u.getID())) {
                         Double balance = dataSnapshot.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).getValue(Double.class);
                         if (balance != null) {
                             databaseReference.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
@@ -484,13 +475,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     //debito dell'amico verso di me
                     Double balance = dataSnapshot.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).getValue(Double.class);
 
-                    if (balance != null)
-                    {
+                    if (balance != null) {
                         databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(balance-singlecredit);
 
                     }
-                    else
-                    {
+                    else {
                         System.out.println("Io non risulto tra i suoi debiti");
                         // => allora devo aggiungermi
                         databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(-singlecredit);
@@ -499,12 +488,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     //aggiorno il debito dell'amico verso il gruppo
                     balance = dataSnapshot.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").getValue(Double.class);
 
-                    if (balance != null)
-                    {
+                    if (balance != null) {
                         databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(balance-singlecredit);
                     }
-                    else
-                    {
+                    else {
                         System.out.println("Gruppo non risulta tra i suoi debiti");
                         // => allora lo devo aggiungere
                         databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
@@ -516,11 +503,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, databaseError.getMessage());
             }
         });
-
-
 
 
         /*
@@ -581,8 +566,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
     }
     */
-
-
     /*
     //ritorna i soldi totali spesi dal gruppo (packake-private: visibilità di default)
     Double getTotalExpenseFirebase (String groupID) {
@@ -612,12 +595,8 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
             total += expense.getValue().getAmount();
         }
 
-
         return total;
     }
-
-
-
     }
     */
 
@@ -655,8 +634,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                 final ArrayList<String> u1Groups = new ArrayList<String>();
 
-                for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
-                {
+                for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
                     u1Groups.add(groupSnapshot.getKey());
                 }
 
@@ -667,38 +645,30 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
                         ArrayList<String> sharedGroups = new ArrayList<String>();
 
-
-                        for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
-                        {
+                        for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
                             if (u1Groups.contains(groupSnapshot.getKey()))
                                 sharedGroups.add(groupSnapshot.getKey());
                         }
 
                         //ora in sharedGroups ci sono solo i gruppi di cui fanno parte entrambi gli utenti
-                        for (String groupID : sharedGroups)
-                        {
+                        for (String groupID : sharedGroups) {
                             databaseReference.child("users").child(user1ID).child("friends").child(user2ID).child(groupID).setValue("true");
                             databaseReference.child("users").child(user2ID).child("friends").child(user1ID).child(groupID).setValue("true");
                         }
-
-
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-
+                        Log.w(TAG, databaseError.getMessage());
                     }
                 });
-
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, databaseError.getMessage());
             }
         });
-
     }
 
 

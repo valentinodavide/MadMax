@@ -26,36 +26,34 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
     private static final String TAG = ExpensesFragment.class.getSimpleName();
 
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
+    private ExpensesViewAdapter expensesViewAdapter;
+
+    private HashMap<String, Expense> expensesMap = new HashMap<>();
+
+
     private OnItemClickInterface onClickFriendInterface;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickFriendInterface = onItemClickInterface;
     }
 
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private ExpensesViewAdapter expensesViewAdapter;
-
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
-    private DatabaseReference databaseReference = firebaseDatabase.getReference();
-    private DatabaseReference groupRef;
-
-    private String groupID = null;
-
-    private HashMap<String, Expense> expensesMap = new HashMap<>();
 
     public ExpensesFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        RecyclerView recyclerView;
+        RecyclerView.LayoutManager layoutManager;
+        String groupID;
+        DatabaseReference groupRef;
 
         setInterface((OnItemClickInterface) getActivity());
 
@@ -143,6 +141,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
             }
         });
     }

@@ -43,9 +43,9 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-    private DatabaseReference groupRef;
 
-    private StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private StorageReference storageReference = firebaseStorage.getReference();
 
     private EditText description;
     private EditText amount;
@@ -55,13 +55,11 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     private String groupID = null;
     private String userID = null;
-    private Integer numberMembers = null;
+    //private Integer numberMembers = null;
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
     private int PICK_BILL_PHOTO_REQUEST = 1;
-    private int EXPENSE_SAVED = 2;
-
-
+    //private int EXPENSE_SAVED = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,14 +69,13 @@ public class NewExpenseActivity extends AppCompatActivity {
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
-        numberMembers = intent.getIntExtra("numberMembers", 0);
+        //numberMembers = intent.getIntExtra("numberMembers", 0);
 
         description = (EditText) findViewById(R.id.edit_description);
         amount = (EditText) findViewById(R.id.edit_amount);
         currency = (Spinner) findViewById(R.id.currency);
         expensePhoto = (ImageView) findViewById(R.id.img_expense);
         billPhoto = (ImageView) findViewById(R.id.img_bill);
-
 
         // creating spinner for currencies
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
@@ -152,6 +149,7 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        DatabaseReference groupRef;
         int itemThatWasClickedId = item.getItemId();
 
         if (itemThatWasClickedId == R.id.action_save) {
@@ -171,8 +169,6 @@ public class NewExpenseActivity extends AppCompatActivity {
 
             Log.d(TAG, "Before first access to firebase");
 
-            firebaseDatabase = FirebaseDatabase.getInstance();
-            databaseReference = firebaseDatabase.getReference();
             groupRef = databaseReference.child("groups");
             groupRef.child(groupID).child("members").addValueEventListener(new ValueEventListener() {
                 @Override
@@ -207,7 +203,7 @@ public class NewExpenseActivity extends AppCompatActivity {
         //Aggiungo spesa a Firebase
         final String eID = databaseReference.child("expenses").push().getKey();
         databaseReference.child("expenses").child(eID).setValue(expense);
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
         databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_expensePhoto.jpg");

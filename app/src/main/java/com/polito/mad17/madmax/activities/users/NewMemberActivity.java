@@ -37,7 +37,6 @@ public class NewMemberActivity extends AppCompatActivity {
     //todo usare SharedPreferences invece della map globale alreadySelected
     public static HashMap<String, User> alreadySelected = new HashMap<>();
     private HashMapFriendsAdapter adapter;
-    //private String myselfID;
 
     private Button buttonInvite;
 
@@ -55,38 +54,29 @@ public class NewMemberActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //myselfID = intent.getStringExtra("UID");
 
-
         lv = (ListView) findViewById(R.id.members);
 
         databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot friendSnapshot: dataSnapshot.getChildren())
-                {
+                for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
                     getFriend(friendSnapshot.getKey());
                 }
 
                 adapter = new HashMapFriendsAdapter(friends);
                 lv.setAdapter(adapter);
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, databaseError.getMessage());
             }
         });
-
-
-
 
         //When i click on one friend of the list
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-
-
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     User item = adapter.getItem(position).getValue();
                     friends.remove(item.getID());
                     adapter.update(friends);
@@ -103,7 +93,6 @@ public class NewMemberActivity extends AppCompatActivity {
                     intent.putExtras(bundle);
 
                     startActivity(intent);
-
             }
         });
 
@@ -125,14 +114,10 @@ public class NewMemberActivity extends AppCompatActivity {
 
     }
 
-    public void getFriend(final String id)
-    {
-        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener()
-        {
-
+    public void getFriend(final String id) {
+        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 User u = new User();
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
@@ -140,22 +125,17 @@ public class NewMemberActivity extends AppCompatActivity {
 
                 //se l'amico letto da db non è già stato scelto, lo metto nella lista di quelli
                 //che saranno stampati
-                if (!alreadySelected.containsKey(u.getID()))
-                {
+                if (!alreadySelected.containsKey(u.getID())) {
                     friends.put(id, u);
                     adapter.update(friends);
                     adapter.notifyDataSetChanged();
                 }
-
-
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w(TAG, databaseError.getMessage());
             }
         });
     }
-
 }

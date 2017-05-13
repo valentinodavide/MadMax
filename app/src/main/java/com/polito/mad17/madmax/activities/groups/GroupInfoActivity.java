@@ -26,11 +26,12 @@ public class GroupInfoActivity extends AppCompatActivity {
 
     String groupID;
     String caller;
-    private ListView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ListView lv;
+
         //setContentView(R.layout.activity_group_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -39,12 +40,9 @@ public class GroupInfoActivity extends AppCompatActivity {
         groupID = intent.getStringExtra("groupID");
         caller = intent.getStringExtra("caller");
 
-
-
         //Button to add a new member
         Button newMemberButton = (Button) findViewById(R.id.addmember);
-        newMemberButton.setOnClickListener(new View.OnClickListener()
-        {
+        newMemberButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -53,7 +51,6 @@ public class GroupInfoActivity extends AppCompatActivity {
                 Intent intent = new Intent(context, destinationActivity);
                 intent.putExtra("groupID", groupID);
                 startActivity(intent);
-
             }
         });
 
@@ -77,15 +74,6 @@ public class GroupInfoActivity extends AppCompatActivity {
             }
         };
 
-
         lv.setAdapter(firebaseListAdapter);
-
-
-
-
-
-
-
     }
-
 }

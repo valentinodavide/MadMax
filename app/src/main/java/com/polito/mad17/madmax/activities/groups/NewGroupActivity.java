@@ -104,8 +104,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 //intent.putExtra("groupID", tempGroupID);
                 //startActivity(intent);
                 startActivityForResult(intent, 1);
-
-
             }
         });
 
@@ -131,9 +129,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         friendsViewAdapter.setMembersData(newmembers, MainActivity.myself);
         */
 
-
         Log.d(TAG, "Arrivato alla fine della OnCreate");
-
     }
 
     @Override
@@ -164,7 +160,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             //add new group to database
             String newgroup_id = databaseReference.child("groups").push().getKey();
             databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+            String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
             databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
             databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(newmembers.size());
 
@@ -227,8 +223,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         ByteArrayOutputStream baos=new  ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
         byte [] b=baos.toByteArray();
-        String temp=Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
+        return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
     @Override

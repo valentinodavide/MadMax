@@ -3,7 +3,6 @@ package com.polito.mad17.madmax.activities.expenses;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +16,15 @@ public class PendingExpensesFragment extends Fragment implements GroupsViewAdapt
 
     private static final String TAG = PendingExpensesFragment.class.getSimpleName();
 
+    //private RecyclerView recyclerView;
+    //private RecyclerView.LayoutManager layoutManager;
+    //private PendingExpensesViewAdapter groupsViewAdapter;
+
     private OnItemClickInterface onClickGroupInterface;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
     }
-
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-//    private PendingExpensesViewAdapter groupsViewAdapter;
 
     public PendingExpensesFragment() {}
 

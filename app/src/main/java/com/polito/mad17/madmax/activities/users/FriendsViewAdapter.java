@@ -35,7 +35,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         void onListItemClick(String clickedItemIndex);
     }
 
-    public FriendsViewAdapter(ListItemClickListener listener, Map<String, User> map) {
+    FriendsViewAdapter(ListItemClickListener listener, Map<String, User> map) {
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
@@ -53,7 +53,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         private TextView balanceTextView;
         private String ID;
 
-        public ItemFriendsViewHolder(View itemView) {
+        ItemFriendsViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
@@ -81,9 +81,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
-        ItemFriendsViewHolder itemFriendsViewHolder = new ItemFriendsViewHolder(view);
-
-        return itemFriendsViewHolder;
+        return new ItemFriendsViewHolder(view);
     }
 
     @Override
@@ -93,8 +91,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
 
         String photo = item.getValue().getProfileImage();
-        if (photo != null)
-        {
+        if (photo != null) {
             int photoUserId = Integer.parseInt(photo);
             holder.imageView.setImageResource(photoUserId);
         }
@@ -131,12 +128,9 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             }
         }
         */
-
-
-
     }
 
-    public Map.Entry<String, User> getItem(int position) {
+    private Map.Entry<String, User> getItem(int position) {
         return (Map.Entry) mData.get(position);
     }
 
@@ -144,7 +138,4 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     public int getItemCount() {
         return mData.size();
     }
-
-
-
 }

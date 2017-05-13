@@ -7,14 +7,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -35,16 +33,15 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
     private static final String TAG = GroupDetailActivity.class.getSimpleName();
 
-    private ImageView imageView;
-    private TextView nameTextView;
-    private TextView balanceTextView;
-    private String groupID;
-    private String userID;
-
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    private DatabaseReference groupRef;
+    //private ImageView imageView;
+    private TextView nameTextView;
+    //private TextView balanceTextView;
+    private String groupID;
+    private String userID;
+
     private Group groupDetails = new Group();
 
     private Bundle bundle = new Bundle();
@@ -54,15 +51,17 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_group_detail);
 
+        DatabaseReference groupRef;
+
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
 
         Log.d(TAG, "onCreate di GroupDetailActivity. Group: " + groupID);
 
-        imageView = (ImageView) findViewById(R.id.img_photo);
+        //imageView = (ImageView) findViewById(R.id.img_photo);
         nameTextView = (TextView) findViewById(R.id.tv_group_name);
-        balanceTextView = (TextView) findViewById(R.id.tv_balance);
+        //balanceTextView = (TextView) findViewById(R.id.tv_balance);
 
         Log.d(TAG, groupID);
 
@@ -77,7 +76,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.w(TAG, databaseError.toException());
             }
         });
 
@@ -145,11 +144,11 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
         });
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    private class PagerAdapter extends FragmentPagerAdapter {
 
         int numberOfTabs;
 
-        public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
+        PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
             super(fragmentManager);
             this.numberOfTabs = numberOfTabs;
         }
@@ -182,8 +181,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                     return membersFragment;
                 case 2:
                     Log.d(TAG, "here in case 1");
-                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
-                    return pendingExpensesFragment;
+                    return new PendingExpensesFragment();
                 default:
                     return null;
             }
@@ -205,8 +203,8 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
 
         Log.d(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        //FragmentManager fragmentManager = getSupportFragmentManager();
+        //FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         switch(fragmentName) {
             case "ExpensesFragment":

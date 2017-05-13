@@ -11,15 +11,15 @@ import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.Group;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemExpensesViewHolder> {
 
     private static final String TAG = ExpensesViewAdapter.class.getSimpleName();
+
+    private final ArrayList expenses;
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
@@ -29,9 +29,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         void onListItemClick(String clickedItemIndex);
     }
 
-    private final ArrayList expenses;
-
-    public ExpensesViewAdapter(ListItemClickListener listener, Map<String, Expense> expensesMap) {
+    ExpensesViewAdapter(ListItemClickListener listener, Map<String, Expense> expensesMap) {
         itemClickListener = listener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
@@ -42,9 +40,9 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         private ImageView imageView;
         private TextView nameTextView;
         private TextView smallTextView;
-        private String ID;
+        //private String ID;
 
-        public ItemExpensesViewHolder(View itemView) {
+        ItemExpensesViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
@@ -87,7 +85,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         }
 
         holder.nameTextView.setText(expense.getDescription());
-        holder.ID = expense.getID();
+        //holder.ID = expense.getID();
 
         holder.smallTextView.setText(expense.getAmount() + " " + expense.getCurrency());
 
@@ -98,7 +96,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         return expenses.size();
     }
 
-    public Map.Entry<String, Expense> getItem(int position) {
+    private Map.Entry<String, Expense> getItem(int position) {
         return (Map.Entry) expenses.get(position);
     }
 
@@ -106,5 +104,4 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         expenses.clear();
         expenses.addAll(map.entrySet());
     }
-
 }

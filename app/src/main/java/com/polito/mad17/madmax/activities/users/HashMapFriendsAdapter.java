@@ -54,7 +54,8 @@ public class HashMapFriendsAdapter extends BaseAdapter {
 
         if (convertView == null) {
             result = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        } else {
+        }
+        else {
             result = convertView;
         }
 
@@ -64,8 +65,6 @@ public class HashMapFriendsAdapter extends BaseAdapter {
         TextView balance=(TextView)result.findViewById(R.id.tv_balance);
         name.setText(item.getValue().getName() + " " + item.getValue().getSurname());
         balance.setVisibility(View.GONE);
-
-
 
         return result;
     }

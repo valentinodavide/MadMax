@@ -17,6 +17,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
 
+// todo cos'è?
 public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener {
 
     private static final String TAG = GroupDetailFragment.class.getSimpleName();

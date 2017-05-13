@@ -24,14 +24,15 @@ public class EmailVerificationActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
 
-    private Button verifyEmailButton;
-    private Button goToLoginButton;
     private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
+        Button verifyEmailButton;
+        Button goToLoginButton;
 
         setContentView(R.layout.activity_email_verification);
 

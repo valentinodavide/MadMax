@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -62,10 +61,8 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText usernameView;
     private EditText emailView;
     private EditText passwordView;
-    private TextView loginView;
     private ImageView profileImageView;
     private ProgressDialog progressDialog;
-    private Button signupButton;
 
     private String inviterUID = null;
 
@@ -76,6 +73,9 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
+        TextView loginView;
+        Button signupButton;
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 
@@ -38,8 +37,6 @@ public class LogInActivity extends AppCompatActivity {
     private EditText emailView; // where the user inserts the email
     private EditText passwordView;  // where the user inserts the password
     private ProgressDialog progressDialog;
-    private Button loginButton; // login button
-    private TextView signupView;    // link to the sign up activity
 
     private String inviterUID = null;
 
@@ -47,6 +44,9 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
+
+        Button loginButton; // login button
+        TextView signupView;    // link to the sign up activity
 
         Intent intent = getIntent();
         String action = intent.getAction();
