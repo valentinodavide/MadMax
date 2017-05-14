@@ -20,12 +20,9 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import static com.polito.mad17.madmax.activities.groups.NewGroupActivity.groups;
+
 public class User implements Parcelable {
-
-
-    private DatabaseReference mDatabase;
-
-
     private String ID;
     private String username;
     private String name;
@@ -45,7 +42,7 @@ public class User implements Parcelable {
     // todo siamo sicuri di fare sharedGroup?
     private HashMap<String, HashMap<String, Group>> sharedGroupPerFriend;   //String = UID of the friend, HashMap<String, Group> : String = GID of the shared group, Group = shared group
 
-    // constructor typically for creting the current user logged in
+    // constructor typically used for creting the current user logged in
     public User(String ID, String username, String name, String surname, String email, String password, String profileImage, String defaultCurrency) {
         this.ID = ID;
         this.username = username;
@@ -66,7 +63,7 @@ public class User implements Parcelable {
         this.sharedGroupPerFriend = new HashMap<>();
     }
 
-    // constructor typically used for populet userFriends of current User
+    // constructor typically used for populate userFriends of current User
     public User(String ID, String username, String name, String surname, String email, String profileImage) {
         this.ID = ID;
         this.username = username;
@@ -107,7 +104,6 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
         dest.writeString(ID);
         dest.writeString(name);
         dest.writeString(surname);
@@ -227,14 +223,13 @@ public class User implements Parcelable {
     public void setSharedGroupPerFriend(HashMap<String, HashMap<String, Group>> sharedGroupPerFriend) {
         this.sharedGroupPerFriend = sharedGroupPerFriend;
     }
-
     /*
         END GETTERS & SETTERS
      */
 
 
-    // method to encrypt password (Davide found on the internet)
-    public String encryptPassword (String passwordToHash) {
+    // method to encrypt password
+    private String encryptPassword (String passwordToHash) {
         String generatedPassword = null;
 
         try {
@@ -247,14 +242,13 @@ public class User implements Parcelable {
             // this bytes[] has bytes in decimal format;
             // convert it to hexadecimal format
             StringBuilder sb = new StringBuilder();
-            for(int i=0; i < bytes.length; i++) {
+            for (int i=0; i < bytes.length; i++) {
                 sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
             }
             // get complete hashed password in hex format
             generatedPassword = sb.toString();
         }
-        catch (NoSuchAlgorithmException e)
-        {
+        catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return generatedPassword;
@@ -360,8 +354,7 @@ public class User implements Parcelable {
 
 
 
-    public HashMap<String, Group> getSharedGroupsMap(User friend)
-    {
+    public HashMap<String, Group> getSharedGroupsMap(User friend) {
         HashMap<String, Group> mygroups = new HashMap<>();
         mygroups = this.getUserGroups();
 
@@ -372,8 +365,7 @@ public class User implements Parcelable {
     }
 
 
-    public ArrayList<Group> getSharedGroupsList (User friend)
-    {
+    public ArrayList<Group> getSharedGroupsList (User friend) {
         ArrayList<Group> mygroups = new ArrayList<>();
         HashMap<String, Group> mygroupsmap = new HashMap<>(this.getUserGroups());
         HashMap<String, Group> friendgroupsmap = new HashMap<>(friend.getUserGroups());
@@ -390,8 +382,6 @@ public class User implements Parcelable {
 
         return mygroups;
     }
-
-
 
     public String toString() {
         return name + " " + surname + " ";
@@ -410,8 +400,104 @@ public class User implements Parcelable {
     }
 
 
+    public void addFriend (final String friendID) {
+        final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
+        final DatabaseReference usersRef = databaseReference.child("users");
+        final DatabaseReference groupsRef = databaseReference.child("groups");
+        final String currentUID = this.getID();
 
+        // getting friend data from db
+        DatabaseReference friendRef = usersRef.child(friendID);
+        User friend = new User(
+                friendID,
+                friendRef.child("username").toString(),
+                friendRef.child("name").toString(),
+                friendRef.child("surname").toString(),
+                friendRef.child("email").toString(),
+                friendRef.child("profileImage").toString()
+        );
 
+        //Add friendID to friend list of currentUID
+        this.userFriends.put(friendID, friend); // add friend to current user local HashMap
+        usersRef.child(currentUID).child("friends").push();
+        usersRef.child(currentUID).child("friends").child(friendID).setValue("true");
 
+        //Add currentUID to friend list of friendID
+        usersRef.child(friendID).child("friends").push();
+        usersRef.child(friendID).child("friends").child(currentUID).setValue("true");
 
+        //Read groups currentUID belongs to
+        Query query = databaseReference.child("users").child(currentUID).child("groups");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final ArrayList<String> u1Groups = new ArrayList<String>();
+
+                for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
+                    u1Groups.add(groupSnapshot.getKey());
+                }
+
+                Query query = databaseReference.child("users").child(friendID).child("groups");
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ArrayList<String> sharedGroups = new ArrayList<String>();
+
+                        for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
+                            if (u1Groups.contains(groupSnapshot.getKey()))
+                                sharedGroups.add(groupSnapshot.getKey());
+                        }
+
+                        final HashMap<String, Group> groups = new HashMap<>();
+
+                        //ora in sharedGroups ci sono solo i gruppi di cui fanno parte entrambi gli utenti
+                        for (String groupID : sharedGroups) {
+                            // getting group data from db
+                            DatabaseReference groupRef = groupsRef.child(groupID);
+                            Group group = new Group(
+                                    groupID,
+                                    groupRef.child("name").toString(),
+                                    groupRef.child("image").toString(),
+                                    groupRef.child("description").toString(),
+                                    Integer.parseInt(groupRef.child("numberMembers").toString())
+                            );
+
+                            groups.put(friendID, group);
+                            usersRef.child(currentUID).child("friends").child(friendID).child(groupID).setValue("true");
+                            usersRef.child(friendID).child("friends").child(currentUID).child(groupID).setValue("true");
+                        }
+
+                        // add shared groups to local sharedGroupPerFriend HashMap
+                        sharedGroupPerFriend.put(friendID, groups);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.w("addFriendFirebase", databaseError.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.w("addFriendFirebase", databaseError.getMessage());
+            }
+        });
+    }
+
+    public void joinGroup (String groupID) {
+        final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
+        final String currentUID = this.getID();
+
+        //Aggiungo gruppo alla lista gruppi dello user
+        databaseReference.child("users").child(currentUID).child("groups").push();
+        databaseReference.child("users").child(currentUID).child("groups").child(groupID).setValue("true");
+
+        //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
+        databaseReference.child("groups").child(groupID).child("members").push();
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("admin").setValue("false");
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue("time");
+    }
 }

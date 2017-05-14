@@ -22,4 +22,6 @@
     <string name="balance">Bilancio</string>
     <string name="history">Storico</string>
     <string name="members">Membri</string>
+    <string name="weak_password">Almeno 6 caratteri!</string>
+
 </resources>

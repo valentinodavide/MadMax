@@ -40,6 +40,7 @@
     <string name="balance">Balance</string>
     <string name="history">History</string>
     <string name="members">Members</string>
+    <string name="weak_password">At least 6 characters!</string>
 
     <string-array name="currencies">
         <item>€</item>

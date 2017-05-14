@@ -26,8 +26,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -182,22 +186,23 @@ public class SignUpActivity extends AppCompatActivity {
                 // the auth state listener will be notified and logic to handle the
                 // signed in user can be handled in the listener.
                 if (!task.isSuccessful()) {
-                    if(task.getException() instanceof com.google.firebase.auth.FirebaseAuthUserCollisionException){
-                        Log.d(TAG,"account creation failed. Email already in use!");
-
-                        Toast.makeText(SignUpActivity.this, "This email is already registered...account not created",Toast.LENGTH_LONG).show();
+                    try {
+                        throw task.getException();
                     }
-                    else if (task.getException() instanceof com.google.firebase.auth.FirebaseAuthWeakPasswordException) {
-                        Log.d(TAG,"account creation failed. Weak password!");
-
-                        Toast.makeText(SignUpActivity.this, "Your password is too short!",Toast.LENGTH_LONG).show();
+                    catch(FirebaseAuthWeakPasswordException e) {
+                        passwordView.setError(e.getReason());
+                        passwordView.requestFocus();
                     }
-                    else {
-                        Log.e(TAG, task.getException().getMessage());
+                    catch(FirebaseAuthUserCollisionException e) {
+                        emailView.setError(e.getMessage());
+                        emailView.requestFocus();
+                    }
+                    catch(Exception e) {
+                        Log.e(TAG, e.getClass().toString() + ", message: " + e.getMessage());
+                        Toast.makeText(SignUpActivity.this, "An error occured", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Log.d(TAG,"account creation succeded.");
-
                     sendVerificationEmail();
                 }
             }
@@ -369,6 +374,9 @@ public class SignUpActivity extends AppCompatActivity {
         String password = passwordView.getText().toString();
         if (TextUtils.isEmpty(password)) {
             passwordView.setError(getString(R.string.required));
+            valid = false;
+        } else if (passwordView.length() < 6){
+            passwordView.setError(getString(R.string.weak_password));
             valid = false;
         } else {
             passwordView.setError(null);

@@ -38,25 +38,35 @@ public class LogInActivity extends AppCompatActivity {
     private EditText passwordView;  // where the user inserts the password
     private ProgressDialog progressDialog;
 
-    private String inviterUID = null;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
 
-        Button loginButton; // login button
+        final String inviterUID, groupToBeAddedID;
+
+        Button loginButton;     // login button
         TextView signupView;    // link to the sign up activity
 
+        // getting Intent from invitation
         Intent intent = getIntent();
+
         String action = intent.getAction();
         Log.d(TAG, "action " + action);
+
+        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
         Uri data = intent.getData();
         if(data != null) {
+            // to be used to set the current user as friend of the inviter
             inviterUID = data.getQueryParameter("inviterUID");
-
-            Log.d(TAG, "inviterUID " + inviterUID);
+            //groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
         }
+        else {
+            inviterUID = null;
+            //groupToBeAddedID = null;
+            Log.e(TAG, "invitation failed?");
+        }
+
 
         auth = FirebaseAuth.getInstance();
 
@@ -76,9 +86,16 @@ public class LogInActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     intent.putExtra("UID", currentUser.getUid());
+
                     if(inviterUID != null) {
                         intent.putExtra("inviterUID", inviterUID);
                     }
+
+                    /*
+                    if (groupToBeAddedID != null) {
+                        intent.putExtra("groupToBeAddedID", groupToBeAddedID);
+                    }*/
+
                     startActivity(intent);
                     finish();
                 }
@@ -96,7 +113,6 @@ public class LogInActivity extends AppCompatActivity {
                         Log.i(TAG, subTag+" user has done the logout");
                     }
                 }
-
             }
         };
 
@@ -136,8 +152,8 @@ public class LogInActivity extends AppCompatActivity {
                 // todo aggiustare back button
                 Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
                 PendingIntent pendingIntent = TaskStackBuilder.create(getApplicationContext())
-                                                        .addNextIntentWithParentStack(intent)
-                                                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+                    .addNextIntentWithParentStack(intent)
+                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                 builder.setContentIntent(pendingIntent);
@@ -145,7 +161,6 @@ public class LogInActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     @Override
@@ -156,14 +171,15 @@ public class LogInActivity extends AppCompatActivity {
         auth.addAuthStateListener(authListener); // attach the listener to the FirebaseAuth instance
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        Log.i(TAG, "onStop");
-//
-//        if (authListener != null)  // detach the listener to the FirebaseAuth instance
-//            auth.removeAuthStateListener(authListener);
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+
+        if (authListener != null)  // detach the listener to the FirebaseAuth instance
+            auth.removeAuthStateListener(authListener);
+    }
+
 
     private void signIn(String email, String password){
         Log.i(TAG, "signIn");

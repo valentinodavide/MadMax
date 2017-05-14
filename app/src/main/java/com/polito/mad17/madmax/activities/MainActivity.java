@@ -64,8 +64,12 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         Log.i(TAG, "onCreate");
 
+        final String currentUID, inviterUID, groupToBeAddedID;
+        final boolean alreadyFriends, alreadyInGroup;
         String[] drawerOptions;
         //DrawerLayout drawerLayout;
         ListView drawerList;
@@ -74,14 +78,30 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
 
-        setContentView(R.layout.activity_main);
 
         // getting currentUID from Intent (from LogInActivity or EmailVerificationActivity)
         Intent i = getIntent();
-        final String currentUID = i.getStringExtra("UID");
+        currentUID = i.getStringExtra("UID");
+
+        // getting invitation info if coming from LogInActivity after an Invitation
+        if (i.hasExtra("inviterUID")) {
+            inviterUID = i.getStringExtra("inviterUID");
+        }
+        else {
+            inviterUID = null;
+        }
+
+        /*
+        if (i.hasExtra("groupToBeAddedID")) {
+            groupToBeAddedID = i.getStringExtra("groupToBeAddedID");
+        }
+        else {
+            groupToBeAddedID = null;
+        }*/
+
 
         final DatabaseReference usersRef = databaseReference.child("users");
-        final DatabaseReference groupRef = databaseReference.child("groups");
+        final DatabaseReference groupsRef = databaseReference.child("groups");
 
         // getting currentUserRef from db
         DatabaseReference currentUserRef = usersRef.child(currentUID);
@@ -94,14 +114,14 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
         // creating an object for current user
         currentUser = new User(
-                currentUserRef.getKey(),
-                currentUserRef.child("username").toString(),
-                currentUserRef.child("name").toString(),
-                currentUserRef.child("surname").toString(),
-                currentUserRef.child("email").toString(),
-                currentUserRef.child("password").toString(),
-                currentUserRef.child("profileImage").toString(),
-                currentUserRef.child("defaultCurrency").toString()
+            currentUserRef.getKey(),
+            currentUserRef.child("username").toString(),
+            currentUserRef.child("name").toString(),
+            currentUserRef.child("surname").toString(),
+            currentUserRef.child("email").toString(),
+            currentUserRef.child("password").toString(),
+            currentUserRef.child("profileImage").toString(),
+            currentUserRef.child("defaultCurrency").toString()
         );
 
 
@@ -117,27 +137,27 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 for (DataSnapshot friendSnapshot : friendsSnapshot.getChildren()) {
                     // populate balanceWithUsers for the logged User
                     String friendID = friendSnapshot.getKey();
-                    DatabaseReference friendRef = friendSnapshot.getRef();
+                    DatabaseReference userFriendRef = friendSnapshot.getRef();
 
                     balanceWithUsers.put(
                             friendID,
-                            Double.parseDouble(friendRef.child("balanceWithUser").toString())
+                            Double.parseDouble(userFriendRef.child("balanceWithUser").toString())
                     );
 
                     // populate userFriends of the logged User
-                    DatabaseReference userFriendsRef = usersRef.child(friendID);
-                    User userFriend = new User(
+                    DatabaseReference friendRef = usersRef.child(friendID);
+                    User friend = new User(
                             friendID,
-                            userFriendsRef.child("username").toString(),
-                            userFriendsRef.child("name").toString(),
-                            userFriendsRef.child("surname").toString(),
-                            userFriendsRef.child("email").toString(),
-                            userFriendsRef.child("profileImage").toString()
+                            friendRef.child("username").toString(),
+                            friendRef.child("name").toString(),
+                            friendRef.child("surname").toString(),
+                            friendRef.child("email").toString(),
+                            friendRef.child("profileImage").toString()
                     );
 
                     userFriends.put(
                             friendID,
-                            userFriend
+                            friend
                     );
 
                     // todo siamo sicuri di volere shared_groups? sono da recuperare qui da db
@@ -172,20 +192,20 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                     );
 
                     // populate userGroups of the logged User
-                    DatabaseReference userGroupsRef = groupRef.child(groupID);
-                    Group userGroup = new Group(
+                    DatabaseReference groupRef = groupsRef.child(groupID);
+                    Group group = new Group(
                             groupID,
-                            userGroupsRef.child("name").toString(),
-                            userGroupsRef.child("image").toString(),
-                            userGroupsRef.child("description").toString(),
-                            0
+                            groupRef.child("name").toString(),
+                            groupRef.child("image").toString(),
+                            groupRef.child("description").toString(),
+                            Integer.parseInt(groupRef.child("numberMembers").toString())
                     );
 
                     // todo qui ci sono ancora da recuperare le spese e i membri del gruppo corrente
 
                     userGroups.put(
                             groupID,
-                            userGroup
+                            group
                     );
                 }
             }
@@ -196,6 +216,24 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+
+
+        if (inviterUID != null) {
+            alreadyFriends = userFriends.containsKey(inviterUID);
+
+            if (!alreadyFriends) {
+                currentUser.addFriend(inviterUID);
+            }
+        }
+
+        /*
+        if (groupToBeAddedID != null) {
+            alreadyInGroup = userFriends.containsKey(groupToBeAddedID);
+
+            if (!alreadyInGroup) {
+                currentUser.joinGroup(groupToBeAddedID);
+            }
+        }*/
 
 
         drawerOptions = getResources().getStringArray(R.array.drawerItem);
@@ -219,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 }
                 else if(position == 0){
                     Log.d(TAG, "my ID is " + currentUser.getID());
-                    String deepLink = R.string.invitation_deep_link + "?inviterUID=" + currentUser.getID();
+                    String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + currentUser.getID();
 
                     Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                             .setDeepLink(Uri.parse(deepLink))
@@ -278,9 +316,54 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 NewGroupActivity.newmembers.put(currentUser.getID(), currentUser);  //inizialmente l'unico membro del nuovo gruppo sono io
                 //myIntent.putExtra("groupID", tempGroupID);
                 MainActivity.this.startActivity(myIntent);
-
             }
         });
+
+
+
+/*
+        // Create an auto-managed GoogleApiClient with access to App Invites.
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(AppInvite.API)
+                .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+                        Log.e(TAG, connectionResult.toString());
+                    }
+                })
+                .build();
+
+
+        // Check for App Invite invitations and launch deep-link activity if possible.
+        // Requires that an Activity is registered in AndroidManifest.xml to handle
+        // deep-link URLs.
+        boolean autoLaunchDeepLink = true;
+        AppInvite.AppInviteApi.getInvitation(mGoogleApiClient, this, autoLaunchDeepLink)
+                .setResultCallback(
+                        new ResultCallback<AppInviteInvitationResult>() {
+                            @Override
+                            public void onResult(AppInviteInvitationResult result) {
+                                Log.d(TAG, "getInvitation:onResult:" + result.getStatus());
+                                if (result.getStatus().isSuccess()) {
+                                    // Extract information from the intent
+                                    Intent intent = result.getInvitationIntent();
+                                    String deepLink = AppInviteReferral.getDeepLink(intent);
+                                    String invitationId = AppInviteReferral.getInvitationId(intent);
+
+                                    Log.d(TAG, "deepLink: " + deepLink);
+                                    Log.d(TAG, "invitationId: " + invitationId);
+
+                                    // Because autoLaunchDeepLink = true we don't have to do anything
+                                    // here, but we could set that to false and manually choose
+                                    // an Activity to launch to handle the deep link here.
+                                    // ...
+                                }
+                            }
+                        });
+
+*/
+
+
     }
 
     @Override
@@ -293,17 +376,11 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                 // Get the invitation IDs of all sent messages
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
 
-                //String deepLink = AppInviteReferral.getDeepLink(data);
-                //int idPositionInDeepLink = deepLink.lastIndexOf("inviterID=");
-
-                //Log.d(TAG, "onActivityResult: deepLink: " + deepLink);
-                //Log.d(TAG, "onActivityResult: idPositionInDeepLink: " + idPositionInDeepLink);
-
-
                 for (String id : ids) {
                     Log.i(TAG, "onActivityResult: sent invitation " + id);
                 }
-            } else {
+            }
+            else {
                 // Sending failed or it was canceled, show failure message to the user
                 Log.e(TAG, "onActivityResult: failed sent");
 
@@ -389,7 +466,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
 
 
     public String addExpenseFirebase(Expense expense) {
-
         //Aggiungo spesa a Firebase
         String eID = databaseReference.child("expenses").push().getKey();
         databaseReference.child("expenses").child(eID).setValue(expense);
@@ -438,7 +514,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 Double amount = 0d; //spesa totale nel gruppo
 
                 DataSnapshot groupSnapshot = dataSnapshot.child("groups").child(groupID);
@@ -496,8 +571,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
                         // => allora lo devo aggiungere
                         databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
                     }
-
-
                 }
             }
 
@@ -601,74 +674,6 @@ public class MainActivity extends AppCompatActivity implements OnItemClickInterf
     */
 
 
-    }
-
-    public void joinGroupFirebase (final String userID, String groupID) {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        //Aggiungo gruppo alla lista gruppi dello user
-        databaseReference.child("users").child(userID).child("groups").push();
-        databaseReference.child("users").child(userID).child("groups").child(groupID).setValue("true");
-        //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
-        databaseReference.child("groups").child(groupID).child("members").push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
-
-    }
-
-    public void addFriendFirebase (final String user1ID, final String user2ID) {
-        //Add u2 to friend list of u1
-        databaseReference.child("users").child(user1ID).child("friends").push();
-        databaseReference.child("users").child(user1ID).child("friends").child(user2ID).setValue("true");
-        //Add u1 to friend list of u2
-        databaseReference.child("users").child(user2ID).child("friends").push();
-        databaseReference.child("users").child(user2ID).child("friends").child(user1ID).setValue("true");
-
-        //Read groups u1 belongs to
-        Query query = databaseReference.child("users").child(user1ID).child("groups");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                final ArrayList<String> u1Groups = new ArrayList<String>();
-
-                for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
-                    u1Groups.add(groupSnapshot.getKey());
-                }
-
-                Query query = databaseReference.child("users").child(user2ID).child("groups");
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        ArrayList<String> sharedGroups = new ArrayList<String>();
-
-                        for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
-                            if (u1Groups.contains(groupSnapshot.getKey()))
-                                sharedGroups.add(groupSnapshot.getKey());
-                        }
-
-                        //ora in sharedGroups ci sono solo i gruppi di cui fanno parte entrambi gli utenti
-                        for (String groupID : sharedGroups) {
-                            databaseReference.child("users").child(user1ID).child("friends").child(user2ID).child(groupID).setValue("true");
-                            databaseReference.child("users").child(user2ID).child("friends").child(user1ID).child(groupID).setValue("true");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, databaseError.getMessage());
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, databaseError.getMessage());
-            }
-        });
     }
 
 
