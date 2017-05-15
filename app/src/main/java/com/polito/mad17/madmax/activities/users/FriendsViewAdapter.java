@@ -1,7 +1,6 @@
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -104,16 +103,13 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         //mydebt = mio debito con il membro f
         /*
         Double mydebt = myself.getBalanceWithUsers().get(friend.getID());
-
         DecimalFormat df = new DecimalFormat("#.##");
-
         if (mydebt != null)
         {
             if (mydebt > 0)
             {
                 holder.smallTextView.setText("+ " + df.format(mydebt) + " €");
                 holder.smallTextView.setBackgroundResource(R.color.greenBalance);
-
             }
             else if (mydebt < 0)
             {
@@ -124,7 +120,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             {
                 holder.smallTextView.setText("" + df.format(mydebt) + " €");
                 holder.smallTextView.setBackgroundResource(R.color.greenBalance);
-
             }
         }
         */

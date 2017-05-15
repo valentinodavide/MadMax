@@ -2,11 +2,13 @@ package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +36,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.Expense;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -121,20 +126,34 @@ public class NewExpenseActivity extends AppCompatActivity {
         Log.i(TAG, "onActivityResult");
 
         // first of all control if is the requested result and if it return something
-        if(requestCode==PICK_EXPENSE_PHOTO_REQUEST && data != null && data.getData()!=null){
+        if (requestCode == PICK_EXPENSE_PHOTO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
             Uri uri = data.getData();
+
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                expensePhoto.setImageBitmap(bitmap);
+                // Log.d(TAG, String.valueOf(bitmap));
+                Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(expensePhoto);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        else  if(requestCode==PICK_BILL_PHOTO_REQUEST && data != null && data.getData()!=null){
+
+        // first of all control if is the requested result and if it return something
+        if (requestCode == PICK_BILL_PHOTO_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
             Uri uri = data.getData();
+
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                billPhoto.setImageBitmap(bitmap);
+                // Log.d(TAG, String.valueOf(bitmap));
+                Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(billPhoto);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -195,6 +214,62 @@ public class NewExpenseActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+   /* riky: probabilmente non più necessaria
+   // resize loaded image to avoid OutOfMemory errors
+    private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
+
+        // Decode image size
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o);
+
+        // The new size we want to scale to
+        final int REQUIRED_SIZE = 140;
+
+        // Find the correct scale value. It should be the power of 2.
+        int width_tmp = o.outWidth, height_tmp = o.outHeight;
+        int scale = 1;
+        while (true) {
+            if (width_tmp / 2 < REQUIRED_SIZE
+                    || height_tmp / 2 < REQUIRED_SIZE) {
+                break;
+            }
+            width_tmp /= 2;
+            height_tmp /= 2;
+            scale *= 2;
+        }
+
+        // Decode with inSampleSize
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
+
+    }*/
+
+    // check if both email and password form are filled
+    private boolean validateForm() {
+        Log.i(TAG, "validateForm");
+
+        boolean valid  = true;
+
+        String d = description.getText().toString();
+        if (TextUtils.isEmpty(d)) {
+            description.setError(getString(R.string.required));
+            valid = false;
+        } else {
+            description.setError(null);
+        }
+
+        String a = amount.getText().toString();
+        if (TextUtils.isEmpty(a)) {
+            amount.setError(getString(R.string.required));
+            valid = false;
+        } else {
+            amount.setError(null);
+        }
+        return valid;
     }
 
     public String addExpenseFirebase(final Expense expense) {

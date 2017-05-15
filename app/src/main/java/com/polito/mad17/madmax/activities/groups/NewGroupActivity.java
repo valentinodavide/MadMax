@@ -113,19 +113,15 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
         /*
         recyclerView = (RecyclerView) findViewById(R.id.members);
-
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
-
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
         // specify an adapter (see also next example)
         friendsViewAdapter = new FriendsViewAdapter(this);
         recyclerView.setAdapter(friendsViewAdapter);
-
         friendsViewAdapter.setMembersData(newmembers, MainActivity.myself);
         */
 
@@ -181,7 +177,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 newGroup = new Group(newID.toString(), name, imageString, description);
             else
                 newGroup = new Group(newID.toString(), name, String.valueOf(R.mipmap.group), description);
-
             groups.put(newGroup.getID(), newGroup);
             */
 

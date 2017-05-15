@@ -21,15 +21,16 @@ import java.util.Map;
 
 public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = GroupsViewAdapter.class.getSimpleName();
-
     private final ArrayList mData;
-
-    //public static HashMap<String, Group> groups = new HashMap<>();
-    //public static User myself;
+    private static final String TAG = GroupsViewAdapter.class.getSimpleName();
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
+
+    //public static HashMap<String, Group> groups = new HashMap<>();
+    public static User myself;
+
+
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -40,6 +41,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+
+
     }
 
     public void update(Map<String, Group> map) {
@@ -47,14 +50,14 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         mData.addAll(map.entrySet());
     }
 
-    private class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView imageView;
         private TextView nameTextView;
         private TextView smallTextView;
-        //private String ID;
+        private String ID;
 
-        ItemGroupViewHolder(View itemView) {
+        public ItemGroupViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
@@ -113,7 +116,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         //groupViewHolder.nameTextView.setText(groups.get(String.valueOf(position)).getName());
         //groupViewHolder.ID = groups.get(String.valueOf(position)).getID();
         groupViewHolder.nameTextView.setText(item.getValue().getName());
-        //groupViewHolder.ID = item.getValue().getID();
+        groupViewHolder.ID = item.getValue().getID();
         //groupViewHolder.smallTextView.setText(item.getValue().getBalance().toString());
 
         //todo mettere debito verso il gruppo
@@ -146,7 +149,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     }
 
-    private Map.Entry<String, Group> getItem(int position) {
+
+    public Map.Entry<String, Group> getItem(int position) {
         return (Map.Entry) mData.get(position);
     }
 
@@ -154,4 +158,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getItemCount() {
         return mData.size();
     }
+
+
 }

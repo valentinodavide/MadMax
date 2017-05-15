@@ -81,7 +81,7 @@
                 android:layout_marginBottom="24dp"
                 android:clickable="true"
                 android:scaleType="centerInside"
-                android:src="@drawable/group" />
+                android:src="@drawable/add_photo" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
                 android:layout_marginBottom="24dp"
                 android:layout_gravity="center"
                 android:scaleType="centerInside"
-                android:src="@drawable/group"
+                android:src="@drawable/add_photo"
                 android:clickable="true"/>
         </LinearLayout>
     </ScrollView>

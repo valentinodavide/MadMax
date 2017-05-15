@@ -98,15 +98,11 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         /*
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
-
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
         groupsViewAdapter = new GroupsViewAdapter(this);
         recyclerView.setAdapter(groupsViewAdapter);
-
         groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
-
         Log.d(TAG, "dopo setAdapter");
         */
 

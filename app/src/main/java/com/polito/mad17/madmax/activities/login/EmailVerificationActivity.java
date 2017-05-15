@@ -24,6 +24,8 @@ public class EmailVerificationActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
 
+    private Button verifyEmailButton;
+    private Button goToLoginButton;
     private ProgressDialog progressDialog;
 
     @Override
@@ -31,12 +33,11 @@ public class EmailVerificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
 
-        Button verifyEmailButton;
-        Button goToLoginButton;
-
         setContentView(R.layout.activity_email_verification);
 
         progressDialog = new ProgressDialog(this);
+
+        auth = FirebaseAuth.getInstance(); // TODO: RIKY -> aggiunta per ottenere l'istanza dell'utente loggato
 
         verifyEmailButton = (Button)findViewById(R.id.send_verification_button);
         verifyEmailButton.setOnClickListener(new View.OnClickListener() {

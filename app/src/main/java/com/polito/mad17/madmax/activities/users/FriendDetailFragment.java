@@ -1,3 +1,4 @@
+/* riky: non più utilizzato
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
@@ -120,16 +121,14 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         });
 
 
+*/
 /*        User friendDetail = null;
         if(bundle != null) {
             friendDetail = bundle.getParcelable("friendDetails");
-
             String photo = friendDetail.getProfileImage();
             int photoUserId = Integer.parseInt(photo);
             imageView.setImageResource(photoUserId);
-
             nameTextView.setText(friendDetail.getName() + " " + friendDetail.getSurname());
-
             Double balance = 0.0;
             // todo controlla se giusto come dato
             if(friendDetail.getBalanceWithUsers() != null) {
@@ -139,10 +138,8 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
                     }
                 }
             }
-
             DecimalFormat df = new DecimalFormat("#.##");
             balanceTextView.setText(df.format(Math.abs(balance)) + " €");
-
             if (balance > 0) {
                 balanceTextTextView.setText(R.string.you_should_receive);
             } else if (balance < 0) {
@@ -150,7 +147,8 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
             } else {
                 balanceTextTextView.setText(R.string.no_debts);
             }
-        }*/
+        }*//*
+
 
         return view;
     }
@@ -199,4 +197,4 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
             }
         });
     }
-}
+}*/

@@ -63,7 +63,7 @@ public class GroupInfoActivity extends AppCompatActivity {
                 User.class,   //classe in cui viene messo il dato letto (?)
                 R.layout.list_item,   //layout del singolo item
                 databaseReference.child("groups").child(groupID).child("members")  //nodo del db da cui leggo
-                ) {
+        ) {
             @Override
             protected void populateView(View v, User model, int position) {
 

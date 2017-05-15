@@ -153,4 +153,6 @@ public class GroupExpensesActivity extends AppCompatActivity {
 
         lv.setAdapter(a);
     }
+
+
 }

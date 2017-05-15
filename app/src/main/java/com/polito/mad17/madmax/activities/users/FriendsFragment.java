@@ -78,7 +78,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         if (activityName.equals("MainActivity"))
             query = databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends");
 
-        //Se sono dentro un gruppo, visualizzo lista membri del gruppo
+            //Se sono dentro un gruppo, visualizzo lista membri del gruppo
         else if (activityName.equals("GroupDetailActivity"))
         {
             Bundle b = this.getArguments();

@@ -77,22 +77,22 @@ public class NewMemberActivity extends AppCompatActivity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    User item = adapter.getItem(position).getValue();
-                    friends.remove(item.getID());
-                    adapter.update(friends);
-                    adapter.notifyDataSetChanged();
+                User item = adapter.getItem(position).getValue();
+                friends.remove(item.getID());
+                adapter.update(friends);
+                adapter.notifyDataSetChanged();
 
-                    alreadySelected.put(item.getID(), item);
+                alreadySelected.put(item.getID(), item);
 
-                    Context context = NewMemberActivity.this;
-                    Class destinationActivity = NewGroupActivity.class;
-                    Intent intent = new Intent(context, destinationActivity);
-                    intent.putExtra("UID", MainActivity.getCurrentUser().getID());
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("userAdded", item);
-                    intent.putExtras(bundle);
+                Context context = NewMemberActivity.this;
+                Class destinationActivity = NewGroupActivity.class;
+                Intent intent = new Intent(context, destinationActivity);
+                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("userAdded", item);
+                intent.putExtras(bundle);
 
-                    startActivity(intent);
+                startActivity(intent);
             }
         });
 

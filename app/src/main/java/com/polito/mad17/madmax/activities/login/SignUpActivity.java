@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,6 +45,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -65,8 +68,10 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText usernameView;
     private EditText emailView;
     private EditText passwordView;
+    private TextView loginView;
     private ImageView profileImageView;
     private ProgressDialog progressDialog;
+    private Button signupButton;
 
     private String inviterUID = null;
 
@@ -77,9 +82,6 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate");
-
-        TextView loginView;
-        Button signupButton;
 
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -152,11 +154,18 @@ public class SignUpActivity extends AppCompatActivity {
         Log.i(TAG, "onActivityResult");
 
         // first of all control if is the requested result and if it return something
-        if(requestCode==PICK_IMAGE_REQUEST && data != null && data.getData()!=null){
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
             Uri uri = data.getData();
+
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                profileImageView.setImageBitmap(bitmap);
+                // Log.d(TAG, String.valueOf(bitmap));
+                Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(profileImageView);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -215,9 +224,9 @@ public class SignUpActivity extends AppCompatActivity {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Log.e(TAG, "Error while retrieving current user from db");
+            Log.e(TAG, "Error while retriving current user from db");
 
-            Toast.makeText(SignUpActivity.this, "Error while retrieving current user from db",Toast.LENGTH_LONG).show();
+            Toast.makeText(SignUpActivity.this, "Error while retriving current user from db",Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -262,43 +271,44 @@ public class SignUpActivity extends AppCompatActivity {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
 
                 u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
+
+                user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+                        if(task.isSuccessful()){
+                            Log.i(TAG, "verification email successful sent");
+
+                            Log.i(TAG, "insert new user into db");
+
+                            HashMap<String,String> newUserEntry = new HashMap<>();
+
+                            newUserEntry.put("email",       u.getEmail());
+                            newUserEntry.put("password",    u.getPassword());
+                            newUserEntry.put("friends",     u.getUserFriends().toString());
+                            newUserEntry.put("groups",      u.getUserGroups().toString());
+                            newUserEntry.put("image",       u.getProfileImage());
+                            newUserEntry.put("name",        u.getName());
+                            newUserEntry.put("surname",     u.getSurname());
+
+                            databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                        }
+                        else {
+                            // todo delete the account and restart the activity
+                            Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                        }
+
+                        Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+
             }
         });
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
-
-        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                progressDialog.dismiss();
-                if(task.isSuccessful()){
-                    Log.i(TAG, "verification email successful sent");
-
-                    Log.i(TAG, "insert new user into db");
-
-                    HashMap<String,String> newUserEntry = new HashMap<>();
-
-                    newUserEntry.put("email",       u.getEmail());
-                    newUserEntry.put("password",    u.getPassword());
-                    newUserEntry.put("friends",     u.getUserFriends().toString());
-                    newUserEntry.put("groups",      u.getUserGroups().toString());
-                    newUserEntry.put("image",       u.getProfileImage());
-                    newUserEntry.put("name",        u.getName());
-                    newUserEntry.put("surname",     u.getSurname());
-
-                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
-                }
-                else {
-                    // todo delete the account and restart the activity
-                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
-                }
-
-                Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
     }
 
     @Override

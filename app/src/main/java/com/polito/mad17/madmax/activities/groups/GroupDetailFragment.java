@@ -1,3 +1,4 @@
+/*
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
@@ -17,7 +18,6 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
 
-// todo cos'è?
 public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener {
 
     private static final String TAG = GroupDetailFragment.class.getSimpleName();
@@ -62,24 +62,27 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
         //todo mettere a posto
         //groupsViewAdapter.setGroupsData(MainActivity.myself.getUserGroups(), MainActivity.myself);
 
-        /* Preso dalla vecchia activity
+        */
+/* Preso dalla vecchia activity
         ImageView photo = (ImageView) view.findViewById(R.id.photo);
         TextView name=(TextView)view.findViewById(R.id.name);
         TextView surname=(TextView)view.findViewById(R.id.surname);
         TextView balancetext=(TextView) view.findViewById(R.id.balancetext);
         TextView balance=(TextView) view.findViewById(R.id.balance);
-        */
+        *//*
+
 
 
 
         //nameTextView.setText(friendDetail.getName() + " " + friendDetail.getSurname());
-        nameTextView =(TextView)view.findViewById(R.id.tv_group_name);
+   //     nameTextView =(TextView)view.findViewById(R.id.tv_group_name);
 
-        nameTextView.setText("Nome Gruppo");
+    //    nameTextView.setText("Nome Gruppo");
 
 
         //Extract data from bundle
-       /* Bundle bundle = this.getArguments();
+       */
+/* Bundle bundle = this.getArguments();
         User friendDetail = null;
         if(bundle != null) {
             friendDetail = (User) bundle.getParcelable("friendDetails");
@@ -110,7 +113,8 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
             } else {
                 balanceTextTextView.setText(R.string.no_debts);
             }
-        }*/
+        }*//*
+
 
         return view;
     }
@@ -142,3 +146,4 @@ public class GroupDetailFragment extends Fragment implements ExpensesViewAdapter
     }
 
 }
+*/
