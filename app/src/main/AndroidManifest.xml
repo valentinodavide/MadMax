@@ -51,7 +51,8 @@
         <activity android:name=".activities.groups.GroupDetailActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <activity android:name=".activities.groups.NewGroupActivity" />
+        <activity android:name=".activities.groups.NewGroupActivity"
+            android:parentActivityName=".activities.MainActivity"/>
 
         <activity android:name=".activities.groups.GroupInfoActivity"
             android:label="@string/title_activity_group_info"
@@ -78,7 +79,8 @@
         </activity>
 
         <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleInstance"/>
 
 
     </application>

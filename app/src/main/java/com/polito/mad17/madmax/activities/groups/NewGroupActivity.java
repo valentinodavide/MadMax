@@ -1,9 +1,12 @@
 package com.polito.mad17.madmax.activities.groups;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -18,8 +21,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
@@ -40,6 +50,8 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
+    private StorageReference storageReference = firebaseStorage.getReference();
 
     private EditText nameGroup;
     private EditText descriptionGroup;
@@ -58,7 +70,11 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     //private String myselfID;
 
     public static HashMap<String, Group> groups = MainActivity.getCurrentUser().getUserGroups();
+    private Uri ImageUri;
 
+    @TargetApi(23) // used for letting AndroidStudio know that method requestPermissions() is called
+    // in a controlled way: in particular it must be accessed only if API >= 23, and we guarantee it
+    // via the static method MainActivity.shouldAskPermission()
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,24 +85,30 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         nameGroup = (EditText) findViewById(R.id.et_name_group);
         descriptionGroup = (EditText) findViewById(R.id.et_description_group);
         imageGroup = (ImageView) findViewById(R.id.group_image);
-//        imageGroup.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // allow to choose the group image
-//                Intent intent = new Intent();
-//                // Show only images, no videos or anything else
-//                intent.setType("image/*");
-//                intent.setAction(Intent.ACTION_GET_CONTENT);
-//                // Always show the chooser (if there are multiple options available)
-//                startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_IMAGE_REQUEST);
-//            }
-//        });
+        imageGroup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "image clicked");
 
-        Intent intent = getIntent();
-        //myselfID = intent.getStringExtra("UID");
-        Bundle b = getIntent().getExtras();
-        if (b != null)
-            userAdded = b.getParcelable("userAdded");
+                if (MainActivity.shouldAskPermission()) {
+                    String[] perms = {"android.permission.READ_EXTERNAL_STORAGE"};
+
+                    int permsRequestCode = 200;
+                    requestPermissions(perms, permsRequestCode);
+                }
+                // allow to the user the choose his profile image
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_IMAGE_REQUEST);
+                // now see onActivityResult
+            }
+        });
+
+        // retrieve the current user from the intent, he will be the first member of the new group
+        userAdded= getIntent().getParcelableExtra("userAdded");
         if (userAdded != null)
             newmembers.put(userAdded.getID(), userAdded);
 
@@ -138,6 +160,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     //When i click SAVE
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int itemThatWasClickedId = item.getItemId();
 
         if (itemThatWasClickedId == R.id.action_save) {
@@ -151,24 +174,44 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             String name = nameGroup.getText().toString();
             String description = descriptionGroup.getText().toString();
 
-            Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
-
+            final Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
             //add new group to database
-            String newgroup_id = databaseReference.child("groups").push().getKey();
-            databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-            String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
-            databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-            databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(newmembers.size());
+            final String newgroup_id = databaseReference.child("groups").push().getKey();
 
-            //add users to new group
-            for(Map.Entry<String, User> user : newmembers.entrySet())
-            {
-                joinGroupFirebase(user.getValue().getID(), newgroup_id);
-            }
+            // for saving image
+            StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id+"_profileImage.jpg");
+
+            // Get the data from an ImageView as bytes
+            imageGroup.setDrawingCacheEnabled(true);
+            imageGroup.buildDrawingCache();
+            Bitmap bitmap = imageGroup.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = uProfileImageFilenameRef.putBytes(data);
+
+            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                    if(task.isSuccessful()){
+                        newGroup.setImage(task.getResult().getMetadata().getDownloadUrl().toString());
+                    }
+                    databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
+                    String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                    databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
+                    databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(newmembers.size());
+
+                    //add users to new group
+                    for(Map.Entry<String, User> user : newmembers.entrySet())
+                    {
+                        joinGroupFirebase(user.getValue().getID(), newgroup_id);
+                    }
 
 
-            Intent intent = new Intent(NewGroupActivity.this, MainActivity.class);
-            intent.putExtra("UID", MainActivity.getCurrentUser().getID());
+//                    Intent intent = new Intent(NewGroupActivity.this, MainActivity.class);
+//                    intent.putExtra("UID", MainActivity.getCurrentUser().getID());
 
 //          Log.d("DEBUG", "groups.size() before " + groups.size());
 
@@ -181,18 +224,21 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             */
 
 
-            //remove group from temporary
-            //databaseReference.child("temporarygroups").child(tempGroupID).removeValue();
+                    //remove group from temporary
+                    //databaseReference.child("temporarygroups").child(tempGroupID).removeValue();
 
-            newmembers.clear();
+                    newmembers.clear();
 
-            Toast.makeText(getBaseContext(), "Saved group", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Saved group", Toast.LENGTH_SHORT).show();
+                    finish();
 
-            startActivity(intent);
+     //               startActivity(intent);
 
+    //                return true;
+                }
+            });
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -226,5 +272,23 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         //Log.d("clickedItemIndex " + friendID);
         System.out.println("clickedItemIndex " + friendID);
         onClickFriendInterface.itemClicked(getClass().getSimpleName(), friendID);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult");
+
+        // first of all control if is the requested result and if it return something
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            ImageUri = data.getData();
+
+            // Log.d(TAG, String.valueOf(bitmap));
+            Glide.with(this).load(ImageUri)
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(imageGroup);
+        }
     }
 }

@@ -58,12 +58,13 @@ public class LogInActivity extends AppCompatActivity {
         Uri data = intent.getData();
         if(data != null) {
             // to be used to set the current user as friend of the inviter
+            Log.d(TAG, "there is an invite");
             inviterUID = data.getQueryParameter("inviterUID");
-            //groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
+            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
         }
         else {
             inviterUID = null;
-            //groupToBeAddedID = null;
+            groupToBeAddedID = null;
             Log.e(TAG, "invitation failed?");
         }
 
@@ -88,13 +89,15 @@ public class LogInActivity extends AppCompatActivity {
                     intent.putExtra("UID", currentUser.getUid());
 
                     if(inviterUID != null) {
+                        Log.i(TAG, "present inviterUID: "+inviterUID);
                         intent.putExtra("inviterUID", inviterUID);
                     }
 
-                    /*
+
                     if (groupToBeAddedID != null) {
+                        Log.i(TAG, "present groupToBeAddedID: "+groupToBeAddedID);
                         intent.putExtra("groupToBeAddedID", groupToBeAddedID);
-                    }*/
+                    }
 
                     startActivity(intent);
                     finish();

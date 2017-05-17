@@ -7,7 +7,6 @@ import android.util.Log;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.activities.MainActivity;
@@ -19,8 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import static com.polito.mad17.madmax.activities.groups.NewGroupActivity.groups;
 
 public class User implements Parcelable {
     private String ID;
@@ -76,7 +73,17 @@ public class User implements Parcelable {
     /*
         PARCELABLE
      */
-    public User() {}
+    public User() {
+        // altrimenti da null pointer exception se l'utente viene creato senza argomenti
+        this.userGroups = new HashMap<>();
+        this.userFriends = new HashMap<>();
+
+        this.balanceWithUsers = new HashMap<>();
+        this.balanceWithGroups = new HashMap<>();
+        this.addedExpenses = new TreeMap<>();
+
+        this.sharedGroupPerFriend = new HashMap<>();
+    }
 
     protected User(Parcel in) {
         ID = in.readString();
@@ -499,5 +506,7 @@ public class User implements Parcelable {
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("admin").setValue("false");
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue("time");
+
+        //todo il numero dei partecipanti viene aggiornato da qualche altra parte?
     }
 }

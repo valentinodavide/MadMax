@@ -70,7 +70,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         groupsViewAdapter = new GroupsViewAdapter(this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())

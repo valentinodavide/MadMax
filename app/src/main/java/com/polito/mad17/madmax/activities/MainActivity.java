@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,10 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
+import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.activities.login.LogInActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
@@ -34,6 +38,7 @@ import com.polito.mad17.madmax.entities.User;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.polito.mad17.madmax.R.string.friends;
@@ -53,6 +58,9 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
     private String currentUID, inviterUID, groupToBeAddedID;
     private boolean alreadyFriends, alreadyInGroup;
 
+    private HashMap<String, String> userFriends;
+    private HashMap<String, String> userGroups;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,19 +69,32 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
 
+        userFriends = new HashMap<>();
+        userGroups = new HashMap<>();
+
+        Log.i(TAG, "token: "+FirebaseInstanceId.getInstance().getToken());
 
         Log.i(TAG, "onCreate");
 
         // getting currentUID from Intent (from LogInActivity or EmailVerificationActivity)
         Intent i = getIntent();
-       currentUID = i.getStringExtra("UID");
+        if(i.hasExtra("UID")){
+            currentUID = i.getStringExtra("UID");Log.i(TAG, "currentUID da extra : "+currentUID);}
+        else
+            if(currentUID == null){
+                auth.signOut();
+                Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
  //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
         Log.d(TAG, "currentID: "+currentUID);
 
-        // cosa è?
         // getting invitation info if coming from LogInActivity after an Invitation
         if (i.hasExtra("inviterUID")) {
             inviterUID = i.getStringExtra("inviterUID");
+            Log.i(TAG, "present inviterUID: "+inviterUID);
         }
         else {
             inviterUID = null;
@@ -81,6 +102,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
 
         if (i.hasExtra("groupToBeAddedID")) {
             groupToBeAddedID = i.getStringExtra("groupToBeAddedID");
+            Log.i(TAG, "present groupToBeAddedID: "+groupToBeAddedID);
         }
         else {
             groupToBeAddedID = null;
@@ -105,7 +127,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
         }
 
         // attach a listener on all the current user data
-        currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        currentUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange");
@@ -115,7 +137,35 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
                 currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
                 currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
+                // get user friends's IDs
+                for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
+                    currentUser.getUserFriends().put(friend.getKey(),null);
+                }
+                // get user groups's IDs
+                for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
+                    currentUser.getUserGroups().put(group.getKey(), null);
+                }
                 //todo mettere altri dati in myself?
+
+                // control if user that requires the friendship is already a friend
+                if (inviterUID != null) {
+                    if(!currentUser.getUserFriends().containsKey(inviterUID)){
+                        currentUser.addFriend(inviterUID);
+                        Toast.makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                        Toast.makeText(MainActivity.this, "You and "+currentUser.getUserFriends().get(inviterUID).getName()+" are already friends!", Toast.LENGTH_LONG).show();
+                }
+
+                // control if user is already part of requested group
+                if (groupToBeAddedID  != null) {
+                    if(!currentUser.getUserGroups().containsKey(groupToBeAddedID)){
+                        currentUser.joinGroup(groupToBeAddedID); //todo usare questa? non aggiorna il numero dei membri
+                        Toast.makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                    Toast.makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
+                }
 
                 // load nav menu header data for the current user
                 loadNavHeader();
@@ -135,6 +185,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
                 viewPager.setAdapter(adapter);
                 viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
                 viewPager.setCurrentItem(1);
+                updateFab(1);
                 tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
@@ -200,31 +251,43 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
                 // friends fragment
                 Log.d(TAG, "fab 0");
                 fab.setImageResource(R.drawable.person_add);
-                //todo fab.setOnClickListener(...); decidere che azione collegare
-                fab.setClickable(false);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "my ID is " + MainActivity.getCurrentUser().getID());
+                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + MainActivity.getCurrentUser().getID();
+
+                        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                                .setDeepLink(Uri.parse(deepLink))
+                                .setMessage(getString(R.string.invitation_message))
+                                //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                                .setCallToActionText(getString(R.string.invitation_cta))
+                                .build();
+
+                        startActivityForResult(intent, REQUEST_INVITE);
+                    }
+                });
                 break;
             case 1:
                 // groups fragment
                 Log.d(TAG, "fab 1");
                 fab.setImageResource(R.drawable.group_add);
 
-                fab.setClickable(false);
-                //todo fab.setOnClickListener(...); togliere setClickable(false) e decidere che azione collegare
-                /*fab.setOnClickListener(new View.OnClickListener() {
+                fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-                        myIntent.putExtra("UID", myselfID);
+                        myIntent.putExtra("userAdded", currentUser);//("UID", currentUID);
                         //String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
                         //inizialmente l'unico user è il creatore del gruppo stesso
-                        User myself = new User(myselfID, "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null, "€");
+                  //      User myself = new User(myselfID, "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null, "€");
                         //mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
                         //mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
-                        NewGroupActivity.newmembers.put(myself.getID(), myself);  //inizialmente l'unico membro del nuovo gruppo sono io
+                  //      NewGroupActivity.newmembers.put(currentUID, currentUser);  //inizialmente l'unico membro del nuovo gruppo sono io
                         //myIntent.putExtra("groupID", tempGroupID);
                         MainActivity.this.startActivity(myIntent);
                     }
-                });*/
+                });
                 break;
             case 2:
                 // pending fragment
@@ -653,6 +716,57 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
         return currentUser;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if(requestCode == REQUEST_INVITE){
+            if(resultCode == RESULT_OK){
+                // Get the invitation IDs of all sent messages
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                for (String id : ids) {
+                    Log.i(TAG, "onActivityResult: sent invitation " + id);
+                }
+            } else {
+                // Sending failed or it was canceled, show failure message to the user
+                Log.e(TAG, "onActivityResult: failed sent");
+
+                Toast.makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "onRestart");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume");
+    }
 }
 
 

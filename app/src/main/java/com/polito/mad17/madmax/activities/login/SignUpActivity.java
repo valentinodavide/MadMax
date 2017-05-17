@@ -57,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-    private StorageReference  storageReference = firebaseStorage.getReference();;
+    private StorageReference  storageReference = firebaseStorage.getReference();
 
     private FirebaseAuth auth;
 

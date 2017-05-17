@@ -10,13 +10,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -29,6 +31,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     //public static HashMap<String, Group> groups = new HashMap<>();
     public static User myself;
+
+    private LayoutInflater layoutInflater;
 
 
 
@@ -81,7 +85,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(context);
 
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
@@ -108,8 +112,11 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         String p = item.getValue().getImage();
         if (p!= null)
         {
-            int photoId = Integer.parseInt(p);
-            groupViewHolder.imageView.setImageResource(photoId);
+            Glide.with(layoutInflater.getContext()).load(p)
+                    .centerCrop()
+                    .bitmapTransform(new CircleTransform(layoutInflater.getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(groupViewHolder.imageView);
         }
 
 

@@ -102,13 +102,15 @@ public class BasicActivity extends AppCompatActivity {
                         break;
                     case R.id.invite_friend:
                         Log.d(TAG, "my ID is " + MainActivity.getCurrentUser().getID());
-                        String deepLink = R.string.invitation_deep_link + "?inviterUID=" + MainActivity.getCurrentUser().getID();
+                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + MainActivity.getCurrentUser().getID();
 
                         intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                                 .setDeepLink(Uri.parse(deepLink))
+                                .setMessage(getString(R.string.invitation_message))
                                 //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
                                 .setCallToActionText(getString(R.string.invitation_cta))
                                 .build();
+
                         startActivityForResult(intent, REQUEST_INVITE);
                         break;
                     case R.id.settings:

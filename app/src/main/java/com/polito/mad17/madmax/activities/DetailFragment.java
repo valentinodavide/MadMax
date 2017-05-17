@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -15,7 +16,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +33,8 @@ import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
+
+import static android.app.Activity.RESULT_OK;
 
 public class DetailFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener {
 
@@ -54,6 +59,9 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
 
     private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
     private FloatingActionButton fab;
+
+    private static final int REQUEST_INVITE = 0;
+
 
     public DetailFragment() {
         // Required empty public constructor
@@ -127,6 +135,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             tabLayout.addTab(tabLayout.newTab().setText(R.string.members));
             tabLayout.addTab(tabLayout.newTab().setText(R.string.history));
             tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            updateFab(0);
 
             final ViewPager viewPager = (ViewPager) mainView.findViewById(R.id.main_view_pager);
             final DetailFragment.PagerAdapter adapter = new DetailFragment.PagerAdapter(getActivity().getSupportFragmentManager(), tabLayout.getTabCount());
@@ -226,7 +235,29 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 Log.d(TAG, "fab 1");
                 fab.setImageResource(R.drawable.person_add);
                 fab.setVisibility(View.VISIBLE);
-                //todo fab.setOnClickListener(...) per aggiunger un membro
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "invite a member to join the group");
+                        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID;
+
+                        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                                .setDeepLink(Uri.parse(deepLink))
+                                .setMessage(getString(R.string.invitationToGroup_message))
+                                //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                                .setCallToActionText(getString(R.string.invitationToGroup_cta))
+                                .build();
+
+                        startActivityForResult(intent, REQUEST_INVITE);
+                    }
+                });
+                /*fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent myIntent = new Intent(getActivity(), NewMemberActivity.class);
+                        startActivity(myIntent);
+                    }
+                });*/
                 break;
             case 2:
                 // history fragment
@@ -290,6 +321,29 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
         @Override
         public boolean isViewFromObject(View view, Object object) {
             return super.isViewFromObject(view, object);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if(requestCode == REQUEST_INVITE){
+            if(resultCode == RESULT_OK){
+                // Get the invitation IDs of all sent messages
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+
+                for (String id : ids) {
+                    Log.i(TAG, "onActivityResult: sent invitation " + id);
+                }
+            }
+            else {
+                // Sending failed or it was canceled, show failure message to the user
+                Log.e(TAG, "onActivityResult: failed sent");
+
+                Toast.makeText(getActivity(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

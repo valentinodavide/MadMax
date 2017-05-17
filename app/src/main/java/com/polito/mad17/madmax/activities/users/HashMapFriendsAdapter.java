@@ -4,9 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
@@ -64,6 +68,14 @@ public class HashMapFriendsAdapter extends BaseAdapter {
         TextView name=(TextView)result.findViewById(R.id.tv_name);
         TextView balance=(TextView)result.findViewById(R.id.tv_balance);
         name.setText(item.getValue().getName() + " " + item.getValue().getSurname());
+        ImageView photo = (ImageView)result.findViewById(R.id.img_photo);
+        // Loading profile image
+        Glide.with(parent.getContext()).load(item.getValue().getProfileImage())
+                .centerCrop()
+                .bitmapTransform(new CircleTransform(parent.getContext()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(photo);
+
         balance.setVisibility(View.GONE);
 
         return result;
