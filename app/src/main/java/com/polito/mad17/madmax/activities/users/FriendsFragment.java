@@ -20,27 +20,30 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.HashMap;
 
-public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener {
+public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener, FriendsViewAdapter.ListItemLongClickListener {
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
-
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-
     private HashMap<String, User> friends = new HashMap<>();
     private ListView lv;
     private HashMapFriendsAdapter adapter;
     private Query query;
+    private String groupID;
 
 
     private OnItemClickInterface onClickFriendInterface;
+    private OnItemLongClickInterface onLongClickFriendInterface;
 
-    public void setInterface(OnItemClickInterface onItemClickInterface) {
+    public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickFriendInterface = onItemClickInterface;
+        onLongClickFriendInterface = onItemLongClickInterface;
+
     }
 
     private RecyclerView recyclerView;
@@ -60,7 +63,12 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
         //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
-        setInterface((OnItemClickInterface) getActivity());
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
+        //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
+        //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
+
+        setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
@@ -68,8 +76,9 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        friendsViewAdapter = new FriendsViewAdapter(this, friends);
+        friendsViewAdapter = new FriendsViewAdapter(this, this, friends);
         recyclerView.setAdapter(friendsViewAdapter);
+
 
         String activityName = getActivity().getClass().getSimpleName();
         Log.d (TAG, "Sono nella activity: " + activityName);
@@ -84,16 +93,51 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             Bundle b = this.getArguments();
             if (b != null)
             {
-                String groupID = b.getString("groupID");
+                groupID = b.getString("groupID");
                 query = databaseReference.child("groups").child(groupID).child("members");
             }
         }
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
-                    getFriend(friendSnapshot.getKey());
+            public void onDataChange(final DataSnapshot externalDataSnapshot) {
+
+                //svuoto la map, così se viene eliminato uno user dal db, non viene tenuto nella map che si ricarica da zero
+                //friends.clear();
+                for (final DataSnapshot friendSnapshot: externalDataSnapshot.getChildren())
+                {
+                    //getFriend(friendSnapshot.getKey());
+                    final Boolean deleted = friendSnapshot.child("deleted").getValue(Boolean.class);
+                    //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
+
+
+                    final String id = friendSnapshot.getKey();
+                    databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
+                    {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot)
+                        {
+
+                            User u = new User();
+                            u.setName(dataSnapshot.child("name").getValue(String.class));
+                            u.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                            if(!deleted)
+                                friends.put(id, u);
+                            else
+                                friends.remove(id);
+
+                            friendsViewAdapter.update(friends);
+                            friendsViewAdapter.notifyDataSetChanged();
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError)
+                        {
+
+                        }
+                    });
                 }
 
                 friendsViewAdapter.update(friends);
@@ -136,11 +180,27 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         onClickFriendInterface.itemClicked(getClass().getSimpleName(), friendID);
     }
 
-    public void getFriend(final String id) {
-        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
+    @Override
+    public boolean onListItemLongClick (String friendID, View v) {
+        Log.d(TAG, "longClickedItemIndex " + friendID);
+        onLongClickFriendInterface.itemLongClicked(getClass().getSimpleName(), friendID, v);
+
+
+
+        return true;
+
+    }
+
+    public void getFriend(final String id)
+    {
+        databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
+        {
 
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+
+
                 User u = new User();
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));

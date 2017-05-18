@@ -5,20 +5,29 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.support.v7.widget.PopupMenu;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.BarDetailFragment;
 import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.DetailFragment;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.entities.Group;
 
-public class GroupDetailActivity extends BasicActivity implements OnItemClickInterface {
+public class GroupDetailActivity extends BasicActivity implements OnItemClickInterface, OnItemLongClickInterface {
 
     private static final String TAG = GroupDetailActivity.class.getSimpleName();
 
@@ -29,15 +38,19 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
     private String userID;
 
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference mDatabase;
+    private DatabaseReference databaseReference;
     private DatabaseReference groupRef;
     private Group groupDetails = new Group();
+    private PopupMenu popup;
+    private MenuItem one;
 
     private Bundle bundle = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+
 
         loadNavHeader();
 
@@ -72,11 +85,12 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                     .replace(R.id.main, detailFragment)
                     .commit();
         }
-/*
-        tenuti i due listener nel caso ce ne fosse bisogno ma si possono eliminare
+
+        //tenuti i due listener nel caso ce ne fosse bisogno ma si possono eliminare
 
         //Show data of group (di Ale)
-        mDatabase.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+        /*
+        databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -90,10 +104,11 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
             }
         });
 
+
         // retrieving group details for current group (di Chiara)
         firebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabase = firebaseDatabase.getReference();
-        groupRef = mDatabase.child("groups");
+        databaseReference = firebaseDatabase.getReference();
+        groupRef = databaseReference.child("groups");
         groupRef.child(groupID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot groupSnapshot) {
@@ -114,7 +129,8 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         });
 
         //Abbiamo due listener che fanno la stessa cosa! Togliere uno dei due
-*/
+        */
+
     }
 
     @Override
@@ -141,92 +157,125 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 break;
         }
     }
-}
 
-
-// vecchia activity di cui non ho toccato nulla
-/*
-package com.polito.mad17.madmax.activities.groups;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.MainActivity;
-import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
-import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
-import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
-import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
-import com.polito.mad17.madmax.activities.users.FriendsFragment;
-import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-
-public class GroupDetailActivity extends AppCompatActivity implements OnItemClickInterface {
-
-    private static final String TAG = GroupDetailActivity.class.getSimpleName();
-
-    private ImageView imageView;
-    private TextView nameTextView;
-    private TextView balanceTextView;
-    private String groupID;
-    private String userID;
-
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference mDatabase;
-    private DatabaseReference groupRef;
-    private Group groupDetails = new Group();
-
-    private Bundle bundle = new Bundle();
-
+    //Apro popup menu quando ho tenuto premuto un friend o gruppo per 1 secondo
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_group_detail);
+    public void itemLongClicked(String fragmentName, final String itemID, View v) {
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
-        Intent intent = getIntent();
-        groupID = intent.getStringExtra("groupID");
-        userID = intent.getStringExtra("userID");
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Log.d(TAG, "onCreate di GroupDetailActivity. Group: " + groupID);
+        Bundle bundle = new Bundle();
+        Intent intent = null;
 
-        imageView = (ImageView) findViewById(R.id.img_photo);
-        nameTextView = (TextView) findViewById(R.id.tv_group_name);
-        balanceTextView = (TextView) findViewById(R.id.tv_balance);
+        switch(fragmentName) {
+            case "FriendsFragment":
 
-        Log.d(TAG, groupID);
+                //todo decidere se rendere disponibile la funzionalità elimina membro
+                /*
+                if (!itemID.equals(userID))
+                {
+                    popup = new PopupMenu(GroupDetailActivity.this, v, Gravity.RIGHT);
 
-        //Show data of group (di Ale)
-        mDatabase.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+                    one = popup.getMenu().findItem(R.id.one);
+                    one.setTitle("Remove Member");
+                    popup.getMenu().findItem(R.id.two).setVisible(false);
+                    popup.getMenu().findItem(R.id.three).setVisible(false);
+
+
+                    //registering popup with OnMenuItemClickListener
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        public boolean onMenuItemClick(MenuItem item) {
+                            //Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                            removeMemberFirebase(itemID, groupID);
+                            return true;
+                        }
+                    });
+
+                    popup.show();//showing popup menu
+                }
+                */
+
+
+
+                break;
+
+            case "GroupsFragment":
+
+                popup = new PopupMenu(GroupDetailActivity.this, v, Gravity.RIGHT);
+
+                popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+                one = popup.getMenu().findItem(R.id.one);
+                one.setTitle("Remove friend");
+                popup.getMenu().findItem(R.id.two).setVisible(false);
+                popup.getMenu().findItem(R.id.three).setVisible(false);
+
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
+
+            case "ExpensesFragment":
+
+                popup = new PopupMenu(GroupDetailActivity.this, v, Gravity.RIGHT);
+
+                popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+                one = popup.getMenu().findItem(R.id.one);
+                one.setTitle("Remove expense");
+                popup.getMenu().findItem(R.id.two).setVisible(false);
+                popup.getMenu().findItem(R.id.three).setVisible(false);
+
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        removeExpenseFirebase(itemID);
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
+
+
+
+                break;
+        }
+
+    }
+
+    public void removeExpenseFirebase (final String expenseID)
+    {
+        databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String name = dataSnapshot.child("name").getValue(String.class);
-                nameTextView.setText(name);
+                String groupID = dataSnapshot.child("groupID").getValue(String.class);
+
+                //Elimino spesa dal gruppo
+                databaseReference.child("groups").child(groupID).child("expenses").child(expenseID).setValue(false);
+
+                //Per ogni participant elimino la spesa dal suo elenco spese
+                for (DataSnapshot participantSnapshot : dataSnapshot.child("participants").getChildren())
+                {
+                    String participantID = participantSnapshot.getKey();
+                    databaseReference.child("users").child(participantID).child("expenses").child(expenseID).setValue(false);
+                }
+                //Elimino commenti sulla spesa
+                databaseReference.child("comments").child(groupID).removeValue();
+                //Elimino spesa
+                databaseReference.child("expenses").child(expenseID).child("deleted").setValue(true);
+                Toast.makeText(GroupDetailActivity.this,"Expense successfully removed",Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -235,143 +284,16 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
             }
         });
 
-        // retrieving group details for current group (di Chiara)
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabase = firebaseDatabase.getReference();
-        groupRef = mDatabase.child("groups");
-        groupRef.child(groupID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot groupSnapshot) {
-
-                groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
-                groupDetails.setID(groupSnapshot.getKey());
-                groupDetails.setNumberMembers(groupSnapshot.child("numberMembers").getValue(Integer.class));
-                Log.d(TAG, "groupDetails " +  groupDetails.toString());
-
-                nameTextView.setText(groupDetails.getName());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-
-        //Abbiamo due listener che fanno la stessa cosa! Togliere uno dei due
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.expenses));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.members));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.history));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        final GroupDetailActivity.PagerAdapter adapter = new GroupDetailActivity.PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) { }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // todo diverse azioni a seconda del fragment in cui mi trovo
-                // getSupportFragmentManager().findFragmentByTag()
-                Intent myIntent = new Intent(GroupDetailActivity.this, NewExpenseActivity.class);
-                myIntent.putExtra("groupID", groupID);
-                myIntent.putExtra("userID", userID);
-                startActivity(myIntent);
-            }
-        });
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
+    //To remove member from group
+    public void removeMemberFirebase (String memberID, String groupID)
+    {
+        databaseReference.child("groups").child(groupID).child("members").child(memberID).child("deleted").setValue(true);
+        databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
+        //todo aggiornare shared groups tra memberID e ogni altro member del group
 
-        int numberOfTabs;
-
-        public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
-            super(fragmentManager);
-            this.numberOfTabs = numberOfTabs;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            return super.instantiateItem(container, position);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-
-            switch (position) {
-                case 0:
-                    Log.d(TAG, "here in case 0");
-                    ExpensesFragment expensesFragment = new ExpensesFragment();
-                    //riga qui sotto aggiunta da Ale...prima il bundle veniva caricato nella OnDataChange quindi
-                    //qui era ancora null e mi crashava, non so come potesse funzionare prima...
-                    //in generale non usare i dati settati nella OnDataChange fuori dalla OnDataChange
-                    bundle.putString("groupID", groupID);
-                    expensesFragment.setArguments(bundle);
-                    return expensesFragment;
-                case 1:
-                    Log.d(TAG, "here in case 2");
-                    FriendsFragment membersFragment = new FriendsFragment();
-                    Bundle b = new Bundle();
-                    b.putString("groupID", groupID);
-                    membersFragment.setArguments(b);
-                    //setargument creo bundle bunfle.setstring
-                    return membersFragment;
-                case 2:
-                    Log.d(TAG, "here in case 1");
-                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
-                    return pendingExpensesFragment;
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return numberOfTabs;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return super.isViewFromObject(view, object);
-        }
-    }
-    
-    @Override
-    public void itemClicked(String fragmentName, String itemID) {
-
-        Log.d(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        switch(fragmentName) {
-            case "ExpensesFragment":
-                Log.d(TAG, "expense case " + fragmentName + itemID);
-                break;
-
-            case "GroupsFragment":
-                break;
-        }
     }
 }
-*/
+
+

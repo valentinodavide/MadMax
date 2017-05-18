@@ -120,13 +120,22 @@ public class BarDetailFragment extends Fragment {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         totBalance = 0d;
                         String name = dataSnapshot.child("name").getValue(String.class);
-                        nameTextView.setText(name);
+                        if (name != null)
+                            nameTextView.setText(name);
 
-                        // Loading group image into bar
-                        Glide.with(getActivity()).load(dataSnapshot.child("image").getValue(String.class))
-                                .centerCrop()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(imageView);
+                        String image = dataSnapshot.child("image").getValue(String.class);
+
+                        if (image != null)
+                        {
+                            Log.d (TAG, "Nome gruppo: " + dataSnapshot.child("name").getValue(String.class) + "  Immagine: " + image);
+                            // Loading group image into bar
+                            Glide.with(getActivity()).load(dataSnapshot.child("image").getValue(String.class))
+                                    .centerCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(imageView);
+                        }
+
+
 
                         // retrieve group balance
                         for (DataSnapshot groupExpenseSnapshot: dataSnapshot.child("expenses").getChildren())

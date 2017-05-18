@@ -225,7 +225,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                     public void onClick(View v) {
                         Intent myIntent = new Intent(getActivity(), NewExpenseActivity.class);
                         myIntent.putExtra("groupID", groupID);
-                        myIntent.putExtra("userID", userID);
+                        myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
                         startActivity(myIntent);
                     }
                 });

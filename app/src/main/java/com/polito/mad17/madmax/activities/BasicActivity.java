@@ -25,6 +25,7 @@ import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.login.LogInActivity;
 import com.polito.mad17.madmax.entities.CircleTransform;
+import com.polito.mad17.madmax.entities.CircleTransform;
 
 import static com.polito.mad17.madmax.activities.MainActivity.auth;
 

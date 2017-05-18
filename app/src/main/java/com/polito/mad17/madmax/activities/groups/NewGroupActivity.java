@@ -227,7 +227,8 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                     //remove group from temporary
                     //databaseReference.child("temporarygroups").child(tempGroupID).removeValue();
 
-                    newmembers.clear();
+            newmembers.clear();
+            NewMemberActivity.alreadySelected.clear();
 
                     Toast.makeText(getBaseContext(), "Saved group", Toast.LENGTH_SHORT).show();
                     finish();
@@ -245,7 +246,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     public void joinGroupFirebase (final String userID, String groupID) {
         //Aggiungo gruppo alla lista gruppi dello user
         databaseReference.child("users").child(userID).child("groups").push();
-        databaseReference.child("users").child(userID).child("groups").child(groupID).setValue("true");
+        databaseReference.child("users").child(userID).child("groups").child(groupID).setValue(true);
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
         databaseReference.child("groups").child(groupID).child("members").push();
         databaseReference.child("groups").child(groupID).child("members").child(userID).push();
@@ -257,6 +258,9 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         }
         databaseReference.child("groups").child(groupID).child("members").child(userID).push();
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
+        databaseReference.child("groups").child(groupID).child("members").child(userID).child("deleted").setValue(false);
+
+
 
     }
 

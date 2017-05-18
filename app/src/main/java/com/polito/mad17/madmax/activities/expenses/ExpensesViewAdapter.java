@@ -11,8 +11,10 @@ import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemExpensesViewHolder> {
@@ -23,19 +25,33 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
+    private ListItemLongClickListener itemLongClickListener = null;
+
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
         void onListItemClick(String clickedItemIndex);
     }
 
-    ExpensesViewAdapter(ListItemClickListener listener, Map<String, Expense> expensesMap) {
+    //The interface that receives the onLongClick messages
+    public interface ListItemLongClickListener {
+        boolean onListItemLongClick(String clickedItemIndex, View v);
+    }
+
+    public ExpensesViewAdapter(ListItemClickListener listener, Map<String, Expense> expensesMap) {
         itemClickListener = listener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
     }
 
-    class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public ExpensesViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Expense> expensesMap) {
+        itemClickListener = listener;
+        itemLongClickListener = longListener;
+        this.expenses = new ArrayList<>();
+        expenses.addAll(expensesMap.entrySet());
+    }
+
+    class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private ImageView imageView;
         private TextView nameTextView;
@@ -48,6 +64,8 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
             smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
         }
 
         @Override
@@ -56,6 +74,17 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getValue().getID());
 
             itemClickListener.onListItemClick(getItem(clickedPosition).getValue().getID());
+        }
+
+        @Override
+        public boolean onLongClick (View v) {
+            int clickedPosition = getAdapterPosition();
+            Map.Entry<String, Expense> itemClicked = getItem(clickedPosition);
+            Log.d(TAG, "longClickedExpense " + itemClicked.getKey());
+            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+
+            return true;
+
         }
     }
 
@@ -96,7 +125,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         return expenses.size();
     }
 
-    private Map.Entry<String, Expense> getItem(int position) {
+    public Map.Entry<String, Expense> getItem(int position) {
         return (Map.Entry) expenses.get(position);
     }
 
@@ -104,4 +133,5 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         expenses.clear();
         expenses.addAll(map.entrySet());
     }
+
 }

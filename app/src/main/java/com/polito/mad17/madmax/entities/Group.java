@@ -12,6 +12,7 @@ public class Group implements Parcelable {
     private String image;                       // optional, URL dell'immagine su Firebase
     private String description;                 // optional
     private Integer numberMembers;
+    private Boolean deleted;
 
 
 
@@ -32,8 +33,10 @@ public class Group implements Parcelable {
         this.description = description;
         this.numberMembers = numberMembers;
         this.counterAddedExpenses = 0;
+        this.deleted = false;
         this.members = new HashMap<>();
         this.expenses = new HashMap<>();
+        this.deleted = deleted;
     }
 
     protected Group(Parcel in) {
@@ -139,6 +142,10 @@ public class Group implements Parcelable {
     public Double getBalance() {return balance;}
 
     public void setBalance(Double balance) {this.balance = balance;}
+
+    public Boolean getDeleted() {return deleted;}
+
+    public void setDeleted(Boolean deleted) {this.deleted = deleted;}
 
 
     // todo updateCounterAddedExpenses: ogni volta che l'utente apre un gruppo il numerino che segna

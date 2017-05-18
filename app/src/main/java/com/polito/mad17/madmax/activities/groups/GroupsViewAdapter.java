@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.CircleTransform;
+import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
@@ -28,6 +29,9 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
+    private ListItemLongClickListener itemLongClickListener = null;
+
+
 
     //public static HashMap<String, Group> groups = new HashMap<>();
     public static User myself;
@@ -40,9 +44,22 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public interface ListItemClickListener {
         void onListItemClick(String clickedItemIndex);
     }
+    //The interface that receives the onLongClick messages
+    public interface ListItemLongClickListener {
+        boolean onListItemLongClick(String clickedItemIndex, View v);
+    }
 
     public GroupsViewAdapter(ListItemClickListener listener, Map<String, Group> map) {
         itemClickListener = listener;
+        mData = new ArrayList();
+        mData.addAll(map.entrySet());
+
+
+    }
+
+    public GroupsViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map) {
+        itemClickListener = listener;
+        itemLongClickListener = longListener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
 
@@ -54,12 +71,12 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         mData.addAll(map.entrySet());
     }
 
-    class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private ImageView imageView;
         private TextView nameTextView;
         private TextView smallTextView;
-        private String ID;
+        //private String ID;
 
         public ItemGroupViewHolder(View itemView) {
             super(itemView);
@@ -67,6 +84,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
             smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
         }
 
         @Override
@@ -78,6 +97,17 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             Log.d(TAG, "clickedGroup " + itemClicked.getKey());
 
             itemClickListener.onListItemClick(itemClicked.getKey());
+        }
+
+        @Override
+        public boolean onLongClick (View v) {
+            int clickedPosition = getAdapterPosition();
+            Map.Entry<String, Group> itemClicked = getItem(clickedPosition);
+            Log.d(TAG, "longClickedGroup " + itemClicked.getKey());
+            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+
+            return true;
+
         }
     }
 
@@ -123,7 +153,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         //groupViewHolder.nameTextView.setText(groups.get(String.valueOf(position)).getName());
         //groupViewHolder.ID = groups.get(String.valueOf(position)).getID();
         groupViewHolder.nameTextView.setText(item.getValue().getName());
-        groupViewHolder.ID = item.getValue().getID();
+        //groupViewHolder.ID = item.getValue().getID();
         //groupViewHolder.smallTextView.setText(item.getValue().getBalance().toString());
 
         //todo mettere debito verso il gruppo
@@ -165,6 +195,4 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getItemCount() {
         return mData.size();
     }
-
-
 }

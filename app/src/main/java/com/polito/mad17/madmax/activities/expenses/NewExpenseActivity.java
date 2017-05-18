@@ -183,6 +183,7 @@ public class NewExpenseActivity extends AppCompatActivity {
             newExpense.setGroupID(groupID);
             newExpense.setCreatorID(userID);
             newExpense.setEquallyDivided(true);
+            newExpense.setDeleted(false);
 
             final HashMap<String, Double> partecipants = new HashMap<>();
 
@@ -193,11 +194,22 @@ public class NewExpenseActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot membersSnapshot) {
 
-                    Double amountPerMember = 1 / (double) membersSnapshot.getChildrenCount();
+                    int participantsCount = 0;
+
+                    //Attenzione! Non contare i membri eliminati tra i partecipanti alla spesa
+                    for (DataSnapshot memberSnap : membersSnapshot.getChildren())
+                    {
+                        if (memberSnap.child("deleted").getValue(Boolean.class) == false)
+                            participantsCount ++;
+                    }
+
+                    Double amountPerMember = 1 / (double) participantsCount;
 
                     for(DataSnapshot member : membersSnapshot.getChildren())
                     {
-                        newExpense.getParticipants().put(member.getKey(), amountPerMember);
+                        //Aggiungo alla spesa solo i membri non eliminati dal gruppo
+                        if (member.child("deleted").getValue(Boolean.class) == false)
+                                newExpense.getParticipants().put(member.getKey(), amountPerMember);
                     }
 
                     addExpenseFirebase(newExpense);
@@ -280,6 +292,8 @@ public class NewExpenseActivity extends AppCompatActivity {
         databaseReference.child("expenses").child(eID).setValue(expense);
         String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
         databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
+        //databaseReference.child("expenses").child(eID).child("deleted").setValue(false);
+
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_expensePhoto.jpg");
 
@@ -310,9 +324,9 @@ public class NewExpenseActivity extends AppCompatActivity {
         StorageReference uBillPhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_billPhoto.jpg");
 
         // Get the data from an ImageView as bytes
-        expensePhoto.setDrawingCacheEnabled(true);
-        expensePhoto.buildDrawingCache();
-        bitmap = expensePhoto.getDrawingCache();
+        billPhoto.setDrawingCacheEnabled(true);
+        billPhoto.buildDrawingCache();
+        bitmap = billPhoto.getDrawingCache();
         baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         data = baos.toByteArray();
@@ -359,12 +373,12 @@ public class NewExpenseActivity extends AppCompatActivity {
 
             //Aggiungo spesaID a elenco spese dello user
             //todo controllare se utile
-            databaseReference.child("users").child(participant.getKey()).child("expenses").child(eID).setValue("true");
+            databaseReference.child("users").child(participant.getKey()).child("expenses").child(eID).setValue(true);
         }
 
         //Aggiungo spesa alla lista spese del gruppo
         databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
-        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue("true");
+        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue(true);
 
         return eID;
 

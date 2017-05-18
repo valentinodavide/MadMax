@@ -1,18 +1,31 @@
 package com.polito.mad17.madmax.activities;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
@@ -32,11 +45,15 @@ import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.activities.login.LogInActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
+import com.polito.mad17.madmax.entities.Comment;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
+import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,18 +61,25 @@ import static com.polito.mad17.madmax.R.string.friends;
 
 //import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
 
-public class MainActivity extends BasicActivity implements OnItemClickInterface {
+public class MainActivity extends BasicActivity implements OnItemClickInterface, OnItemLongClickInterface {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     public static FirebaseAuth auth;
+    private String[] drawerOptions;
+    private DrawerLayout drawerLayout;
+    private ListView drawerList;
+    private MenuItem one, two, three;
+
+ //   private ActionBarDrawerToggle drawerToggle;
+
     private static final int REQUEST_INVITE = 0;
 
     private static User currentUser;
     private String currentUID, inviterUID, groupToBeAddedID;
-    private boolean alreadyFriends, alreadyInGroup;
+
 
     private HashMap<String, String> userFriends;
     private HashMap<String, String> userGroups;
@@ -80,14 +104,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
         if(i.hasExtra("UID")){
             currentUID = i.getStringExtra("UID");Log.i(TAG, "currentUID da extra : "+currentUID);}
         else
-            if(currentUID == null){
-                auth.signOut();
-                Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        if(currentUID == null){
+            auth.signOut();
+            Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
- //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
+        //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
         Log.d(TAG, "currentID: "+currentUID);
 
         // getting invitation info if coming from LogInActivity after an Invitation
@@ -163,7 +187,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
                         Toast.makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
                     }
                     else
-                    Toast.makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
                 }
 
                 // load nav menu header data for the current user
@@ -208,7 +232,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
             }
         });
     }
-
 
     private void updateFab(int position){
         switch(position){
@@ -344,6 +367,90 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
 
     }
 
+    //Apro popup menu quando ho tenuto premuto un friend o gruppo per 1 secondo
+    @Override
+    public void itemLongClicked(String fragmentName, final String itemID, View v) {
+
+        Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Bundle bundle = new Bundle();
+        Intent intent = null;
+
+        switch(fragmentName) {
+            case "FriendsFragment":
+
+                PopupMenu popup = new PopupMenu(MainActivity.this, v, Gravity.RIGHT);
+
+                popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+                one = popup.getMenu().findItem(R.id.one);
+                one.setTitle("Remove Friend");
+                popup.getMenu().findItem(R.id.two).setVisible(false);
+                popup.getMenu().findItem(R.id.three).setVisible(false);
+
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
+
+
+                break;
+
+            case "GroupsFragment":
+
+                popup = new PopupMenu(MainActivity.this, v, Gravity.RIGHT);
+
+                popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+                one = popup.getMenu().findItem(R.id.one);
+                one.setTitle("Leave this Group");
+                two = popup.getMenu().findItem(R.id.two);
+                two.setTitle("Remove this Group");
+                popup.getMenu().findItem(R.id.three).setVisible(false);
+
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+
+                        switch ((String) item.getTitle()) {
+
+                            case "Leave this Group":
+
+                                leaveGroupFirebase(itemID);
+                                break;
+
+                            case "Remove this Group":
+                                removeGroupFirebase (itemID);
+                                break;
+
+
+
+
+                        }
+
+
+
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
+
+
+                break;
+        }
+
+    }
+
     public String addExpenseFirebase(Expense expense) {
 
         //Aggiungo spesa a Firebase
@@ -388,96 +495,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
         //updateBalanceFirebase(u, expense);
     }
 
-    // update balance among other users and among the group this user is part of
-    private void updateBalanceFirebase (final User u, final Expense expense) {
-        // todo per ora fa il calcolo come se le spese fossero sempre equamente divise fra tutti i
-        // todo     membri del gruppo (cioè come se expense.equallyDivided fosse sempre = true
 
-
-        final String groupID = expense.getGroupID();
-
-
-        Query query = databaseReference.child("groups").child(groupID);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Double amount = 0d; //spesa totale nel gruppo
-
-                DataSnapshot groupSnapshot = dataSnapshot.child("groups").child(groupID);
-
-                for (DataSnapshot expense : groupSnapshot.child("expenses").getChildren())
-                {
-                    amount += expense.child("amount").getValue(Double.class);
-                }
-
-                Long membersCount = groupSnapshot.child("members").getChildrenCount();
-                Double singlecredit = expense.getAmount() / membersCount;
-                Double totalcredit = singlecredit * (membersCount -1); //credito totale che io ho verso tutti gli altri membri del gruppo
-                //debito attuale dello user verso il gruppo
-                Double actualdebts =  dataSnapshot.child("users").child(u.getID()).child("groups").child(groupID).child("balanceWithGroup").getValue(Double.class);
-
-                if (actualdebts != null) {
-                    //aggiorno il mio debito verso il gruppo
-                    databaseReference.child("users").child(u.getID()).child("groups").child(groupID).child("balanceWithGroup").setValue(actualdebts+totalcredit);
-                }
-                else {
-                    System.out.println("Group not found");
-                }
-
-                for (DataSnapshot member : groupSnapshot.child("members").getChildren())
-                {
-                    //se non sono io stesso
-                    if (!member.getKey().equals(u.getID()))
-                    {
-                        Double balance = dataSnapshot.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).getValue(Double.class);
-                        if (balance != null) {
-                            databaseReference.child("users").child(u.getID()).child("balancesWithUsers").child(member.getKey()).setValue(balance+singlecredit);
-                        }
-                    }
-
-                    //aggiorno debito dell'amico verso di me
-
-                    //debito dell'amico verso di me
-                    Double balance = dataSnapshot.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).getValue(Double.class);
-
-                    if (balance != null)
-                    {
-                        databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(balance-singlecredit);
-
-                    }
-                    else
-                    {
-                        System.out.println("Io non risulto tra i suoi debiti");
-                        // => allora devo aggiungermi
-                        databaseReference.child("users").child(member.getKey()).child("balancesWithUsers").child(u.getID()).setValue(-singlecredit);
-                    }
-
-                    //aggiorno il debito dell'amico verso il gruppo
-                    balance = dataSnapshot.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").getValue(Double.class);
-
-                    if (balance != null)
-                    {
-                        databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(balance-singlecredit);
-                    }
-                    else
-                    {
-                        System.out.println("Gruppo non risulta tra i suoi debiti");
-                        // => allora lo devo aggiungere
-                        databaseReference.child("users").child(member.getKey()).child("groups").child(groupID).child("balanceWithGroup").setValue(-singlecredit);
-                    }
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     public void joinGroupFirebase (final String userID, String groupID)
     {
@@ -558,6 +576,96 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
 
     }
 
+    public void leaveGroupFirebase (String groupID)
+    {
+        Group g = GroupsFragment.groups.get(groupID);
+        if (g != null)
+        {
+            Log.d (TAG, "Bilancio attuale col gruppo: " + g.getBalance());
+            if (g.getBalance() > 0)
+            {
+                Log.d (TAG, "Hai un credito verso questo gruppo. Abbandonare comunque?");
+                return;
+            }
+            else if (g.getBalance() < 0)
+            {
+                Log.d (TAG, "Hai un debito verso questo gruppo. Prima salda il debito poi puoi abbandonare, testa di cazzo");
+                return;
+            }
+            else
+            {
+                Log.d (TAG, "Nessuno debito, abbandono in corso");
+                //Elimino gruppo da lista gruppi dello user
+                databaseReference.child("users").child(getCurrentUser().getID()).child("groups").child(groupID).setValue(false);
+                //Elimino user dalla lista dei members del gruppo
+                databaseReference.child("groups").child(groupID).child("members").child(getCurrentUser().getID()).child("deleted").setValue(true);
+
+                //Elimino gruppo da cache
+                GroupsFragment.groups.remove(groupID);
+
+            }
+
+        }
+        else
+        {
+            Log.d (TAG, "Bilancio del gruppo: " + groupID + " non disponibile adesso. Riprovare.");
+        }
+
+        return ;
+
+    }
+
+    public void removeGroupFirebase (final String groupID)
+    {
+
+        databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                //Se io sono admin posso eliminare il gruppo, altrimenti no
+                if (dataSnapshot.child("members").child(getCurrentUser().getID()).child("admin").getValue().equals("true"))
+                {
+                    Log.d (TAG, "Sono admin, posso eliminare il gruppo");
+
+                    //todo controllare se almeno un membro ha debito/credito verso il gruppo. Se sì visualizzare messaggio per chiedere conferma dell'eliminazione gruppo
+
+                    //For each member of the group
+                    for (DataSnapshot memberSnapshot: dataSnapshot.child("members").getChildren())
+                    {
+                        String memberID = memberSnapshot.getKey();
+                        //In user's groups, set this group to deleted
+                        databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
+                    }
+
+
+                    //todo aggiornare shared groups
+
+                    //Segno il group come eliminato nei groups
+                    databaseReference.child("groups").child(groupID).child("deleted").setValue(true);
+
+
+                    Toast.makeText(MainActivity.this,"Group successfully removed",Toast.LENGTH_SHORT).show();
+
+                }
+                else
+                {
+                    Log.d (TAG, "Non sono admin, non posso eliminare il gruppo");
+                    Toast.makeText(MainActivity.this,"You must be admin to remove this group",Toast.LENGTH_SHORT).show();
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
     // check if permissions on reading storage must be asked: true only if API >= 23
     public static boolean shouldAskPermission(){
         return(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1);
@@ -631,3 +739,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface 
         Log.i(TAG, "onResume");
     }
 }
+
+
+

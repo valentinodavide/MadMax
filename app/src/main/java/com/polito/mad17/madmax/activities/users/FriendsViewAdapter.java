@@ -10,8 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
+    final private ListItemLongClickListener itemLongClickListener;
 
     private static HashMap<String, User> friends = new HashMap<>();
     private static User myself;
@@ -34,8 +37,16 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         void onListItemClick(String clickedItemIndex);
     }
 
-    FriendsViewAdapter(ListItemClickListener listener, Map<String, User> map) {
+    //The interface that receives the onLongClick messages
+    public interface ListItemLongClickListener {
+        boolean onListItemLongClick(String clickedItemIndex, View v);
+    }
+
+
+
+    public FriendsViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
         itemClickListener = listener;
+        itemLongClickListener = longListener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
     }
@@ -45,19 +56,20 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         mData.addAll(map.entrySet());
     }
 
-    class ItemFriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ItemFriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private ImageView imageView;
         private TextView nameTextView;
         private TextView balanceTextView;
         private String ID;
 
-        ItemFriendsViewHolder(View itemView) {
+        public ItemFriendsViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -66,9 +78,22 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             //Log.d(TAG, "clickedFriend " + friends.get(String.valueOf(clickedPosition+1)).getID());
             Map.Entry<String, User> itemClicked = getItem(clickedPosition);
 
-            Log.d(TAG, "clickedGroup " + itemClicked.getKey());
+            Log.d(TAG, "clickedFriend " + itemClicked.getKey());
 
             itemClickListener.onListItemClick(itemClicked.getKey());
+
+        }
+
+        @Override
+        public boolean onLongClick (View v) {
+            int clickedPosition = getAdapterPosition();
+            Map.Entry<String, User> itemClicked = getItem(clickedPosition);
+            Log.d(TAG, "longClickedFriend " + itemClicked.getKey());
+            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+
+
+
+            return true;
 
         }
     }
@@ -80,7 +105,9 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
-        return new ItemFriendsViewHolder(view);
+        ItemFriendsViewHolder itemFriendsViewHolder = new ItemFriendsViewHolder(view);
+
+        return itemFriendsViewHolder;
     }
 
     @Override
@@ -90,7 +117,8 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
 
         String photo = item.getValue().getProfileImage();
-        if (photo != null) {
+        if (photo != null)
+        {
             int photoUserId = Integer.parseInt(photo);
             holder.imageView.setImageResource(photoUserId);
         }
@@ -125,7 +153,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         */
     }
 
-    private Map.Entry<String, User> getItem(int position) {
+    public Map.Entry<String, User> getItem(int position) {
         return (Map.Entry) mData.get(position);
     }
 

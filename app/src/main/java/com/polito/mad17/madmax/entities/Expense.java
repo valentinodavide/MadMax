@@ -18,9 +18,12 @@ public class Expense {
                                     // altrimenti viene suddivisa come specificato in participants ->
     private HashMap<String, Double> participants;     // String: userID, Double: frazione corrispondente a quello user
 
+
+    private Boolean deleted;
+
     public Expense() { this.participants = new HashMap<>(); }
 
-    public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String expensePhoto, Boolean equallyDivided, String groupID, String creatorID) {
+    public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String expensePhoto, Boolean equallyDivided, String groupID, String creatorID, Boolean deleted) {
         this.ID = ID;
         this.description = description;
         this.category = category;
@@ -32,6 +35,7 @@ public class Expense {
         this.groupID = groupID;
         this.creatorID = creatorID;
         this.participants = new HashMap<>();
+        this.deleted = deleted;
     }
 
 
@@ -110,6 +114,10 @@ public class Expense {
     public String getCreatorID() {return creatorID;}
 
     public void setCreatorID(String creatorID) {this.creatorID = creatorID;}
+
+    public Boolean getDeleted() {return deleted;}
+
+    public void setDeleted(Boolean deleted) {this.deleted = deleted;}
 
 
     public Map<String, Object> toMap() {
