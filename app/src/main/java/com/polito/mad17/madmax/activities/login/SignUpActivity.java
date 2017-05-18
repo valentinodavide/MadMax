@@ -311,6 +311,8 @@ public class SignUpActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
+    /*
+    todo siamo sicuri che serve?
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -338,7 +340,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+*/
 
     // check if both email and password form are filled
     private boolean validateForm() {

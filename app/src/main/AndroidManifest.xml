@@ -13,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.login.LogInActivity">
+        <activity android:name=".activities.login.LogInActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,11 +34,11 @@
                 <data android:scheme="madmax"
                     android:host="expensivetastes" />
             </intent-filter>
-
         </activity>
 
         <activity android:name=".activities.groups.GroupExpensesActivity"
             android:parentActivityName=".activities.MainActivity" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -70,18 +72,14 @@
                 android:value=".activities.login.LogInActivity" />
         </activity>
 
-        <activity android:name=".activities.login.EmailVerificationActivity"
-            android:parentActivityName=".activities.login.LogInActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.login.LogInActivity" />
-        </activity>
+        <activity android:name=".activities.login.EmailVerificationActivity"/>
 
         <activity android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleInstance"/>
 
+        <activity android:name=".activities.SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 
