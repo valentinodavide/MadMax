@@ -20,32 +20,55 @@
         android:id="@+id/tv_name"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.76"
 
         android:paddingLeft="8dp"
         android:paddingTop="20dp"
 
         android:clickable="false"
 
-        android:textSize="16dp"
+        android:textSize="18sp"
         android:text="GroupName"
+        android:textColor="@color/colorPrimaryText"
         />
 
-    <TextView
-        android:id="@+id/tv_balance"
+    <RelativeLayout
         android:layout_width="70dp"
         android:layout_height="match_parent"
+        android:layout_weight="0.2">
 
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        <TextView
+            android:id="@+id/tv_balance_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
 
-        android:background="@color/colorPrimary"
-        android:gravity="center"
-        android:text="111"
-        android:textColor="#FFFFFF"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="11dp"
+            android:layout_marginBottom="5dp"
 
-        android:textSize="14dp" />
+            android:layout_alignParentRight="true"
 
+            android:gravity="center"
+            android:text="@string/owes_you"
+            android:textColor="@color/colorPrimaryText"
 
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_balance_text"
+
+            android:layout_marginRight="11dp"
+
+            android:layout_alignParentRight="true"
+
+            android:text="111"
+            android:textColor="@color/colorAccent"
+
+            android:textSize="12sp" />
+
+    </RelativeLayout>
 </LinearLayout>
 

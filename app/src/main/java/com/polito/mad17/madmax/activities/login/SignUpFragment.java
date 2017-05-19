@@ -1,37 +1,31 @@
 package com.polito.mad17.madmax.activities.login;
 
+
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,24 +36,24 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpFragment extends Fragment {
 
-    private static final String TAG = SignUpActivity.class.getSimpleName();
+    private static final String TAG = SignUpFragment.class.getSimpleName();
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
-    private StorageReference  storageReference = firebaseStorage.getReference();
+    private StorageReference storageReference = firebaseStorage.getReference();
 
     private FirebaseAuth auth;
+
+    private OnItemClickInterface onClickSignUpInterface;
 
     private int PICK_IMAGE_REQUEST = 1; // to use for selecting the image profile
 
@@ -73,48 +67,42 @@ public class SignUpActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Button signupButton;
 
-    private String inviterUID = null;
+    private String inviterID;
+
+    public void setInterface(OnItemClickInterface onItemClickInterface) {
+        onClickSignUpInterface = onItemClickInterface;
+    }
+
+    public SignUpFragment() { }
 
     @Override
     @TargetApi(23) // used for letting AndroidStudio know that method requestPermissions() is called
     // in a controlled way: in particular it must be accessed only if API >= 23, and we guarantee it
     // via the static method MainActivity.shouldAskPermission()
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate");
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getActionBar()
-
-        Intent intent = getIntent();
-        inviterUID = intent.getStringExtra("inviterUID");
-
-        setContentView(R.layout.activity_sign_up);
-
         auth = FirebaseAuth.getInstance();
 
-        progressDialog = new ProgressDialog(this);
+        inviterID = getArguments().getString("inviterID");
+    }
 
-        nameView = (EditText)findViewById(R.id.name);
-        surnameView = (EditText)findViewById(R.id.surname);
-        usernameView = (EditText)findViewById(R.id.username);
-        emailView = (EditText)findViewById(R.id.email);
-        passwordView = (EditText)findViewById(R.id.password);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        loginView = (TextView)findViewById(R.id.link_login);
-        loginView.setPaintFlags(loginView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        loginView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG, "login clicked");
-                Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+        setInterface((OnItemClickInterface) getActivity());
+        View view = inflater.inflate(R.layout.fragment_signup, container, false);
 
-        profileImageView = (ImageView)findViewById(R.id.profile_image);
+        nameView = (EditText) view.findViewById(R.id.name);
+        surnameView = (EditText) view.findViewById(R.id.surname);
+        usernameView = (EditText) view.findViewById(R.id.username);
+        emailView = (EditText) view.findViewById(R.id.email);
+        passwordView = (EditText) view.findViewById(R.id.password);
+        loginView = (TextView) view.findViewById(R.id.link_login);
+        loginView.setPaintFlags(loginView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG); // to make the link underlined
+        progressDialog = new ProgressDialog(getContext());
+
+        profileImageView = (ImageView) view.findViewById(R.id.profile_image);
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +125,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        signupButton = (Button) findViewById(R.id.btn_signup);
+        signupButton = (Button) view.findViewById(R.id.btn_signup);
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,30 +134,16 @@ public class SignUpActivity extends AppCompatActivity {
                 createAccount(emailView.getText().toString(), passwordView.getText().toString());
             }
         });
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.i(TAG, "onActivityResult");
-
-        // first of all control if is the requested result and if it return something
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
-            Uri uri = data.getData();
-
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                // Log.d(TAG, String.valueOf(bitmap));
-                Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(profileImageView);
-
-            } catch (IOException e) {
-                e.printStackTrace();
+        loginView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG,"link to login clicked");
+                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
             }
-        }
+        });
+
+        return view;
     }
 
     private void createAccount(String email, String password){
@@ -178,14 +152,14 @@ public class SignUpActivity extends AppCompatActivity {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(SignUpActivity.this, "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Invalid form!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         progressDialog.setMessage("Account creation, please wait...");
         progressDialog.show();
 
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressDialog.dismiss();
@@ -208,7 +182,7 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                     catch(Exception e) {
                         Log.e(TAG, e.getClass().toString() + ", message: " + e.getMessage());
-                        Toast.makeText(SignUpActivity.this, "An error occured", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "An error occured", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Log.d(TAG,"account creation succeded.");
@@ -226,7 +200,7 @@ public class SignUpActivity extends AppCompatActivity {
         if (user == null) {
             Log.e(TAG, "Error while retriving current user from db");
 
-            Toast.makeText(SignUpActivity.this, "Error while retriving current user from db",Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Error while retriving current user from db",Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -241,10 +215,9 @@ public class SignUpActivity extends AppCompatActivity {
                 passwordView.getText().toString(),
                 "",
                 "€");
-        if(inviterUID != null) {
-            u.getUserFriends().put(inviterUID, null);
+        if(inviterID != null) {
+            u.getUserFriends().put(inviterID, null);
         }
-
 
         // for saving image
         StorageReference uProfileImageFilenameRef = storageReference.child("users").child(UID).child(UID+"_profileImage.jpg");
@@ -298,9 +271,7 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.e(TAG, "verification email not sent, exception: " + task.getException());
                         }
 
-                        Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
-                        startActivity(intent);
-                        finish();
+                        onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), user.getUid());
                     }
                 });
 
@@ -310,37 +281,6 @@ public class SignUpActivity extends AppCompatActivity {
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
     }
-
-    /*
-    todo siamo sicuri che serve?
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                Intent upIntent = NavUtils.getParentActivityIntent(this);
-                Log.d(TAG, "created intent " + upIntent);
-                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-                    Log.d(TAG, "shouldUpRecreateTask");
-                    // This activity is NOT part of this app's task, so create a new task
-                    // when navigating up, with a synthesized back stack.
-                    TaskStackBuilder.create(this)
-                            // Add all of this activity's parents to the back stack
-                            .addNextIntentWithParentStack(upIntent)
-                            // Navigate up to the closest parent
-                            .startActivities();
-                } else {
-                    Log.d(TAG, "else");
-                    // This activity is part of this app's task, so simply
-                    // navigate up to the logical parent activity.
-                    NavUtils.navigateUpTo(this, upIntent);
-                }
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-*/
 
     // check if both email and password form are filled
     private boolean validateForm() {
@@ -395,4 +335,5 @@ public class SignUpActivity extends AppCompatActivity {
         }
         return valid;
     }
+
 }

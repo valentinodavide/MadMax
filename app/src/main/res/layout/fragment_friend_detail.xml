@@ -15,6 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_marginBottom="16dp"
         />
 
     <FrameLayout
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:textSize="25sp"
-            android:textColor="@color/white"
+            android:textColor="@color/colorPrimaryLight"
             android:paddingTop="5dp"
             tools:text="Name Surname"
             />
@@ -72,7 +73,7 @@
                 android:textSize="13sp"
                 android:paddingLeft="5dp"
                 android:paddingTop="5dp"
-                android:textColor="@color/beige"
+                android:textColor="@color/colorPrimaryLight"
                 tools:text="@string/owes_you"
                 />
 
@@ -82,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dp"
                 android:textSize="20sp"
-                android:textColor="@color/white"
+                android:textColor="@color/colorAccent"
                 android:textStyle="bold"
                 tools:text="130 €"
                 />
@@ -97,7 +98,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginLeft="100dp"
             android:background="@drawable/pay_button_border"
-            android:textColor="@color/white"
+            android:textColor="@color/colorPrimaryLight"
             android:text="@string/paydebt"
             />
 
@@ -112,6 +113,9 @@
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:text="@string/shared_groups"
+        android:textAllCaps="true"
+        android:textSize="16dp"
+        android:textColor="@color/colorPrimaryText"
         />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

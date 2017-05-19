@@ -170,18 +170,18 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (mygroupdebt > 0)
         {
             groupViewHolder.smallTextView.setText("+ " + df.format(mygroupdebt) + " €");
-            groupViewHolder.smallTextView.setBackgroundResource(R.color.greenBalance);
+            groupViewHolder.smallTextView.setTextColor(R.color.colorPrimary);
 
         }
         else if (mygroupdebt < 0)
         {
             groupViewHolder.smallTextView.setText("- " + df.format(Math.abs(mygroupdebt)) + " €");
-            groupViewHolder.smallTextView.setBackgroundColor(Color.rgb(255,0,0));
+            groupViewHolder.smallTextView.setTextColor(R.color.colorAccent);
         }
         else
         {
             groupViewHolder.smallTextView.setText("" + df.format(mygroupdebt) + " €");
-            groupViewHolder.smallTextView.setBackgroundResource(R.color.greenBalance);
+            groupViewHolder.smallTextView.setTextColor(R.color.colorPrimary);
         }
 
     }

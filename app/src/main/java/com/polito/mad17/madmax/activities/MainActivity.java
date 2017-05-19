@@ -1,30 +1,22 @@
 package com.polito.mad17.madmax.activities;
 
-import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -42,18 +34,15 @@ import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
-import com.polito.mad17.madmax.activities.login.LogInActivity;
+import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
-import com.polito.mad17.madmax.entities.Comment;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
-import java.security.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,14 +88,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
         Log.i(TAG, "onCreate");
 
-        // getting currentUID from Intent (from LogInActivity or EmailVerificationActivity)
+        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
         Intent i = getIntent();
         if(i.hasExtra("UID")){
             currentUID = i.getStringExtra("UID");Log.i(TAG, "currentUID da extra : "+currentUID);}
         else
         if(currentUID == null){
             auth.signOut();
-            Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+            Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
             startActivity(intent);
             finish();
         }
@@ -114,7 +103,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
         Log.d(TAG, "currentID: "+currentUID);
 
-        // getting invitation info if coming from LogInActivity after an Invitation
+        // getting invitation info if coming from LoginSignUpActivity after an Invitation
         if (i.hasExtra("inviterUID")) {
             inviterUID = i.getStringExtra("inviterUID");
             Log.i(TAG, "present inviterUID: "+inviterUID);
@@ -144,7 +133,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
             // if the current user is not in the database do the logout and restart from login
             auth.signOut();
-            Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+            Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
             startActivity(intent);
             finish();
         }
@@ -196,7 +185,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 Log.d(TAG, "logged user surname: "+currentUser.getSurname());
 
                 // insert tabs and current fragment in the main layout
-                mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab,null));
+                mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
                 TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
                 tabLayout.addTab(tabLayout.newTab().setText(friends));
                 tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
@@ -431,13 +420,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                             case "Remove this Group":
                                 removeGroupFirebase (itemID);
                                 break;
-
-
-
-
                         }
-
-
 
                         return true;
                     }
@@ -445,10 +428,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 popup.show();//showing popup menu
 
-
                 break;
         }
-
     }
 
     public String addExpenseFirebase(Expense expense) {

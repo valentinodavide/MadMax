@@ -100,7 +100,7 @@ public class EmailVerificationActivity extends AppCompatActivity {
                 else{
                     Log.i(TAG, "user signed out");
 
-                    Intent intent = new Intent(getApplicationContext(), LogInActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
                     startActivity(intent);
                     finish();
                 }

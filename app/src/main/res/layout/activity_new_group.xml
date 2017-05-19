@@ -3,81 +3,96 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
+
                 android:orientation="vertical"
                 tools:context="com.polito.mad17.madmax.activities.groups.NewGroupActivity">
 
-    <ImageView android:src="@drawable/group"
-        android:id="@+id/group_image"
-        android:layout_width="wrap_content"
-        android:layout_height="72dp"
-        android:layout_marginBottom="24dp"
-        android:layout_gravity="center_horizontal"
-        android:clickable="false"/>
-
-    <android.support.design.widget.TextInputLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/et_name_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/name"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/et_description_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/description"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"/>
-    </android.support.design.widget.TextInputLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    <Button
-        android:id="@+id/addmember"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add member"
-        />
-
-    <TextView
-        android:id="@+id/memberstext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/addmember"
-        android:text="Members of group"/>
-
-    <!--<android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/members"
-        android:layout_below="@id/memberstext"
-        />-->
-        <ListView
+        android:layout_height="match_parent">
+        
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/members"
-            android:layout_below="@id/memberstext"
-            />
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView android:src="@drawable/group"
+                android:id="@+id/group_image"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:layout_marginBottom="24dp"
+                android:layout_gravity="center_horizontal"
+                android:clickable="false"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/et_name_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/name"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/et_description_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/description"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
 
+            <TextView
+                android:id="@+id/memberstext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Members of group"
+                android:textAllCaps="true"
+                android:textColor="@color/colorPrimaryText"/>
 
+            <!--<android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/members"
+                android:layout_below="@id/memberstext"
+                />-->
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/members"
+                    android:layout_below="@id/memberstext"
+                    />
 
-</RelativeLayout>
+                <Button
+                    android:id="@+id/addmember"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/members"
+                    android:text="Invite new member"
+                    android:layout_marginBottom="16dp"
+                    />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
 

@@ -33,10 +33,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/toolbar"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorWhite"
             app:tabTextColor="@color/colorWhite"
             app:tabSelectedTextColor="@color/colorAccent"
-            app:tabIndicatorColor="@color/colorYellow"
+            app:tabIndicatorColor="@color/colorAccent"
             android:elevation="6dp"
             android:minHeight="?attr/actionBarSize"/>
 
@@ -53,7 +53,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/add_plus" />
 
     </RelativeLayout>
 
@@ -66,7 +66,7 @@
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:background="#111"/>
+        android:background="@color/colorBlack"/>
 
 </android.support.v4.widget.DrawerLayout>
 

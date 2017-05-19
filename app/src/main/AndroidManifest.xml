@@ -13,8 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".activities.login.LogInActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".activities.login.LoginSignUpActivity"
+            android:theme="@style/AppTheme.Login">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -63,14 +63,6 @@
         <activity android:name=".activities.users.NewMemberActivity"
             android:label="@string/title_activity_new_member"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activities.login.SignUpActivity"
-            android:parentActivityName=".activities.login.LogInActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.login.LogInActivity" />
-        </activity>
 
         <activity android:name=".activities.login.EmailVerificationActivity"/>
 

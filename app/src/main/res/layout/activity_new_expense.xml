@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.polito.mad17.madmax.activities.expenses.NewExpenseActivity"
-    android:layout_margin="16dp">
+    tools:context="com.polito.mad17.madmax.activities.expenses.NewExpenseActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -14,22 +13,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="8dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp">
 
-                <EditText android:id="@+id/edit_description"
+                <EditText
+                    android:id="@+id/edit_description"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:layout_margin="0dp"
                     android:hint="@string/edit_description_hint"
                     android:inputType="textCapSentences"
                     android:maxLines="1"
-                    android:textSize="20sp"
-                    android:layout_margin="0dp"
-                />
+                    android:textColor="@color/colorPrimaryText"
+                    android:textSize="20sp" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -41,23 +42,28 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
-                <EditText
-                    android:id="@+id/edit_amount"
-                    android:layout_width="250dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
 
-                    android:hint="@string/edit_amount_hint"
+                    <EditText
+                        android:id="@+id/edit_amount"
+                        android:layout_width="250dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentLeft="true"
 
-                    android:inputType="numberDecimal"
-                    android:textSize="20sp" />
+                        android:layout_alignParentStart="true"
 
-                <Spinner
-                    android:id="@+id/currency"
-                    android:layout_width="75dp"
-                    android:layout_height="64dp"
-                    android:layout_weight="1"
-                    android:layout_alignParentRight="true"/>
+                        android:layout_alignParentTop="true"
+                        android:layout_weight="1"
+                        android:hint="@string/edit_amount_hint"
+                        android:inputType="numberDecimal"
+                        android:textColor="@color/colorPrimaryText"
+                        android:textSize="20sp" />
+
+                    <Spinner
+                        android:id="@+id/currency"
+                        android:layout_width="75dp"
+                        android:layout_height="64dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_weight="1" />
 
                 </RelativeLayout>
 
@@ -66,12 +72,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
                 android:text="Image Product"
                 android:textAllCaps="true"
-                android:layout_gravity="center"
-                android:textSize="20sp"
-                />
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="20sp" />
 
             <ImageView
                 android:id="@+id/img_expense"
@@ -86,22 +92,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
                 android:text="Image Bill"
                 android:textAllCaps="true"
-                android:layout_gravity="center"
-                android:textSize="20sp"
-                />
+                android:textColor="@color/colorPrimaryText"
+                android:textSize="20sp" />
 
             <ImageView
                 android:id="@+id/img_bill"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
-                android:layout_marginBottom="24dp"
                 android:layout_gravity="center"
+                android:layout_marginBottom="24dp"
+                android:clickable="true"
                 android:scaleType="centerInside"
-                android:src="@drawable/add_photo"
-                android:clickable="true"/>
+                android:src="@drawable/add_photo" />
         </LinearLayout>
     </ScrollView>
 

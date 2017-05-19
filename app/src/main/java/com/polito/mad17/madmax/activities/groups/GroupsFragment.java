@@ -41,17 +41,17 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
     Double totBalance;
 
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private GroupsViewAdapter groupsViewAdapter;
+    private Double balance;
+
 
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickGroupInterface = onItemClickInterface;
         onLongClickGroupInterface = onItemLongClickInterface;
 
     }
-
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private GroupsViewAdapter groupsViewAdapter;
-    private Double balance;
 
     public GroupsFragment() {}
 
@@ -63,17 +63,12 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "onCreateView");
-        RecyclerView recyclerView;
-        RecyclerView.LayoutManager layoutManager;
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
-
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
-
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);

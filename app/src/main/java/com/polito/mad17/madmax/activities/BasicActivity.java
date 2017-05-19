@@ -23,8 +23,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.login.LogInActivity;
-import com.polito.mad17.madmax.entities.CircleTransform;
+import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
 import com.polito.mad17.madmax.entities.CircleTransform;
 
 import static com.polito.mad17.madmax.activities.MainActivity.auth;
@@ -120,7 +119,7 @@ public class BasicActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext() , "Logout selected", Toast.LENGTH_SHORT).show();
                         auth.signOut();
 
-                        intent = new Intent(getApplicationContext(), LogInActivity.class);
+                        intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
                         startActivity(intent);
                         finish();
                         break;

@@ -2,75 +2,86 @@ package com.polito.mad17.madmax.activities.login;
 
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
+import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 
-public class LogInActivity extends AppCompatActivity {
+public class LoginFragment extends Fragment {
 
-    private static final String TAG = LogInActivity.class.getSimpleName();
-
+    private static final String TAG = LoginFragment.class.getSimpleName();
+    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
+
+    private OnItemClickInterface onClickLoginInterface;
 
     // UI references.
     private EditText emailView; // where the user inserts the email
     private EditText passwordView;  // where the user inserts the password
     private ProgressDialog progressDialog;
+    private Button loginButton;     // login button
+    private TextView signupView;    // link to the sign up activity
+
+
+    public void setInterface(OnItemClickInterface onItemClickInterface) {
+        onClickLoginInterface = onItemClickInterface;
+    }
+
+    public LoginFragment() { }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate");
+        auth = FirebaseAuth.getInstance();
+    }
 
-        final String inviterUID, groupToBeAddedID;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
 
-        Button loginButton;     // login button
-        TextView signupView;    // link to the sign up activity
+        setInterface((OnItemClickInterface) getActivity());
 
-        // getting Intent from invitation
-        Intent intent = getIntent();
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
 
-        String action = intent.getAction();
-        Log.d(TAG, "action " + action);
-
-        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
-        Uri data = intent.getData();
-        if(data != null) {
-            // to be used to set the current user as friend of the inviter
-            Log.d(TAG, "there is an invite");
-            inviterUID = data.getQueryParameter("inviterUID");
-            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
-        }
-        else {
-            inviterUID = null;
-            groupToBeAddedID = null;
-            Log.e(TAG, "invitation failed?");
-        }
-
+        emailView = (EditText) view.findViewById(R.id.email);
+        passwordView = (EditText) view.findViewById(R.id.password);
+        signupView = (TextView) view.findViewById(R.id.link_signup);
+        signupView.setPaintFlags(signupView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG); // to make the link underlined
+        loginButton = (Button) view.findViewById(R.id.btn_login);
+        progressDialog = new ProgressDialog(getContext());
 
         auth = FirebaseAuth.getInstance();
-
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -83,33 +94,37 @@ public class LogInActivity extends AppCompatActivity {
 
                 // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
                 if(currentUser != null && currentUser.isEmailVerified())  {
-                    Log.i(TAG, subTag+" user is logged, go to MainActivity");
+                    Log.i(TAG, subTag + " user is logged, go to MainActivity");
 
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.putExtra("UID", currentUser.getUid());
-
-                    if(inviterUID != null) {
-                        Log.i(TAG, "present inviterUID: "+inviterUID);
-                        intent.putExtra("inviterUID", inviterUID);
-                    }
-
-
-                    if (groupToBeAddedID != null) {
-                        Log.i(TAG, "present groupToBeAddedID: "+groupToBeAddedID);
-                        intent.putExtra("groupToBeAddedID", groupToBeAddedID);
-                    }
-
-                    startActivity(intent);
-                    finish();
+                    onClickLoginInterface.itemClicked(LoginFragment.class.getSimpleName(), currentUser.getUid());
                 }
                 else {
                     // if the user is already logged but has not verified the mail redirect him to the email verification
                     if(currentUser != null && !currentUser.isEmailVerified()) {
                         Log.i(TAG, subTag+" user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
 
-                        Intent intent = new Intent(getApplicationContext(), EmailVerificationActivity.class);
-                        startActivity(intent);
-                        finish();
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user == null) {
+                            Log.e(TAG, "Error while retriving current user from db");
+
+                            Toast.makeText(getContext(), "Error while retriving current user from db",Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                progressDialog.dismiss();
+                                if(task.isSuccessful()){
+
+                                    Toast.makeText(getContext(), "Sent a new verification email",Toast.LENGTH_LONG).show();
+                                    Log.i(TAG, "verification email successful sent");
+                                }
+                                else {
+                                    Log.d(TAG, "verification email not sent, exception: "+task.getException());
+                                }
+                            }
+                        });
                     }
                     else{
                         // if the user has done the logout
@@ -119,14 +134,7 @@ public class LogInActivity extends AppCompatActivity {
             }
         };
 
-        setContentView(R.layout.activity_log_in);
-
-        emailView = (EditText) findViewById(R.id.email);
-        passwordView = (EditText) findViewById(R.id.password);
-        signupView = (TextView) findViewById(R.id.link_signup);
-        signupView.setPaintFlags(signupView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG); // to make the link underlined
-        loginButton = (Button) findViewById(R.id.btn_login);
-        progressDialog = new ProgressDialog(this);
+        auth.addAuthStateListener(authListener); // attach the listener to the FirebaseAuth instance
 
         // allow to proceed in login using keyboard, without press Login button
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -151,36 +159,26 @@ public class LogInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG,"link to signup clicked");
+                onClickLoginInterface.itemClicked(LoginFragment.class.getSimpleName(), "1");
 
-                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
-                PendingIntent pendingIntent = TaskStackBuilder.create(getApplicationContext())
-                    .addNextIntentWithParentStack(intent)
-                    .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-                builder.setContentIntent(pendingIntent);
-                startActivity(intent);
             }
         });
+
+        return view;
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i(TAG, "onStart");
-
-        auth.addAuthStateListener(authListener); // attach the listener to the FirebaseAuth instance
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        Log.i(TAG, "onStop");
+    public void onDetach() {
+        super.onDetach();
 
         if (authListener != null)  // detach the listener to the FirebaseAuth instance
             auth.removeAuthStateListener(authListener);
     }
-
 
     private void signIn(String email, String password){
         Log.i(TAG, "signIn");
@@ -188,7 +186,7 @@ public class LogInActivity extends AppCompatActivity {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(LogInActivity.this, "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Invalid form!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -203,7 +201,7 @@ public class LogInActivity extends AppCompatActivity {
                     progressDialog.dismiss();
 
                 Log.i(TAG, "authentication failed, exception: " + e.toString());
-                Toast.makeText(LogInActivity.this, "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
             }
         });
     }

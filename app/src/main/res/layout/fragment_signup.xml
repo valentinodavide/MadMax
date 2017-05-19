@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.polito.mad17.madmax.activities.login.SignUpActivity">
+    android:padding="@dimen/activity_horizontal_margin">
 
     <LinearLayout
         android:id="@+id/create_account_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="16dp">
 
         <ImageView android:src="@drawable/anonymous"
             android:id="@+id/profile_image"
@@ -97,18 +97,19 @@
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_signup"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
-            android:layout_gravity="center_horizontal"
             android:padding="12dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorAccent"
             android:text="@string/save"/>
 
         <TextView android:id="@+id/link_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
             android:layout_gravity="center_horizontal"
             android:linksClickable="true"
             android:text="@string/prompt_registered_user"
