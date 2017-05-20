@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.login;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,6 +36,10 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // the first time user open the app the default preferences must be setted up
+        PreferenceManager.setDefaultValues(this, R.layout.preferences, false);
+
         Log.i(TAG, "onCreate");
 
         // insert tabs and current fragment in the main layout

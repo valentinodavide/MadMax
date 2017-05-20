@@ -114,6 +114,8 @@ public class BasicActivity extends AppCompatActivity {
                         startActivityForResult(intent, REQUEST_INVITE);
                         break;
                     case R.id.settings:
+                        intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.logout:
                         Toast.makeText(getApplicationContext() , "Logout selected", Toast.LENGTH_SHORT).show();

@@ -92,8 +92,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         Intent i = getIntent();
         if(i.hasExtra("UID")){
             currentUID = i.getStringExtra("UID");Log.i(TAG, "currentUID da extra : "+currentUID);}
-        else
-        if(currentUID == null){
+        else if(currentUID == null){
             auth.signOut();
             Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
             startActivity(intent);
@@ -187,7 +186,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 // insert tabs and current fragment in the main layout
                 mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
                 TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-                tabLayout.addTab(tabLayout.newTab().setText(friends));
+                tabLayout.addTab(tabLayout.newTab().setText(R.string.friends));
                 tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
                 tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
                 tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -275,7 +274,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 break;
         }
     }
-
 
     public class PagerAdapter extends FragmentPagerAdapter {
 
@@ -476,10 +474,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         //updateBalanceFirebase(u, expense);
     }
 
-
-
-    public void joinGroupFirebase (final String userID, String groupID)
-    {
+    public void joinGroupFirebase (final String userID, String groupID) {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         //Aggiungo gruppo alla lista gruppi dello user
@@ -494,8 +489,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
     }
 
-    public void addFriendFirebase (final String user1ID, final String user2ID)
-    {
+    public void addFriendFirebase (final String user1ID, final String user2ID) {
         //Add u2 to friend list of u1
         databaseReference.child("users").child(user1ID).child("friends").push();
         databaseReference.child("users").child(user1ID).child("friends").child(user2ID).setValue("true");
@@ -557,8 +551,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
     }
 
-    public void leaveGroupFirebase (String groupID)
-    {
+    public void leaveGroupFirebase (String groupID) {
         Group g = GroupsFragment.groups.get(groupID);
         if (g != null)
         {
@@ -596,8 +589,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
     }
 
-    public void removeGroupFirebase (final String groupID)
-    {
+    public void removeGroupFirebase (final String groupID) {
 
         databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -720,6 +712,3 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         Log.i(TAG, "onResume");
     }
 }
-
-
-

@@ -1,10 +1,11 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -33,14 +34,15 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.Expense;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class NewExpenseActivity extends AppCompatActivity {
 
@@ -71,6 +73,9 @@ public class NewExpenseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_expense);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
@@ -86,6 +91,10 @@ public class NewExpenseActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currency.setAdapter(adapter);
+
+        // set the defaultCurrency value for the spinner based on the user preferences
+        int spinnerPosition = adapter.getPosition(defaultCurrency);
+        currency.setSelection(spinnerPosition);
 
         expensePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
