@@ -1,13 +1,14 @@
 package com.polito.mad17.madmax.activities.login;
 
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -41,6 +42,8 @@ import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
@@ -83,9 +86,6 @@ public class SignUpFragment extends Fragment {
     public SignUpFragment() { }
 
     @Override
-    @TargetApi(23) // used for letting AndroidStudio know that method requestPermissions() is called
-    // in a controlled way: in particular it must be accessed only if API >= 23, and we guarantee it
-    // via the static method MainActivity.shouldAskPermission()
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
@@ -235,6 +235,9 @@ public class SignUpFragment extends Fragment {
             return;
         }
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
         String UID = user.getUid();
 
         final User u = new User(
@@ -245,7 +248,7 @@ public class SignUpFragment extends Fragment {
                 emailView.getText().toString(),
                 passwordView.getText().toString(),
                 "",
-                "€");
+                defaultCurrency);
         if(inviterID != null) {
             u.getUserFriends().put(inviterID, null);
         }
@@ -296,6 +299,7 @@ public class SignUpFragment extends Fragment {
                                     newUserEntry.put("image",       u.getProfileImage());
                                     newUserEntry.put("name",        u.getName());
                                     newUserEntry.put("surname",     u.getSurname());
+                                    newUserEntry.put("username",     u.getUsername());
 
                                     databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
                                 }
@@ -316,7 +320,7 @@ public class SignUpFragment extends Fragment {
     }
 
     // check if both email and password form are filled
-    private boolean validateForm() {
+    public boolean validateForm() {
         Log.i(TAG, "validateForm");
 
         boolean valid  = true;
@@ -368,5 +372,4 @@ public class SignUpFragment extends Fragment {
         }
         return valid;
     }
-
 }

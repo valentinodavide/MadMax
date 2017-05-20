@@ -26,13 +26,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data android:scheme="http"
+                <data
                     android:host="www.madmax.com"
-                    android:pathPrefix="/beeshare" />
+                    android:pathPrefix="/beeshare"
+                    android:scheme="http" />
                 <!-- note that the leading "/" is required for pathPrefix -->
                 <!-- Accepts URIs that begin with "example://gizmos” -->
-                <data android:scheme="madmax"
-                    android:host="beeshare" />
+                <data
+                    android:host="beeshare"
+                    android:scheme="madmax" />
             </intent-filter>
         </activity>
         <activity
@@ -63,11 +65,15 @@
             android:label="@string/title_activity_new_member"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.login.EmailVerificationActivity" />
-        <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleInstance"/>
-        <activity android:name=".activities.SettingsActivity"
-            android:parentActivityName=".activities.MainActivity"/>
+        <activity
+            android:name=".activities.MainActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.ProfileEdit"
+            android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>

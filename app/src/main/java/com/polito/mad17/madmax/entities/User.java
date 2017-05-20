@@ -1,9 +1,13 @@
 package com.polito.mad17.madmax.entities;
 
+import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 
 public class User implements Parcelable {
     private String ID;
@@ -36,7 +42,6 @@ public class User implements Parcelable {
     private HashMap<String, Double> balanceWithGroups;  //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
     private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
 
-    // todo siamo sicuri di fare sharedGroup?
     private HashMap<String, HashMap<String, Group>> sharedGroupPerFriend;   //String = UID of the friend, HashMap<String, Group> : String = GID of the shared group, Group = shared group
 
     // constructor typically used for creting the current user logged in
@@ -56,7 +61,6 @@ public class User implements Parcelable {
         this.balanceWithGroups = new HashMap<>();
         this.addedExpenses = new TreeMap<>();
 
-        // todo siamo sicuri di fare sharedGroup?
         this.sharedGroupPerFriend = new HashMap<>();
     }
 
@@ -166,7 +170,7 @@ public class User implements Parcelable {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = encryptPassword(password);
     }
 
     public String getProfileImage() {
@@ -221,12 +225,10 @@ public class User implements Parcelable {
         this.addedExpenses = addedExpenses;
     }
 
-    // todo siamo sicuri di fare sharedGroup?
     public HashMap<String, HashMap<String, Group>> getSharedGroupPerFriend() {
         return sharedGroupPerFriend;
     }
 
-    // todo siamo sicuri di fare sharedGroup?
     public void setSharedGroupPerFriend(HashMap<String, HashMap<String, Group>> sharedGroupPerFriend) {
         this.sharedGroupPerFriend = sharedGroupPerFriend;
     }
@@ -236,7 +238,7 @@ public class User implements Parcelable {
 
 
     // method to encrypt password
-    private String encryptPassword (String passwordToHash) {
+    public static String encryptPassword (String passwordToHash) {
         String generatedPassword = null;
 
         try {
@@ -341,26 +343,6 @@ public class User implements Parcelable {
     }
     */
 
-    public void joinGroup (Group group) {
-        group.getMembers().put(this.getID(), this); //aggiunto user alla lista di membri del gruppo
-        //this.userGroups.add(g); //gruppo aggiunto alla lista di gruppi di cui user fa parte
-        this.userGroups.put(group.getID(), group);
-
-        //creo un debito verso il gruppo
-        balanceWithGroups.put(group.getID(), 0d);
-
-        //per ogni membro del gruppo
-        for (HashMap.Entry<String, User> friend : group.getMembers().entrySet()) {
-            //se non sono io stesso
-            if (!friend.getKey().equals(this.getID())) {
-                balanceWithUsers.put(friend.getKey(), 0d); //creo un debito verso il membro
-                friend.getValue().getBalanceWithUsers().put(this.getID(), 0d); //creo un debito dal membro verso di me
-            }
-        }
-    }
-
-
-
     public HashMap<String, Group> getSharedGroupsMap(User friend) {
         HashMap<String, Group> mygroups = new HashMap<>();
         mygroups = this.getUserGroups();
@@ -370,7 +352,6 @@ public class User implements Parcelable {
         return  mygroups;
 
     }
-
 
     public ArrayList<Group> getSharedGroupsList (User friend) {
         ArrayList<Group> mygroups = new ArrayList<>();
@@ -390,10 +371,6 @@ public class User implements Parcelable {
         return mygroups;
     }
 
-    public String toString() {
-        return name + " " + surname + " ";
-    }
-
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("ID", ID);
@@ -405,7 +382,6 @@ public class User implements Parcelable {
 
         return result;
     }
-
 
     public void addFriend (final String friendID) {
         final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
@@ -492,6 +468,25 @@ public class User implements Parcelable {
         });
     }
 
+    // todo verifica duplicazione metodo
+    public void joinGroup (Group group) {
+        group.getMembers().put(this.getID(), this); //aggiunto user alla lista di membri del gruppo
+        //this.userGroups.add(g); //gruppo aggiunto alla lista di gruppi di cui user fa parte
+        this.userGroups.put(group.getID(), group);
+
+        //creo un debito verso il gruppo
+        balanceWithGroups.put(group.getID(), 0d);
+
+        //per ogni membro del gruppo
+        for (HashMap.Entry<String, User> friend : group.getMembers().entrySet()) {
+            //se non sono io stesso
+            if (!friend.getKey().equals(this.getID())) {
+                balanceWithUsers.put(friend.getKey(), 0d); //creo un debito verso il membro
+                friend.getValue().getBalanceWithUsers().put(this.getID(), 0d); //creo un debito dal membro verso di me
+            }
+        }
+    }
+
     public void joinGroup (String groupID) {
         final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
         final String currentUID = this.getID();
@@ -508,5 +503,25 @@ public class User implements Parcelable {
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue("time");
 
         //todo il numero dei partecipanti viene aggiornato da qualche altra parte?
+    }
+
+    // static method to loading an image from firebase
+    public boolean loadImage (Activity activity, ImageView imageView) {
+        String profileImage = getProfileImage();
+        if (profileImage.isEmpty()) {
+            return false;
+        }
+
+        // Loading image
+        Glide.with(activity).load(profileImage).centerCrop()
+                .bitmapTransform(new CircleTransform(activity))
+                .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+        Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
+
+        return true;
+    }
+
+    public String toString() {
+        return name + " " + surname + " ";
     }
 }

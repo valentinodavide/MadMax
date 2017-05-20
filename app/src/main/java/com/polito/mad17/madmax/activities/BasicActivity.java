@@ -19,14 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
-import com.polito.mad17.madmax.entities.CircleTransform;
 
 import static com.polito.mad17.madmax.activities.MainActivity.auth;
+import static com.polito.mad17.madmax.activities.MainActivity.getCurrentUser;
 
 
 public class BasicActivity extends AppCompatActivity {
@@ -34,10 +32,9 @@ public class BasicActivity extends AppCompatActivity {
     private static final String TAG = BasicActivity.class.getSimpleName();
     private static final int REQUEST_INVITE = 0;
     protected FrameLayout mainView;
-    private String[] drawerOptions; // nav menu item
+    //private String[] drawerOptions; // nav menu item
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private View navHeader;
     private ImageView imgProfile;
     private TextView txtName, txtWebsite;
     private Toolbar toolbar;
@@ -48,12 +45,14 @@ public class BasicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basic);
 
+        View navHeader;
+
         mainView = (FrameLayout) findViewById(R.id.main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // get the item shown in the navigation drawer
-        drawerOptions = getResources().getStringArray(R.array.drawerItem);
+        //drawerOptions = getResources().getStringArray(R.array.drawerItem);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         navigationView = (NavigationView)findViewById(R.id.nav_view);
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -61,31 +60,20 @@ public class BasicActivity extends AppCompatActivity {
         // Navigation view header
         navHeader = navigationView.getHeaderView(0);
         navHeader.setBackgroundColor(Color.BLUE);
+        navHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(BasicActivity.this, ProfileEdit.class);
+                BasicActivity.this.startActivity(intent);
+            }
+        });
+
         txtName = (TextView) navHeader.findViewById(R.id.name);
         txtWebsite = (TextView) navHeader.findViewById(R.id.website);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
 
         // initializing navigation menu
         setUpNavigationView();
-    }
-
-
-
-    /* load navigation header menu info like profile image, name, email */
-    protected void loadNavHeader() {
-        // name and email
-        txtName.setText(MainActivity.getCurrentUser().getName() + " " + MainActivity.getCurrentUser().getSurname());
-        Log.d(TAG, "name: "+MainActivity.getCurrentUser().getName() + " - surname: " + MainActivity.getCurrentUser().getSurname());
-        txtWebsite.setText(MainActivity.getCurrentUser().getEmail());
-        Log.d(TAG, "email: "+MainActivity.getCurrentUser().getEmail());
-
-        // Loading profile image
-        Glide.with(this).load(MainActivity.getCurrentUser().getProfileImage())
-                .centerCrop()
-                .bitmapTransform(new CircleTransform(this))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(imgProfile);
-        Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
     }
 
     public void setUpNavigationView() {
@@ -101,8 +89,8 @@ public class BasicActivity extends AppCompatActivity {
                         finish();
                         break;
                     case R.id.invite_friend:
-                        Log.d(TAG, "my ID is " + MainActivity.getCurrentUser().getID());
-                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + MainActivity.getCurrentUser().getID();
+                        Log.d(TAG, "my ID is " + getCurrentUser().getID());
+                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + getCurrentUser().getID();
 
                         intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                                 .setDeepLink(Uri.parse(deepLink))
@@ -159,5 +147,17 @@ public class BasicActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /* load navigation header menu info like profile image, name, email */
+    protected void loadNavHeader() {
+        // name and email
+        txtName.setText(getCurrentUser().getName() + " " + getCurrentUser().getSurname());
+        Log.d(TAG, "name: "+ getCurrentUser().getName() + " - surname: " + getCurrentUser().getSurname());
+        txtWebsite.setText(getCurrentUser().getEmail());
+        Log.d(TAG, "email: "+ getCurrentUser().getEmail());
+
+        // profile image
+        getCurrentUser().loadImage(this, imgProfile);
     }
 }

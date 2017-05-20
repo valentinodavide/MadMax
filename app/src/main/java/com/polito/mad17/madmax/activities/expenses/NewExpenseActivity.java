@@ -35,6 +35,7 @@ import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.Expense;
 
 import java.io.ByteArrayOutputStream;
@@ -143,7 +144,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop()
+                        .centerCrop().bitmapTransform(new CircleTransform(this))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensePhoto);
             } catch (IOException e) {
@@ -160,7 +161,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop()
+                        .centerCrop().bitmapTransform(new CircleTransform(this))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(billPhoto);
             } catch (IOException e) {
