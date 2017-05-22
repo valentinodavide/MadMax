@@ -20,6 +20,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <intent-filter android:label="MadMaxInvitiationFilter">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -46,6 +47,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
+
         <activity android:name=".activities.expenses.NewExpenseActivity" />
         <activity
             android:name=".activities.users.FriendDetailActivity"

@@ -30,6 +30,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.expenses.ChooseGroupActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
@@ -270,8 +271,16 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 // pending fragment
                 Log.d(TAG, "fab 2");
                 fab.setImageResource(R.drawable.edit);
-                //todo fab.setOnClickListener(...);
-                fab.setClickable(false);
+
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent myIntent = new Intent(MainActivity.this, ChooseGroupActivity.class);
+                        myIntent.putExtra("userAdded", currentUser);//("UID", currentUID);
+                        MainActivity.this.startActivity(myIntent);
+                    }
+                });
+                //fab.setClickable(false);
                 break;
         }
     }

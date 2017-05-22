@@ -68,8 +68,8 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         String groupID;
         DatabaseReference groupRef;
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
+        //firebaseDatabase = FirebaseDatabase.getInstance();
+        //databaseReference = firebaseDatabase.getReference();
 
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
