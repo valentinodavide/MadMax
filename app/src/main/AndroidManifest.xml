@@ -76,6 +76,7 @@
             android:parentActivityName=".activities.MainActivity" />
         <activity android:name=".activities.ProfileEdit"
             android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.expenses.ChooseGroupActivity" />
     </application>
 
 </manifest>
