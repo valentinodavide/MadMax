@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <PreferenceCategory
+        android:title="Notifications"
+        android:key="notifications_category">
+
+        <CheckBoxPreference
+            android:key="notification_invite"
+            android:title="Invitation to join a new group"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_joinGroup"
+            android:title="User join one of your groups"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_leaveGroup"
+            android:title="User leave one of your groups"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_expense"
+            android:title="New expense added"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_proposalExpense"
+            android:title="New proposal expense added"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_comment"
+            android:title="Comment on your proposal expenses"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_vote"
+            android:title="Vote on your proposal expenses"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_proposalApproved"
+            android:title="Proposal expense approved"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_proposalNeglected"
+            android:title="Proposal expense neglected"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_payment"
+            android:title="User pay his debts with you"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="notification_confirmPayment"
+            android:title="User confirm your payment"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Other"
+        android:key="other_category">
+
+        <ListPreference
+            android:key="defaultCurrency"
+            android:title="Select default currency"
+            android:dialogTitle="Choose a currency:"
+            android:entries="@array/currencies"
+            android:entryValues="@array/currencies"
+            android:defaultValue="€" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

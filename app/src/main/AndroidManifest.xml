@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.polito.mad17.madmax">
 
-    <!--uses-permission android:name="android.permission.MANAGE_DOCUMENTS" /-->
+    <!-- uses-permission android:name="android.permission.MANAGE_DOCUMENTS" / -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -12,32 +12,35 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".activities.login.LoginSignUpActivity"
+        <activity
+            android:name=".activities.login.LoginSignUpActivity"
             android:theme="@style/AppTheme.Login">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <intent-filter android:label="MadMaxInvitiationFilter">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data android:scheme="http"
+                <data
                     android:host="www.madmax.com"
-                    android:pathPrefix="/expensivetastes" />
-                <!-- note that the leading "/" is required for pathPrefix-->
+                    android:pathPrefix="/beeshare"
+                    android:scheme="http" />
+                <!-- note that the leading "/" is required for pathPrefix -->
                 <!-- Accepts URIs that begin with "example://gizmos” -->
-                <data android:scheme="madmax"
-                    android:host="expensivetastes" />
+                <data
+                    android:host="beeshare"
+                    android:scheme="madmax" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activities.groups.GroupExpensesActivity"
-            android:parentActivityName=".activities.MainActivity" >
+        <activity
+            android:name=".activities.groups.GroupExpensesActivity"
+            android:parentActivityName=".activities.MainActivity">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -46,33 +49,34 @@
         </activity>
 
         <activity android:name=".activities.expenses.NewExpenseActivity" />
-
-        <activity android:name=".activities.users.FriendDetailActivity"
+        <activity
+            android:name=".activities.users.FriendDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activities.groups.GroupDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-
-        <activity android:name=".activities.groups.NewGroupActivity"
-            android:parentActivityName=".activities.MainActivity"/>
-
-        <activity android:name=".activities.groups.GroupInfoActivity"
+        <activity
+            android:name=".activities.groups.GroupDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.groups.NewGroupActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.groups.GroupInfoActivity"
             android:label="@string/title_activity_group_info"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activities.users.NewMemberActivity"
+        <activity
+            android:name=".activities.users.NewMemberActivity"
             android:label="@string/title_activity_new_member"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".activities.login.EmailVerificationActivity"/>
-
-        <activity android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleInstance"/>
-
-        <activity android:name=".activities.SettingsActivity"
+        <activity android:name=".activities.login.EmailVerificationActivity" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" />
-
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.ProfileEdit"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity android:name=".activities.expenses.ChooseGroupActivity" />
     </application>
 
 </manifest>

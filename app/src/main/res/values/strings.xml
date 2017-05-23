@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Expenses Taste</string>
+    <string name="app_name" translatable="false">BeeShare</string>
 
     <string name="title_activity_group_expenses">Group Expenses</string>
     <string name="title_image_expenses">Image Expenses</string>
@@ -52,12 +52,12 @@
         <item>¥</item>
     </string-array>
 
-    <string name="invitation_message">Join to Expenses Taste</string>
+    <string name="invitation_message">Join BeeShare!</string>
     <string name="invitationToGroup_message">You are been invited to join the group</string>
-    <string name="invitation_title">Invitation from Expenses Taste</string>
+    <string name="invitation_title">Invitation from BeeShare</string>
     <string name="invitation_cta">Install!</string>
     <string name="invitationToGroup_cta">Join to the group!</string>
-    <string name="invitation_deep_link">http://www.madmax.com/expensivetastes</string>
+    <string name="invitation_deep_link">http://www.madmax.com/beeshare</string>
     <string name="title_activity_group_info">GroupInfoActivity</string>
     <string name="title_activity_new_member">NewMemberActivity</string>
     <string name="invite_member">Invite a friend</string>

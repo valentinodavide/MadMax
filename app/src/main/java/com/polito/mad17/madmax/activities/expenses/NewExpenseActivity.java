@@ -1,10 +1,11 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -33,14 +34,16 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.Expense;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class NewExpenseActivity extends AppCompatActivity {
 
@@ -60,6 +63,8 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     private String groupID = null;
     private String userID = null;
+    private String callingActivity;
+    private String groupName;
     //private Integer numberMembers = null;
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
@@ -71,10 +76,14 @@ public class NewExpenseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_expense);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
-        //numberMembers = intent.getIntExtra("numberMembers", 0);
+        callingActivity = intent.getStringExtra("callingActivity");
+        groupName = intent.getStringExtra("groupName");
 
         description = (EditText) findViewById(R.id.edit_description);
         amount = (EditText) findViewById(R.id.edit_amount);
@@ -86,6 +95,10 @@ public class NewExpenseActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         currency.setAdapter(adapter);
+
+        // set the defaultCurrency value for the spinner based on the user preferences
+        int spinnerPosition = adapter.getPosition(defaultCurrency);
+        currency.setSelection(spinnerPosition);
 
         expensePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +147,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop()
+                        .centerCrop().bitmapTransform(new CircleTransform(this))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensePhoto);
             } catch (IOException e) {
@@ -151,7 +164,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop()
+                        .centerCrop().bitmapTransform(new CircleTransform(this))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(billPhoto);
             } catch (IOException e) {
@@ -185,12 +198,13 @@ public class NewExpenseActivity extends AppCompatActivity {
             newExpense.setEquallyDivided(true);
             newExpense.setDeleted(false);
 
-            final HashMap<String, Double> partecipants = new HashMap<>();
 
             Log.d(TAG, "Before first access to firebase");
 
+
+
             groupRef = databaseReference.child("groups");
-            groupRef.child(groupID).child("members").addValueEventListener(new ValueEventListener() {
+            groupRef.child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot membersSnapshot) {
 
@@ -209,10 +223,24 @@ public class NewExpenseActivity extends AppCompatActivity {
                     {
                         //Aggiungo alla spesa solo i membri non eliminati dal gruppo
                         if (member.child("deleted").getValue(Boolean.class) == false)
-                                newExpense.getParticipants().put(member.getKey(), amountPerMember);
+                            newExpense.getParticipants().put(member.getKey(), amountPerMember);
                     }
 
-                    addExpenseFirebase(newExpense);
+                    String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                    newExpense.setTimestamp(timeStamp);
+
+                    //Aggiungo una pending expense
+                    if (callingActivity.equals("ChooseGroupActivity"))
+                    {
+                        newExpense.setGroupName(groupName);
+                        addPendingExpenseFirebase(newExpense);
+
+                    }
+                    //Aggiungo una spesa normale
+                    else
+                    {
+                        addExpenseFirebase(newExpense);
+                    }
                 }
 
                 @Override
@@ -221,9 +249,11 @@ public class NewExpenseActivity extends AppCompatActivity {
                     Log.w(TAG, "Failed to read value.", error.toException());
                 }
             });
-
-            this.finish();
         }
+
+
+        this.finish();
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -287,12 +317,10 @@ public class NewExpenseActivity extends AppCompatActivity {
     public String addExpenseFirebase(final Expense expense) {
         Log.d(TAG, "addExpenseFirebase");
 
+
         //Aggiungo spesa a Firebase
         final String eID = databaseReference.child("expenses").push().getKey();
         databaseReference.child("expenses").child(eID).setValue(expense);
-        String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
-        databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
-        //databaseReference.child("expenses").child(eID).child("deleted").setValue(false);
 
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_expensePhoto.jpg");
@@ -382,7 +410,68 @@ public class NewExpenseActivity extends AppCompatActivity {
 
         return eID;
 
-        //u.updateBalance(expense);
-        //updateBalanceFirebase(u, expense);
     }
+
+    public void addPendingExpenseFirebase (Expense expense)
+    {
+        Log.d(TAG, "addPendingExpenseFirebase");
+
+
+        //Aggiungo pending expense a Firebase
+        final String eID = databaseReference.child("proposedExpenses").push().getKey();
+        databaseReference.child("proposedExpenses").child(eID).setValue(expense);
+
+
+        StorageReference uExpensePhotoFilenameRef = storageReference.child("proposedExpenses").child(eID).child(eID+"_expensePhoto.jpg");
+
+        // Get the data from an ImageView as bytes
+        expensePhoto.setDrawingCacheEnabled(true);
+        expensePhoto.buildDrawingCache();
+        Bitmap bitmap = expensePhoto.getDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = uExpensePhotoFilenameRef.putBytes(data);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // todo Handle unsuccessful uploads
+                Log.e(TAG, "image upload failed");
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                databaseReference.child("proposedExpenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
+            }
+        });
+
+
+        Log.d(TAG, "creator expense " + expense.getCreatorID());
+
+        //Per ogni participant setto la quota che ha già pagato per questa spesa
+        //e aggiungo spesa alla lista spese di ogni participant
+        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet())
+        {
+            Log.d(TAG, "participant " + participant.getKey());
+
+            //Setto voto nel participant a null
+            databaseReference.child("proposedExpenses").child(eID).child("participants").child(participant.getKey()).child("vote").setValue("null");
+            //Aggiungo campo deleted al participant
+            databaseReference.child("proposedExpenses").child(eID).child("participants").child(participant.getKey()).child("deleted").setValue(false);
+            //Aggiungo spesaID a elenco spese pending dello user
+            databaseReference.child("users").child(participant.getKey()).child("proposedExpenses").child(eID).setValue(true);
+        }
+
+        //todo aggiungere spesa pending al gruppo
+        //Aggiungo spesa alla lista spese del gruppo
+        //databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
+        //databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue(true);
+
+        return;
+    }
+
+
 }

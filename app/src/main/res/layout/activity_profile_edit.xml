@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/create_account_layout"
+        android:id="@+id/edit_account_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -93,7 +93,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btn_signup"
+            android:id="@+id/btn_save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -103,15 +103,6 @@
             android:textColor="@color/colorWhite"
             android:background="@color/colorAccent"
             android:text="@string/save"/>
-
-        <TextView android:id="@+id/link_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:linksClickable="true"
-            android:text="@string/prompt_registered_user"
-            android:gravity="center"
-            android:textSize="16sp"/>
 
     </LinearLayout>
 

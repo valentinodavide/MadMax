@@ -1,12 +1,15 @@
 package com.polito.mad17.madmax.activities.login;
 
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -20,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,10 +42,15 @@ import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
+
+import static android.app.Activity.RESULT_OK;
 
 public class SignUpFragment extends Fragment {
 
@@ -76,9 +86,6 @@ public class SignUpFragment extends Fragment {
     public SignUpFragment() { }
 
     @Override
-    @TargetApi(23) // used for letting AndroidStudio know that method requestPermissions() is called
-    // in a controlled way: in particular it must be accessed only if API >= 23, and we guarantee it
-    // via the static method MainActivity.shouldAskPermission()
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
@@ -146,6 +153,30 @@ public class SignUpFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult");
+
+        // first of all control if is the requested result and if it return something
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                // Log.d(TAG, String.valueOf(bitmap));
+                Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(profileImageView);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void createAccount(String email, String password){
         Log.i(TAG, "createAccount");
 
@@ -204,6 +235,9 @@ public class SignUpFragment extends Fragment {
             return;
         }
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
         String UID = user.getUid();
 
         final User u = new User(
@@ -214,7 +248,7 @@ public class SignUpFragment extends Fragment {
                 emailView.getText().toString(),
                 passwordView.getText().toString(),
                 "",
-                "€");
+                defaultCurrency);
         if(inviterID != null) {
             u.getUserFriends().put(inviterID, null);
         }
@@ -232,58 +266,61 @@ public class SignUpFragment extends Fragment {
 
         UploadTask uploadTask = uProfileImageFilenameRef.putBytes(data);
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // todo Handle unsuccessful uploads
-                Log.e(TAG, "image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-
-                u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
-
-                user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+        uploadTask
+                .addOnFailureListener(new OnFailureListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        progressDialog.dismiss();
-                        if(task.isSuccessful()){
-                            Log.i(TAG, "verification email successful sent");
+                    public void onFailure(@NonNull Exception exception) {
+                        // todo Handle unsuccessful uploads
+                        Log.e(TAG, "image upload failed");
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
 
-                            Log.i(TAG, "insert new user into db");
+                        u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
 
-                            HashMap<String,String> newUserEntry = new HashMap<>();
+                        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                progressDialog.dismiss();
+                                if(task.isSuccessful()){
+                                    Log.i(TAG, "verification email successful sent");
 
-                            newUserEntry.put("email",       u.getEmail());
-                            newUserEntry.put("password",    u.getPassword());
-                            newUserEntry.put("friends",     u.getUserFriends().toString());
-                            newUserEntry.put("groups",      u.getUserGroups().toString());
-                            newUserEntry.put("image",       u.getProfileImage());
-                            newUserEntry.put("name",        u.getName());
-                            newUserEntry.put("surname",     u.getSurname());
+                                    Log.i(TAG, "insert new user into db");
 
-                            databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
-                        }
-                        else {
-                            // todo delete the account and restart the activity
-                            Log.e(TAG, "verification email not sent, exception: " + task.getException());
-                        }
+                                    HashMap<String,String> newUserEntry = new HashMap<>();
 
-                        onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), user.getUid());
+                                    newUserEntry.put("email",       u.getEmail());
+                                    newUserEntry.put("password",    u.getPassword());
+                                    newUserEntry.put("friends",     u.getUserFriends().toString());
+                                    newUserEntry.put("groups",      u.getUserGroups().toString());
+                                    newUserEntry.put("image",       u.getProfileImage());
+                                    newUserEntry.put("name",        u.getName());
+                                    newUserEntry.put("surname",     u.getSurname());
+                                    newUserEntry.put("username",     u.getUsername());
+
+                                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                                }
+                                else {
+                                    // todo delete the account and restart the activity
+                                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                                }
+
+                                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), user.getUid());
+                            }
+                        });
+
                     }
                 });
-
-            }
-        });
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
     }
 
     // check if both email and password form are filled
-    private boolean validateForm() {
+    public boolean validateForm() {
         Log.i(TAG, "validateForm");
 
         boolean valid  = true;
@@ -335,5 +372,4 @@ public class SignUpFragment extends Fragment {
         }
         return valid;
     }
-
 }

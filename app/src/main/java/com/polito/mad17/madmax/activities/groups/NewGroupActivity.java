@@ -36,6 +36,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
 import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
 import com.polito.mad17.madmax.activities.users.NewMemberActivity;
+import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
@@ -290,7 +291,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
             // Log.d(TAG, String.valueOf(bitmap));
             Glide.with(this).load(ImageUri)
-                    .centerCrop()
+                    .centerCrop().bitmapTransform(new CircleTransform(this))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(imageGroup);
         }

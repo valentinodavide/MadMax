@@ -226,6 +226,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                         Intent myIntent = new Intent(getActivity(), NewExpenseActivity.class);
                         myIntent.putExtra("groupID", groupID);
                         myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                        myIntent.putExtra("callingActivity", "DetailFragment");
                         startActivity(myIntent);
                     }
                 });

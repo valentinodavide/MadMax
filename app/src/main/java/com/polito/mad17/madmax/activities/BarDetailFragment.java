@@ -125,7 +125,7 @@ public class BarDetailFragment extends Fragment {
 
                         String image = dataSnapshot.child("image").getValue(String.class);
 
-                        if (image != null)
+                        if (image != null && image != "noImage")
                         {
                             Log.d (TAG, "Nome gruppo: " + dataSnapshot.child("name").getValue(String.class) + "  Immagine: " + image);
                             // Loading group image into bar

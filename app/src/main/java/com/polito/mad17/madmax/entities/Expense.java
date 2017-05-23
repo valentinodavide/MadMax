@@ -18,8 +18,14 @@ public class Expense {
                                     // altrimenti viene suddivisa come specificato in participants ->
     private HashMap<String, Double> participants;     // String: userID, Double: frazione corrispondente a quello user
 
-
+    private String timestamp;
     private Boolean deleted;
+    //Attributi usati nel caso di pending expense
+    private Integer participantsCount;
+    private String groupName;
+    private Integer yes;
+    private Integer no;
+
 
     public Expense() { this.participants = new HashMap<>(); }
 
@@ -118,6 +124,27 @@ public class Expense {
     public Boolean getDeleted() {return deleted;}
 
     public void setDeleted(Boolean deleted) {this.deleted = deleted;}
+
+    public String getTimestamp() {return timestamp;}
+
+    public void setTimestamp(String timestamp) {this.timestamp = timestamp;}
+
+    public Integer getParticipantsCount() {return participantsCount;}
+
+    public void setParticipantsCount(Integer participantsCount) {this.participantsCount = participantsCount;}
+
+    public String getGroupName() {return groupName;}
+
+    public void setGroupName(String groupName) {this.groupName = groupName;}
+
+    public Integer getYes() {return yes;}
+
+    public void setYes(Integer yes) {this.yes = yes;}
+
+    public Integer getNo() {return no;}
+
+    public void setNo(Integer no) {this.no = no;}
+
 
 
     public Map<String, Object> toMap() {

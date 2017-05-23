@@ -75,6 +75,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(GroupExpensesActivity.this, NewExpenseActivity.class);
                 intent.putExtra("IDGroup", IDGroup);
+                intent.putExtra("callingActivity", "GroupExpensesActivity");
                 GroupExpensesActivity.this.startActivity(intent);
 
                 finish();

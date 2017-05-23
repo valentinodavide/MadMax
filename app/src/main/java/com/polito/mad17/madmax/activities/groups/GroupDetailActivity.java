@@ -86,50 +86,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                     .commit();
         }
 
-        //tenuti i due listener nel caso ce ne fosse bisogno ma si possono eliminare
 
-        //Show data of group (di Ale)
-        /*
-        databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String name = dataSnapshot.child("name").getValue(String.class);
-                nameTextView.setText(name);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        // retrieving group details for current group (di Chiara)
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference();
-        groupRef = databaseReference.child("groups");
-        groupRef.child(groupID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot groupSnapshot) {
-
-                groupDetails.setName(groupSnapshot.child("name").getValue(String.class));
-                groupDetails.setID(groupSnapshot.getKey());
-                groupDetails.setNumberMembers(groupSnapshot.child("numberMembers").getValue(Integer.class));
-                Log.d(TAG, "groupDetails " +  groupDetails.toString());
-
-                nameTextView.setText(groupDetails.getName());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
-
-        //Abbiamo due listener che fanno la stessa cosa! Togliere uno dei due
-        */
 
     }
 
