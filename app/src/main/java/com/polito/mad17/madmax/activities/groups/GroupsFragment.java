@@ -173,7 +173,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         });
     }
 
-    //versione più complessa dell getGroup. Quest'ultima non verrà più usata.
+    ///versione più complessa dell getGroup. Quest'ultima non verrà più usata.
     //oltre al nome gruppo, prende anche il bilancio dello user col gruppo
     void getGroupAndBalance (final String userID, final String groupID)
     {
@@ -191,7 +191,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                 final String groupName = groupDataSnapshot.child("name").getValue(String.class);
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
-                final String groupImage = groupDataSnapshot.child("image").getValue(String.class);
 
 
                 if (deleted != null)
@@ -236,11 +235,10 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                         //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
                                         Double currentBalance = totalBalance.get(userID);
                                         totalBalance.put(userID, currentBalance+balance);
-                                        totBalance += balance; // riky: non è ridondante?
+                                        totBalance += balance;
 
                                     }
 
-                                    /* spsostato dove dichiarato dopo
                                     Group g = new Group();
                                     g.setName(groupName);
                                     g.setBalance(totalBalance.get(userID));
@@ -261,7 +259,9 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                     }
 
                                     groupsViewAdapter.update(groups);
-                                    groupsViewAdapter.notifyDataSetChanged(); */
+                                    groupsViewAdapter.notifyDataSetChanged();
+
+
                                 }
 
                                 @Override
@@ -273,44 +273,17 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                         }
 
                     }
-// inizio spostamento
-                    Group g = new Group();
-                    g.setName(groupName);
-                    if(totalBalance.containsKey(userID))
-                        g.setBalance(totalBalance.get(userID));
-                    else
-                        g.setBalance(0d);
-                    g.setDeleted(deleted);
-                    //g.setBalance(totBalance);
-                    //se il gruppo non è deleted e io faccio ancora parte del gruppo
-                    if (!deleted &&
-                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
-                            )
-                    {
-                        groups.put(groupID, g);
 
-                    }
-                    else
-                    {
-                        groups.remove(groupID);
-                    }
-
-                    groupsViewAdapter.update(groups);
-                    groupsViewAdapter.notifyDataSetChanged();
-// fine spostamento
-            /*   riky: a cosa serve?commentato perchè dava errori
-                 //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
+                    //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
                     //if (dataSnapshot.child("members").hasChild(userID))
                     //{
                     Group g = new Group();
                     g.setName(groupName);
                     g.setBalance(0d);
                     g.setDeleted(deleted);
-                    g.setImage(groupImage);
                     if (!deleted &&
                             groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue().equals("true"))
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class))
                         groups.put(groupID, g);
                     else
                         groups.remove(groupID);
@@ -318,7 +291,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                     groupsViewAdapter.update(groups);
                     groupsViewAdapter.notifyDataSetChanged();
-                    totBalance = 0d; */
+                    totBalance = 0d;
                 }
 
 
