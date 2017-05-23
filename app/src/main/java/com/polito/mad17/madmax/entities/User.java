@@ -11,7 +11,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.activities.MainActivity;
 
@@ -417,7 +419,9 @@ public class User implements Parcelable {
                 final ArrayList<String> u1Groups = new ArrayList<String>();
 
                 for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
-                    u1Groups.add(groupSnapshot.getKey());
+                    Log.d(TAG,groupSnapshot.getKey()+" : "+groupSnapshot.getValue());
+                    if(groupSnapshot.getValue(Boolean.class))
+                        u1Groups.add(groupSnapshot.getKey());
                 }
 
                 Query query = databaseReference.child("users").child(friendID).child("groups");
@@ -427,7 +431,7 @@ public class User implements Parcelable {
                         ArrayList<String> sharedGroups = new ArrayList<String>();
 
                         for (DataSnapshot groupSnapshot: dataSnapshot.getChildren()) {
-                            if (u1Groups.contains(groupSnapshot.getKey()))
+                            if (u1Groups.contains(groupSnapshot.getKey()) && groupSnapshot.getValue(Boolean.class))
                                 sharedGroups.add(groupSnapshot.getKey());
                         }
 
@@ -487,7 +491,7 @@ public class User implements Parcelable {
         }
     }
 
-    public void joinGroup (String groupID) {
+    public void joinGroup (String groupID, String inviterUID) {
         final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
         final String currentUID = this.getID();
 
@@ -501,8 +505,34 @@ public class User implements Parcelable {
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("admin").setValue("false");
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue("time");
+        // aggiunto da riky
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("deleted").setValue("false");
 
-        //todo il numero dei partecipanti viene aggiornato da qualche altra parte?
+        // aggiungo l'invitante agli amici se non lo è già
+        if(!userFriends.containsKey(inviterUID)){
+            addFriend(inviterUID);//todo aggiungere l'invitato tra gli amici dell'invitante
+        }
+
+        //Incremento il numero di partecipanti
+        databaseReference.child("groups").child(groupID).child("numberMembers").runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer numberMembers = mutableData.getValue(Integer.class);
+                if(numberMembers == null){
+                    return Transaction.success(mutableData);
+                }
+                // Set value and report transaction success
+                mutableData.setValue(numberMembers+1);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                // Transaction completed
+                Log.d(TAG, "postTransaction:onComplete:" + databaseError);
+            }
+        });
     }
 
     // static method to loading an image from firebase
@@ -514,7 +544,7 @@ public class User implements Parcelable {
 
         // Loading image
         Glide.with(activity).load(profileImage).centerCrop()
-                .bitmapTransform(new CircleTransform(activity))
+                .bitmapTransform(new CropCircleTransformation(activity))
                 .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
         Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
 

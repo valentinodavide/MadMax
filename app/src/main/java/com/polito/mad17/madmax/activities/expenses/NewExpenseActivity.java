@@ -35,7 +35,6 @@ import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
-import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.Expense;
 
 import java.io.ByteArrayOutputStream;
@@ -147,7 +146,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop().bitmapTransform(new CircleTransform(this))
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensePhoto);
             } catch (IOException e) {
@@ -164,7 +163,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
-                        .centerCrop().bitmapTransform(new CircleTransform(this))
+                        .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(billPhoto);
             } catch (IOException e) {
@@ -186,6 +185,8 @@ public class NewExpenseActivity extends AppCompatActivity {
 
         if (itemThatWasClickedId == R.id.action_save) {
 
+            if(!validateForm())
+                return true;
             //display message if text field is empty
             Toast.makeText(getBaseContext(), "Saved expense", Toast.LENGTH_SHORT).show();
 
@@ -201,8 +202,6 @@ public class NewExpenseActivity extends AppCompatActivity {
 
             Log.d(TAG, "Before first access to firebase");
 
-
-
             groupRef = databaseReference.child("groups");
             groupRef.child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -213,7 +212,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                     //Attenzione! Non contare i membri eliminati tra i partecipanti alla spesa
                     for (DataSnapshot memberSnap : membersSnapshot.getChildren())
                     {
-                        if (memberSnap.child("deleted").getValue(Boolean.class) == false)
+                        if (memberSnap.child("deleted").getValue().toString().contains("false"))
                             participantsCount ++;
                     }
 
@@ -222,8 +221,8 @@ public class NewExpenseActivity extends AppCompatActivity {
                     for(DataSnapshot member : membersSnapshot.getChildren())
                     {
                         //Aggiungo alla spesa solo i membri non eliminati dal gruppo
-                        if (member.child("deleted").getValue(Boolean.class) == false)
-                            newExpense.getParticipants().put(member.getKey(), amountPerMember);
+                        if (member.child("deleted").getValue().toString().contains("false"))
+                                newExpense.getParticipants().put(member.getKey(), amountPerMember);
                     }
 
                     String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
@@ -316,7 +315,6 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     public String addExpenseFirebase(final Expense expense) {
         Log.d(TAG, "addExpenseFirebase");
-
 
         //Aggiungo spesa a Firebase
         final String eID = databaseReference.child("expenses").push().getKey();

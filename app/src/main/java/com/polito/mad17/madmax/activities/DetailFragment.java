@@ -240,13 +240,16 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                     @Override
                     public void onClick(View v) {
                         Log.d(TAG, "invite a member to join the group");
-                        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID;
+                //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
+
+                        Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
+                                .appendQueryParameter("groupToBeAddedID", groupID)
+                                .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
 
                         Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                                .setDeepLink(Uri.parse(deepLink))
-                                .setMessage(getString(R.string.invitationToGroup_message))
-                                //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                                .setCallToActionText(getString(R.string.invitationToGroup_cta))
+                                .setDeepLink(builder.build())
+                                .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                                .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
                                 .build();
 
                         startActivityForResult(intent, REQUEST_INVITE);

@@ -43,7 +43,6 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.SettingsFragment;
-import com.polito.mad17.madmax.entities.CircleTransform;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;

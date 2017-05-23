@@ -67,7 +67,6 @@ public class BasicActivity extends AppCompatActivity {
                 BasicActivity.this.startActivity(intent);
             }
         });
-
         txtName = (TextView) navHeader.findViewById(R.id.name);
         txtWebsite = (TextView) navHeader.findViewById(R.id.website);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
@@ -84,6 +83,8 @@ public class BasicActivity extends AppCompatActivity {
                 Intent intent;
                 switch (item.getItemId()){
                     case R.id.home:
+                        if(getLocalClassName().contains("MainActivity"))
+                            break;
                         intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         finish();

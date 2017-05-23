@@ -13,7 +13,7 @@
         android:layout_width="@dimen/profile_width"
         android:layout_height="@dimen/profile_height"
         android:paddingTop="@dimen/activity_vertical_margin"
-        android:src="@drawable/riki" />
+        android:src="@drawable/anonymous" />
 
     <TextView
         android:id="@+id/name"

@@ -20,6 +20,8 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 
+import static com.polito.mad17.madmax.activities.groups.GroupsFragment.groups;
+
 public class LoginSignUpActivity extends AppCompatActivity implements OnItemClickInterface {
 
     private static final String TAG = LoginSignUpActivity.class.getSimpleName();
@@ -44,6 +46,7 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
 
         // insert tabs and current fragment in the main layout
         setContentView(R.layout.activity_log_in_signup);
+      //  findViewById(R.id.activity_log_in_signup_layout).setOnClickListener(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.login));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.signup));
@@ -85,7 +88,7 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
         else {
             inviterUID = null;
             groupToBeAddedID = null;
-            Log.e(TAG, "invitation failed?");
+            Log.d(TAG, "there is not an invite");
         }
 
 
@@ -171,19 +174,23 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
                 }
                 else {
                     intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("UID", itemID);
+                    Bundle extras = new Bundle();
+
+                    extras.putString("UID", itemID);
 
                     if (inviterUID != null) {
                         Log.i(TAG, "present inviterUID: " + inviterUID);
-                        intent.putExtra("inviterUID", inviterUID);
+                        extras.putString("inviterUID", inviterUID);
                     }
 
 
                     if (groupToBeAddedID != null) {
                         Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
-                        intent.putExtra("groupToBeAddedID", groupToBeAddedID);
+                        extras.putString("groupToBeAddedID", groupToBeAddedID);
                     }
 
+                    intent.putExtras(extras);
+                    groups.clear();// di prova
                     startActivity(intent);
                     finish();
                 }

@@ -1,8 +1,6 @@
 package com.polito.mad17.madmax.activities.groups;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,7 +19,6 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
-import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
@@ -87,7 +82,9 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                 for (DataSnapshot groupSnapshot: dataSnapshot.getChildren())
                 {
                     //Se il gruppo è true, ossia è ancora tra quelli dello user
-                    if (groupSnapshot.getValue(Boolean.class))
+                    try{
+                    Boolean trueGroup = (Boolean) groupSnapshot.getValue();
+                    if (trueGroup)
                         getGroupAndBalance(MainActivity.getCurrentUser().getID(), groupSnapshot.getKey());
                     else
                     {
@@ -97,6 +94,12 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                         groupsViewAdapter.notifyDataSetChanged();
 
                     }
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        Log.d(TAG, groupSnapshot.getValue().toString());
+                    }
+
                 }
 
 
@@ -188,6 +191,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                 final String groupName = groupDataSnapshot.child("name").getValue(String.class);
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
+                final String groupImage = groupDataSnapshot.child("image").getValue(String.class);
 
 
                 if (deleted != null)
@@ -232,10 +236,11 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                         //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
                                         Double currentBalance = totalBalance.get(userID);
                                         totalBalance.put(userID, currentBalance+balance);
-                                        totBalance += balance;
+                                        totBalance += balance; // riky: non è ridondante?
 
                                     }
 
+                                    /* spsostato dove dichiarato dopo
                                     Group g = new Group();
                                     g.setName(groupName);
                                     g.setBalance(totalBalance.get(userID));
@@ -256,9 +261,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                     }
 
                                     groupsViewAdapter.update(groups);
-                                    groupsViewAdapter.notifyDataSetChanged();
-
-
+                                    groupsViewAdapter.notifyDataSetChanged(); */
                                 }
 
                                 @Override
@@ -270,17 +273,44 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                         }
 
                     }
+// inizio spostamento
+                    Group g = new Group();
+                    g.setName(groupName);
+                    if(totalBalance.containsKey(userID))
+                        g.setBalance(totalBalance.get(userID));
+                    else
+                        g.setBalance(0d);
+                    g.setDeleted(deleted);
+                    //g.setBalance(totBalance);
+                    //se il gruppo non è deleted e io faccio ancora parte del gruppo
+                    if (!deleted &&
+                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                            )
+                    {
+                        groups.put(groupID, g);
 
-                    //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
+                    }
+                    else
+                    {
+                        groups.remove(groupID);
+                    }
+
+                    groupsViewAdapter.update(groups);
+                    groupsViewAdapter.notifyDataSetChanged();
+// fine spostamento
+            /*   riky: a cosa serve?commentato perchè dava errori
+                 //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
                     //if (dataSnapshot.child("members").hasChild(userID))
                     //{
                     Group g = new Group();
                     g.setName(groupName);
                     g.setBalance(0d);
                     g.setDeleted(deleted);
+                    g.setImage(groupImage);
                     if (!deleted &&
                             groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class))
+                            groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue().equals("true"))
                         groups.put(groupID, g);
                     else
                         groups.remove(groupID);
@@ -288,7 +318,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                     groupsViewAdapter.update(groups);
                     groupsViewAdapter.notifyDataSetChanged();
-                    totBalance = 0d;
+                    totBalance = 0d; */
                 }
 
 

@@ -1,7 +1,6 @@
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,8 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.entities.CircleTransform;
-import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
@@ -144,11 +142,10 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         {
             Glide.with(layoutInflater.getContext()).load(p)
                     .centerCrop()
-                    .bitmapTransform(new CircleTransform(layoutInflater.getContext()))
+                    .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(groupViewHolder.imageView);
         }
-
 
         //groupViewHolder.nameTextView.setText(groups.get(String.valueOf(position)).getName());
         //groupViewHolder.ID = groups.get(String.valueOf(position)).getID();

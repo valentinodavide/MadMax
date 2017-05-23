@@ -1,15 +1,13 @@
 package com.polito.mad17.madmax.activities.groups;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -85,7 +83,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
             }
         });
 
-        //Button to go to group info
+/*        //Button to go to group info
         Button groupInfoButton = (Button) findViewById(R.id.infobutton);
         groupInfoButton.setOnClickListener(new View.OnClickListener()
         {
@@ -100,7 +98,7 @@ public class GroupExpensesActivity extends AppCompatActivity {
                 startActivity(intent);
 
             }
-        });
+        });*/
 
         // todo when we'll use Firebase -> retrieve expenses HashMap with IDGroup received from GroupsActivity
 

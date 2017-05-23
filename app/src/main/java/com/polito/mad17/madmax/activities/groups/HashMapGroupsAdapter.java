@@ -5,11 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -63,6 +66,14 @@ public class HashMapGroupsAdapter extends BaseAdapter {
 
         TextView name=(TextView)result.findViewById(R.id.tv_name);
         name.setText(item.getValue().getName());
+
+        ImageView img_photo = (ImageView)result.findViewById(R.id.img_photo);
+        Glide.with(parent.getContext()).load(item.getValue().getImage())
+                .centerCrop()
+                .bitmapTransform(new CropCircleTransformation(parent.getContext()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(img_photo);
+        Log.d("Adapter image: ", item.getValue().getImage());
 
         result.setOnClickListener(new View.OnClickListener() {
             @Override

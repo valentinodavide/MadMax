@@ -9,11 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,8 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     private static User myself;
     private int currentFriend = 0;
     private final ArrayList mData;
+
+    private LayoutInflater layoutInflater;
 
 
     // The interface that receives the onClick messages
@@ -102,7 +105,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     public FriendsViewAdapter.ItemFriendsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
         ItemFriendsViewHolder itemFriendsViewHolder = new ItemFriendsViewHolder(view);
@@ -119,8 +122,13 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         String photo = item.getValue().getProfileImage();
         if (photo != null)
         {
-            int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);
+            Glide.with(layoutInflater.getContext()).load(photo)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.imageView);
+           /* int photoUserId = Integer.parseInt(photo);
+            holder.imageView.setImageResource(photoUserId);*/
         }
 
 

@@ -1,11 +1,9 @@
 package com.polito.mad17.madmax.activities.login;
 
-import android.app.PendingIntent;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -28,12 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
-import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 
 public class LoginFragment extends Fragment {
 
@@ -81,6 +77,15 @@ public class LoginFragment extends Fragment {
         loginButton = (Button) view.findViewById(R.id.btn_login);
         progressDialog = new ProgressDialog(getContext());
 
+        emailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus && !passwordView.hasFocus()) {
+                   hideKeyboard(v);
+                }
+            }
+        });
+
         auth = FirebaseAuth.getInstance();
         authListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -88,30 +93,28 @@ public class LoginFragment extends Fragment {
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();
 
-                String subTag = "onAuthStateChanged";
-
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
                 // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
                 if(currentUser != null && currentUser.isEmailVerified())  {
-                    Log.i(TAG, subTag + " user is logged, go to MainActivity");
+                    Log.i(TAG," user is logged, go to MainActivity");
 
                     onClickLoginInterface.itemClicked(LoginFragment.class.getSimpleName(), currentUser.getUid());
                 }
                 else {
                     // if the user is already logged but has not verified the mail redirect him to the email verification
                     if(currentUser != null && !currentUser.isEmailVerified()) {
-                        Log.i(TAG, subTag+" user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
-
+                        Log.i(TAG, " user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
+/*
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                         if (user == null) {
                             Log.e(TAG, "Error while retriving current user from db");
 
                             Toast.makeText(getContext(), "Error while retriving current user from db",Toast.LENGTH_LONG).show();
                             return;
-                        }
+                        }*/
 
-                        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 progressDialog.dismiss();
@@ -128,7 +131,7 @@ public class LoginFragment extends Fragment {
                     }
                     else{
                         // if the user has done the logout
-                        Log.i(TAG, subTag+" user has done the logout");
+                        Log.i(TAG, " user has done the logout");
                     }
                 }
             }
@@ -231,5 +234,10 @@ public class LoginFragment extends Fragment {
             passwordView.setError(null);
         }
         return valid;
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

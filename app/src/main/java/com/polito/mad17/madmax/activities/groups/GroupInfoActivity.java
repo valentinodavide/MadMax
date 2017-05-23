@@ -1,3 +1,4 @@
+/*
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
@@ -76,4 +77,4 @@ public class GroupInfoActivity extends AppCompatActivity {
 
         lv.setAdapter(firebaseListAdapter);
     }
-}
+}*/

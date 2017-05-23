@@ -33,7 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.entities.CircleTransform;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
@@ -133,7 +133,7 @@ public class ProfileEdit extends AppCompatActivity {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Glide.with(this).load(data.getData()).centerCrop()
-                    .bitmapTransform(new CircleTransform(this))
+                    .bitmapTransform(new CropCircleTransformation(this))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(profileImageView);
 

@@ -12,9 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".activities.login.LoginSignUpActivity"
+
+        <activity android:name=".activities.login.LoginSignUpActivity"
+            android:windowSoftInputMode="stateVisible|adjustPan"
             android:theme="@style/AppTheme.Login">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,9 +1,11 @@
 package com.polito.mad17.madmax.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -56,12 +58,15 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference, usersRef, groupRef;
+
     public static FirebaseAuth auth;
     private String[] drawerOptions;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private MenuItem one, two, three;
+    private ViewPager viewPager;
+    private PagerAdapter adapter;
 
  //   private ActionBarDrawerToggle drawerToggle;
 
@@ -74,9 +79,18 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private HashMap<String, String> userFriends;
     private HashMap<String, String> userGroups;
 
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.i(TAG, "onCreate");
+        Log.i(TAG, "token: "+FirebaseInstanceId.getInstance().getToken());
+
+        // waiting user data becomes available
+        progressDialog = new ProgressDialog(this);
+        progressDialog.show();
 
         getDatabase();
         databaseReference = firebaseDatabase.getReference();
@@ -85,142 +99,42 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         userFriends = new HashMap<>();
         userGroups = new HashMap<>();
 
-        Log.i(TAG, "token: "+FirebaseInstanceId.getInstance().getToken());
+        usersRef = databaseReference.child("users");
+        groupRef = databaseReference.child("groups");
 
-        Log.i(TAG, "onCreate");
+        // insert tabs and current fragment in the main layout
+        mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText(friends));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
-        Intent i = getIntent();
-        if(i.hasExtra("UID")){
-            currentUID = i.getStringExtra("UID");Log.i(TAG, "currentUID da extra : "+currentUID);}
-        else if(currentUID == null){
-            auth.signOut();
-            Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
-        //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
-        Log.d(TAG, "currentID: "+currentUID);
-
-        // getting invitation info if coming from LoginSignUpActivity after an Invitation
-        if (i.hasExtra("inviterUID")) {
-            inviterUID = i.getStringExtra("inviterUID");
-            Log.i(TAG, "present inviterUID: "+inviterUID);
-        }
-        else {
-            inviterUID = null;
-        }
-
-        if (i.hasExtra("groupToBeAddedID")) {
-            groupToBeAddedID = i.getStringExtra("groupToBeAddedID");
-            Log.i(TAG, "present groupToBeAddedID: "+groupToBeAddedID);
-        }
-        else {
-            groupToBeAddedID = null;
-        }
-
-        final DatabaseReference usersRef = databaseReference.child("users");
-        final DatabaseReference groupRef = databaseReference.child("groups");
-
-        // getting reference to the user from db
-        DatabaseReference currentUserRef = usersRef.child(currentUID);
-
-        if (currentUserRef == null) {
-            Log.e(TAG, "unable to retrieve logged user from db");
-
-            Toast.makeText(MainActivity.this, "unable to retrieve logged user from db", Toast.LENGTH_LONG).show();
-
-            // if the current user is not in the database do the logout and restart from login
-            auth.signOut();
-            Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
-            startActivity(intent);
-            finish();
-        }
-
-        // attach a listener on all the current user data
-        currentUserRef.addValueEventListener(new ValueEventListener() {
+        viewPager = (ViewPager) findViewById(R.id.main_view_pager);
+        adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        //viewPager.setAdapter(adapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        viewPager.setCurrentItem(1);
+//        updateFab(1);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange");
-                currentUser = new User();
-                currentUser.setID(currentUID);
-                currentUser.setName(dataSnapshot.child("name").getValue(String.class));
-                currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                currentUser.setUsername(dataSnapshot.child("username").getValue(String.class));
-                currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
-                currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
-                // get user friends's IDs
-                for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
-                    currentUser.getUserFriends().put(friend.getKey(),null);
-                }
-                // get user groups's IDs
-                for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
-                    currentUser.getUserGroups().put(group.getKey(), null);
-                }
-                //todo mettere altri dati in myself?
-
-                // control if user that requires the friendship is already a friend
-                if (inviterUID != null) {
-                    if(!currentUser.getUserFriends().containsKey(inviterUID)){
-                        currentUser.addFriend(inviterUID);
-                        Toast.makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
-                    }
-                    else
-                        Toast.makeText(MainActivity.this, "You and "+currentUser.getUserFriends().get(inviterUID).getName()+" are already friends!", Toast.LENGTH_LONG).show();
-                }
-
-                // control if user is already part of requested group
-                if (groupToBeAddedID  != null) {
-                    if(!currentUser.getUserGroups().containsKey(groupToBeAddedID)){
-                        currentUser.joinGroup(groupToBeAddedID); //todo usare questa? non aggiorna il numero dei membri
-                        Toast.makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
-                    }
-                    else
-                        Toast.makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
-                }
-
-                // load nav menu header data for the current user
-                loadNavHeader();
-                Log.d(TAG, "logged user name: "+currentUser.getName());
-                Log.d(TAG, "logged user surname: "+currentUser.getSurname());
-
-                // insert tabs and current fragment in the main layout
-                mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
-                TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-                tabLayout.addTab(tabLayout.newTab().setText(R.string.friends));
-                tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
-                tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
-                tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-                final ViewPager viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-                final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-                viewPager.setAdapter(adapter);
-                viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-                viewPager.setCurrentItem(1);
-                updateFab(1);
-                tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-                        Log.d(TAG, tab.getPosition() + "");
-                        updateFab(tab.getPosition());
-                        viewPager.setCurrentItem(tab.getPosition());
-                    }
-
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) { }
-
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) { }
-                });
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, tab.getPosition() + "");
+                updateFab(tab.getPosition());
+                viewPager.setCurrentItem(tab.getPosition());
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // TODO: come gestire?
-                Log.d(TAG, "getting current user failed");
-            }
+            public void onTabUnselected(TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
         });
+
+        // in the main we don't want an expansible bar
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        appBarLayout.setExpanded(false);
+        //todo: capire come bloccare la barra nel main
     }
 
     private void updateFab(int position){
@@ -692,10 +606,146 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         }
     }
 
+    /* in this way calls to getIntent() will return the latest intent that was used to start this activity
+     * rather than the first intent */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.d(TAG, "onNewIntent");
+        setIntent(intent);
+        super.onNewIntent(intent);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         Log.i(TAG, "onStart");
+
+        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
+        Intent i = getIntent();
+        Bundle extras = i.getExtras();
+
+        if(extras != null) {
+            if (extras.containsKey("UID"))
+                currentUID = extras.getString("UID");
+            else if (currentUID == null) {
+                auth.signOut();
+                Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
+                startActivity(intent);
+                finish();
+            }
+
+            //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
+            Log.d(TAG, "currentID: " + currentUID);
+
+            // getting invitation info if coming from LoginSignUpActivity after an Invitation
+            if (extras.containsKey("inviterUID")) {
+                inviterUID = extras.getString("inviterUID");
+                Log.i(TAG, "present inviterUID: " + inviterUID);
+            } else {
+                inviterUID = null;
+            }
+
+            if (extras.containsKey("groupToBeAddedID")) {
+                groupToBeAddedID = extras.getString("groupToBeAddedID");
+                Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
+            } else {
+                groupToBeAddedID = null;
+            }
+        }
+
+
+        // getting reference to the user from db
+        DatabaseReference currentUserRef = usersRef.child(currentUID);
+
+        if (currentUserRef == null) {
+            Log.e(TAG, "unable to retrieve logged user from db");
+
+            Toast.makeText(MainActivity.this, "unable to retrieve logged user from db", Toast.LENGTH_LONG).show();
+
+            // if the current user is not in the database do the logout and restart from login
+            auth.signOut();
+            currentUID = null;
+            Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
+            if(progressDialog.isShowing())
+                progressDialog.dismiss();
+            startActivity(intent);
+            finish();
+        }
+
+
+        // control if there is a request to join a group
+        if (groupToBeAddedID != null) {
+            if (inviterUID != null) {
+                if (!currentUser.getUserGroups().containsKey(groupToBeAddedID)) {
+                    currentUser.joinGroup(groupToBeAddedID, inviterUID);
+                    Toast.makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
+                } else
+                    Log.i(TAG,"You are already part of the group " + groupToBeAddedID);
+            }
+        }
+        else
+            // control if ther is a friend request
+            if (inviterUID != null) {
+                if(!currentUser.getUserFriends().containsKey(inviterUID)){
+                    currentUser.addFriend(inviterUID);
+                    Toast.makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
+                }
+                else
+                    Log.i(TAG, "You and "+inviterUID+" are already friends!");
+            }
+
+        // attach a listener on all the current user data
+        currentUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange");
+
+                // in the main we don't want an expansible bar
+                AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+                appBarLayout.setExpanded(false);
+                //todo: capire come bloccare la barra nel main
+
+                /*if(!progressDialog.isShowing())
+                    progressDialog.show();*/
+
+                currentUser = new User();
+                currentUser.setID(currentUID);
+                currentUser.setName(dataSnapshot.child("name").getValue(String.class));
+                currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
+                currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
+                // get user friends's IDs
+                for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
+                    currentUser.getUserFriends().put(friend.getKey(),null);
+                }
+                // get user groups's IDs
+                for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
+                    currentUser.getUserGroups().put(group.getKey(), null);
+                }
+                //todo mettere altri dati in myself?
+
+                // load nav menu header data for the current user
+                loadNavHeader();
+                Log.d(TAG, "logged user name: "+currentUser.getName());
+                Log.d(TAG, "logged user surname: "+currentUser.getSurname());
+
+                viewPager.setAdapter(adapter);
+                viewPager.setCurrentItem(1);
+                updateFab(1);
+
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // TODO: come gestire?
+                Log.d(TAG, "getting current user failed");
+
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+            }
+        });
     }
 
     @Override

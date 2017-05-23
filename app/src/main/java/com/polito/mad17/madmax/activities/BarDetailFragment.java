@@ -95,7 +95,6 @@ public class BarDetailFragment extends Fragment {
                         // Loading profile image
                         Glide.with(getActivity()).load(dataSnapshot.child("image").getValue(String.class))
                                 .centerCrop()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
                                 .into(imageView);
 
                         balanceLayout.setVisibility(View.GONE);

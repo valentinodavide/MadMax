@@ -100,15 +100,33 @@ public class NewMemberActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "button clicked");
-                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + MainActivity.getCurrentUser().getID();
+                Log.d(TAG, "invite a member to join the group");
+                //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
+
+                Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
+
+                        .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
 
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+                        .setDeepLink(builder.build())
+                        .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+                        .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
+                        .build();
+
+                startActivityForResult(intent, REQUEST_INVITE);
+
+
+
+
+                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + MainActivity.getCurrentUser().getID();
+
+               /* Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(Uri.parse(deepLink))
                         //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
                         .setCallToActionText(getString(R.string.invitation_cta))
                         .build();
 
-                startActivityForResult(intent, REQUEST_INVITE);
+                startActivityForResult(intent, REQUEST_INVITE);*/
             }
         });
 

@@ -80,7 +80,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         recyclerView.setAdapter(friendsViewAdapter);
 
 
-        String activityName = getActivity().getClass().getSimpleName();
+        final String activityName = getActivity().getClass().getSimpleName();
         Log.d (TAG, "Sono nella activity: " + activityName);
 
         //Se sono in MainActivity visualizzo lista degli amici
@@ -98,31 +98,40 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             }
         }
 
+        Log.d(TAG, "query: "+query);
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot externalDataSnapshot) {
 
                 //svuoto la map, così se viene eliminato uno user dal db, non viene tenuto nella map che si ricarica da zero
                 //friends.clear();
-                for (final DataSnapshot friendSnapshot: externalDataSnapshot.getChildren())
-                {
-                    //getFriend(friendSnapshot.getKey());
-                    final Boolean deleted = friendSnapshot.child("deleted").getValue(Boolean.class);
+
+                for (final DataSnapshot friendSnapshot: externalDataSnapshot.getChildren()) {
+                        //getFriend(friendSnapshot.getKey());
+                    Boolean deleted = true;
+                    if(activityName.equals("MainActivity")){
+                        Log.d(TAG, "key: "+friendSnapshot.getKey());
+                        Log.d(TAG, "value: "+friendSnapshot.getValue());
+                        deleted  = friendSnapshot.getValue().equals("false");
+                    }
+                    else
+                        if(activityName.equals("GroupDetailActivity"))
+                            deleted  = friendSnapshot.child("deleted").getValue().equals("false");
                     //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
 
 
                     final String id = friendSnapshot.getKey();
-                    databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
-                    {
+                    final Boolean finalDeleted = deleted;
+                    databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
 
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot)
-                        {
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
                             User u = new User();
                             u.setName(dataSnapshot.child("name").getValue(String.class));
                             u.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                            if(!deleted)
+                            u.setProfileImage(dataSnapshot.child("image").getValue(String.class));
+                            if (!finalDeleted)
                                 friends.put(id, u);
                             else
                                 friends.remove(id);
@@ -133,8 +142,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                         }
 
                         @Override
-                        public void onCancelled(DatabaseError databaseError)
-                        {
+                        public void onCancelled(DatabaseError databaseError) {
 
                         }
                     });

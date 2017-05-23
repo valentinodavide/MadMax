@@ -6,63 +6,65 @@
     android:layout_height="wrap_content"
     android:paddingTop="56dp"
     android:paddingLeft="24dp"
-    android:paddingRight="24dp">
+    android:paddingRight="24dp"
+    android:clickable="true"
+    android:focusableInTouchMode="true">
 
-    <!-- Email Label -->
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <!-- Email Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/email"
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimaryText"/>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <!-- Password Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_password"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="@string/action_sign_in"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:textColor="@color/colorPrimaryText"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/prompt_email"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:textColor="@color/colorPrimaryText"/>
-    </android.support.design.widget.TextInputLayout>
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"
+            android:padding="12dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorAccent"
+            android:text="@string/login"/>
 
-
-    <!-- Password Label -->
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
+        <TextView android:id="@+id/link_signup"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/prompt_password"
-            android:imeActionId="@+id/login"
-            android:imeActionLabel="@string/action_sign_in"
-            android:imeOptions="actionUnspecified"
-            android:inputType="textPassword"
-            android:maxLines="1"
-            android:textColor="@color/colorPrimaryText"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/btn_login"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
-        android:padding="12dp"
-        android:layout_gravity="center_horizontal"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorAccent"
-        android:text="@string/login"/>
-
-    <TextView android:id="@+id/link_signup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_gravity="center_horizontal"
-        android:linksClickable="true"
-        android:text="@string/prompt_create_account"
-        android:gravity="center"
-        android:textSize="16sp" />
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal"
+            android:linksClickable="true"
+            android:text="@string/prompt_create_account"
+            android:gravity="center"
+            android:textSize="16sp" />
 
 </LinearLayout>

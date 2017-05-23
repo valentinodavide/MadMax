@@ -10,20 +10,20 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView android:src="@drawable/group"
+            <ImageView android:src="@drawable/vacanze"
                 android:id="@+id/group_image"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
                 android:layout_marginBottom="24dp"
                 android:layout_gravity="center_horizontal"
-                android:clickable="false"/>
+                android:clickable="true"/>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -53,7 +53,7 @@
                     android:maxLines="1"/>
             </android.support.design.widget.TextInputLayout>
 
-            <RelativeLayout
+<!--            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -66,12 +66,12 @@
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimaryText"/>
 
-            <!--<android.support.v7.widget.RecyclerView
+            &lt;!&ndash;<android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/members"
                 android:layout_below="@id/memberstext"
-                />-->
+                />&ndash;&gt;
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -88,7 +88,7 @@
                     android:layout_marginBottom="16dp"
                     />
 
-            </RelativeLayout>
+            </RelativeLayout>-->
 
         </LinearLayout>
 
