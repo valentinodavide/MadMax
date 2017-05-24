@@ -22,7 +22,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter android:label="MadMaxInvitiationFilter">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -49,7 +48,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-
         <activity android:name=".activities.expenses.NewExpenseActivity" />
         <activity
             android:name=".activities.users.FriendDetailActivity"
@@ -76,9 +74,17 @@
         <activity
             android:name=".activities.SettingsActivity"
             android:parentActivityName=".activities.MainActivity" />
-        <activity android:name=".activities.ProfileEdit"
+        <activity
+            android:name=".activities.ProfileEdit"
             android:parentActivityName=".activities.MainActivity" />
         <activity android:name=".activities.expenses.ChooseGroupActivity" />
+        <activity android:name=".activities.expenses.PendingExpenseDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.MainActivity"
+
+            >
+
+        </activity>
     </application>
 
 </manifest>

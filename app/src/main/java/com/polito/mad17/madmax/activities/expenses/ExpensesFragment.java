@@ -100,6 +100,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
                 {
                     getExpense(expense.getKey());
                     Log.d(TAG, expense.getKey());
+
                 }
 
                 expensesViewAdapter.update(expensesMap);

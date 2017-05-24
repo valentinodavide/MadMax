@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+    <item
+        android:id="@+id/one"
+        android:orderInCategory="100"
+        android:title="Modify Expense"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/two"
+        android:orderInCategory="100"
+        android:title="Remove Expense"
+        app:showAsAction="never" />
+
+
+</menu>

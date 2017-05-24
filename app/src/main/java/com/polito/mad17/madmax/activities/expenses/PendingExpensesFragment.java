@@ -59,7 +59,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        pendingExpenseViewAdapter = new PendingExpenseViewAdapter(this, pendingExpensesMap);
+        pendingExpenseViewAdapter = new PendingExpenseViewAdapter(this, pendingExpensesMap, getActivity());
         recyclerView.setAdapter(pendingExpenseViewAdapter);
 
 
@@ -70,7 +70,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                 //Per ogni pending expense dello user
                 for (DataSnapshot pendingExpenseSnap : dataSnapshot.getChildren())
                 {
-                    //Se la pending expense non è stata eliminata
+                    //Se la pending expense non è stata eliminata (NELLO USER)
                     if (pendingExpenseSnap.getValue(Boolean.class))
                     {
                         getPendingExpense(pendingExpenseSnap.getKey());
@@ -137,11 +137,13 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                 Integer participantsCount = 0;
                 Integer yes = 0;
                 Integer no = 0;
+                String myvote = "null";
 
                 //Questo listener è chiamato ogni volta che questa spesa pending è modificata, quindi devo controllare
-                //che io faccia ancora parte di questa spesa
+                //che io faccia ancora parte di questa spesa e che la spesa pending esista ancora (NELLE PROPOSED EXPESES)
                 if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUser().getID()) &&
-                        !dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class) )
+                        !dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class) &&
+                        !dataSnapshot.child("deleted").getValue(Boolean.class))
                 {
                     for (DataSnapshot participantSnap : dataSnapshot.child("participants").getChildren())
                     {
@@ -150,9 +152,18 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                         {
                             participantsCount++;
                             if (participantSnap.child("vote").getValue(String.class).equals("yes"))
+                            {
                                 yes++;
+                                if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
+                                    myvote = "yes";
+
+                            }
                             if (participantSnap.child("vote").getValue(String.class).equals("no"))
+                            {
                                 no++;
+                                if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
+                                    myvote = "no";
+                            }
                         }
                     }
 
@@ -165,6 +176,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                     pendingExpense.setParticipantsCount(participantsCount);
                     pendingExpense.setYes(yes);
                     pendingExpense.setNo(no);
+                    pendingExpense.setMyVote(myvote);
                     pendingExpense.setCurrency(dataSnapshot.child("currency").getValue(String .class));
                     pendingExpensesMap.put(pendingID, pendingExpense);
                     pendingExpenseViewAdapter.update(pendingExpensesMap);

@@ -25,7 +25,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
-    final private ListItemLongClickListener itemLongClickListener;
+    private ListItemLongClickListener itemLongClickListener = null;
 
     private static HashMap<String, User> friends = new HashMap<>();
     private static User myself;
@@ -46,6 +46,11 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     }
 
 
+    public FriendsViewAdapter(ListItemClickListener listener, Map<String, User> map) {
+        itemClickListener = listener;
+        mData = new ArrayList();
+        mData.addAll(map.entrySet());
+    }
 
     public FriendsViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
         itemClickListener = listener;
@@ -136,29 +141,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         holder.ID = item.getValue().getID();
         holder.balanceTextView.setVisibility(View.GONE);
 
-        //mydebt = mio debito con il membro f
-        /*
-        Double mydebt = myself.getBalanceWithUsers().get(friend.getID());
-        DecimalFormat df = new DecimalFormat("#.##");
-        if (mydebt != null)
-        {
-            if (mydebt > 0)
-            {
-                holder.smallTextView.setText("+ " + df.format(mydebt) + " €");
-                holder.smallTextView.setBackgroundResource(R.color.greenBalance);
-            }
-            else if (mydebt < 0)
-            {
-                holder.smallTextView.setText("- " + df.format(Math.abs(mydebt)) + " €");
-                holder.smallTextView.setBackgroundColor(Color.rgb(255,0,0));
-            }
-            else
-            {
-                holder.smallTextView.setText("" + df.format(mydebt) + " €");
-                holder.smallTextView.setBackgroundResource(R.color.greenBalance);
-            }
-        }
-        */
+
     }
 
     public Map.Entry<String, User> getItem(int position) {

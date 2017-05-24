@@ -463,10 +463,9 @@ public class NewExpenseActivity extends AppCompatActivity {
             databaseReference.child("users").child(participant.getKey()).child("proposedExpenses").child(eID).setValue(true);
         }
 
-        //todo aggiungere spesa pending al gruppo
-        //Aggiungo spesa alla lista spese del gruppo
-        //databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
-        //databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue(true);
+        //Aggiungo spesa pending alla lista spese pending del gruppo
+        databaseReference.child("groups").child(expense.getGroupID()).child("proposedExpenses").push();
+        databaseReference.child("groups").child(expense.getGroupID()).child("proposedExpenses").child(eID).setValue(true);
 
         return;
     }

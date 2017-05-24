@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:padding="4dp">
+
+    <ImageView
+        android:id="@+id/img_photo"
+        android:layout_width="62dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+
+        android:src="@drawable/group"
+        />
+
+    <TextView
+        android:id="@+id/tv_voter_name"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+
+        android:paddingLeft="8dp"
+        android:paddingTop="20dp"
+
+        android:clickable="false"
+
+        android:textSize="18sp"
+        android:text="ParticipantName"
+        android:textColor="@color/colorPrimaryText"
+        />
+
+
+        <TextView
+            android:id="@+id/tv_vote"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="5dp"
+            android:gravity="center"
+            android:background="@drawable/thumb_up_black"
+           />
+
+
+
+</LinearLayout>

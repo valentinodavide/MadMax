@@ -29,6 +29,7 @@ import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
+import com.polito.mad17.madmax.activities.groups.HistoryFragment;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Group;
 
@@ -310,8 +311,8 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                     return membersFragment;
                 case 2:
                     Log.d(TAG, "here in case 2");
-                    PendingExpensesFragment pendingExpensesFragment = new PendingExpensesFragment();
-                    return pendingExpensesFragment;
+                    HistoryFragment historyFragment = new HistoryFragment();
+                    return historyFragment;
                 default:
                     return null;
             }

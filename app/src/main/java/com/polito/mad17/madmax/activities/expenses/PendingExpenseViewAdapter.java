@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities.expenses;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +16,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
@@ -42,6 +45,9 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private Context mContext;
+    private Activity activity;
+
 
 
     // The interface that receives the onClick messages
@@ -54,17 +60,19 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, Map<String, Expense> pendingMap) {
+    public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, Map<String, Expense> pendingMap, Activity activity) {
         itemClickListener = listener;
         this.pendingExpenses = new ArrayList<>();
         pendingExpenses.addAll(pendingMap.entrySet());
+        this.activity = activity;
     }
 
-    public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap) {
+    public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap, Activity activity) {
         itemClickListener = listener;
         itemLongClickListener = longListener;
         this.pendingExpenses = new ArrayList<>();
         pendingExpenses.addAll(pendingMap.entrySet());
+        this.activity = activity;
     }
 
     class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -96,6 +104,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
 
             itemView.setOnClickListener(this);
             thumbUpButton.setOnClickListener(this);
+            thumbDownButton.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
         }
@@ -112,86 +121,83 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             {
                 Log.d (TAG, "clicked thumb up");
 
-                //Guardo il mio voto attuale per questa spesa
-                databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).child("participants")
-                        .child(MainActivity.getCurrentUser().getID()).child("vote")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).runTransaction(new Transaction.Handler() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public Transaction.Result doTransaction(MutableData mutableData) {
 
+                        String myVote = mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").getValue(String.class);
 
-                        if (dataSnapshot.getValue(String.class).equals("null") || dataSnapshot.getValue(String.class).equals("no"))
+                        if (myVote.equals("null") || myVote.equals("no"))
                         {
                             //up diventa blu, down diventa nero
-                            databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).child("participants")
-                                    .child(MainActivity.getCurrentUser().getID()).child("vote").setValue("yes");
-                            thumbUpButton.setBackgroundResource(R.drawable.thumb_up_blue);
-                            thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("yes");
+
 
                         }
-                        else if (dataSnapshot.getValue(String.class).equals("yes"))
+                        else if (myVote.equals("yes"))
                         {
                             //up diventa nero
-                            databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).child("participants")
-                                    .child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
-                            thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
+                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
 
                         }
+
+                        return Transaction.success(mutableData);
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
+                        // Transaction completed
+                        Log.d(TAG, "postTransaction:onComplete:" + databaseError);
                     }
                 });
+
             }
+
+
+
             else if (v.getId() == thumbDownButton.getId())
             {
                 Log.d (TAG, "clicked thumb down");
 
-                //todo adattare
-                //Guardo il mio voto attuale per questa spesa
-                databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).child("participants")
-                        .child(MainActivity.getCurrentUser().getID()).child("vote")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
+                databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).runTransaction(new Transaction.Handler() {
+                    @Override
+                    public Transaction.Result doTransaction(MutableData mutableData) {
 
+                        String myVote = mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").getValue(String.class);
 
-                                if (dataSnapshot.getValue(String.class).equals("null") || dataSnapshot.getValue(String.class).equals("no"))
-                                {
-                                    //up diventa blu, down diventa nero
-                                    databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).child("participants")
-                                            .child(MainActivity.getCurrentUser().getID()).child("vote").setValue("yes");
-                                    thumbUpButton.setBackgroundResource(R.drawable.thumb_up_blue);
-                                    thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+                        if (myVote.equals("null") || myVote.equals("yes"))
+                        {
+                            //up diventa blu, down diventa nero
+                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("no");
 
-                                }
-                                else if (dataSnapshot.getValue(String.class).equals("yes"))
-                                {
-                                    //up diventa nero
-                                    databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).child("participants")
-                                            .child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
-                                    thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
+                        }
+                        else if (myVote.equals("no"))
+                        {
+                            //up diventa nero
+                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
+                        }
 
-                                }
-                            }
+                        return Transaction.success(mutableData);
+                    }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
 
-                            }
-                        });
+                        // Transaction completed
+                        Log.d(TAG, "postTransaction:onComplete:" + databaseError);
+                    }
+                });
+
             }
 
             else
             {
                 Log.d (TAG, "altro");
-
+                itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
             }
 
 
-            itemClickListener.onListItemClick(getItem(clickedPosition).getValue().getID());
         }
 
         @Override
@@ -219,6 +225,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         Log.d(TAG, "dopo aver istanziato il view holder");
 
 
+
+
+
+
+
         return itemExpensesViewHolder;
     }
 
@@ -244,6 +255,22 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         Double amount = expense.getAmount();
         holder.amountTextView.setText(df.format(amount) + " " + expense.getCurrency());
 
+        if (expense.getMyVote().equals("yes"))
+        {
+            holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_blue);
+            holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+        }
+        else if (expense.getMyVote().equals("no"))
+        {
+            holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
+            holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_blue);
+        }
+        else if (expense.getMyVote().equals("null"))
+        {
+            holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
+            holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+        }
+
 
 
     }
@@ -260,6 +287,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     public void update(Map<String, Expense> map) {
         pendingExpenses.clear();
         pendingExpenses.addAll(map.entrySet());
+    }
+
+    void setThumbsColor (String expense)
+    {
+
     }
 
 

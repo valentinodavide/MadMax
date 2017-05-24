@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.polito.mad17.madmax.activities.BarDetailFragment">
 
+    
     <ImageView
         android:id="@+id/img_photo"
         android:layout_width="match_parent"

@@ -25,6 +25,7 @@ public class Expense {
     private String groupName;
     private Integer yes;
     private Integer no;
+    private String myVote;
 
 
     public Expense() { this.participants = new HashMap<>(); }
@@ -144,6 +145,10 @@ public class Expense {
     public Integer getNo() {return no;}
 
     public void setNo(Integer no) {this.no = no;}
+
+    public String getMyVote() {return myVote;}
+
+    public void setMyVote(String myVote) {this.myVote = myVote;}
 
 
 

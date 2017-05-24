@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ChooseGroupActivity;
+import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
@@ -274,6 +275,13 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 intent.putExtra("userID", currentUser.getID());
                 startActivity(intent);
                 break;
+
+            case "PendingExpensesFragment":
+                intent = new Intent(this, PendingExpenseDetailActivity.class);
+                intent.putExtra("expenseID", itemID);
+                intent.putExtra("userID", currentUser.getID());
+                startActivity(intent);
+                break;
         }
 
     }
@@ -475,7 +483,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
     }
 
-    public void leaveGroupFirebase (String groupID) {
+    //todo eliminare spese peding di cui faccio parte in questo gruppo
+    public void leaveGroupFirebase (final String groupID) {
         Group g = GroupsFragment.groups.get(groupID);
         if (g != null)
         {
@@ -498,6 +507,41 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 //Elimino user dalla lista dei members del gruppo
                 databaseReference.child("groups").child(groupID).child("members").child(getCurrentUser().getID()).child("deleted").setValue(true);
 
+                //Elimino pending expenses di questo gruppo dallo user, in modo che lui non le veda più. Gli altri coninuano a vederle
+                databaseReference.child("users").child(getCurrentUser().getID()).child("proposedExpenses").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Per ogni spesa proposta dello user
+                        for (DataSnapshot proposedExpenseSnap : dataSnapshot.getChildren())
+                        {
+                            final String expenseID = proposedExpenseSnap.getKey();
+
+                            databaseReference.child("proposedExpenses").child(expenseID).child("groupID").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot groupSnapshot) {
+
+                                    //Se la spesa proposta è nel gruppo appena eliminato
+                                    if (groupSnapshot.getValue(String.class).equals(groupID))
+                                    {
+                                        //Elimino la spesa proposta dall'elenco dell'utente
+                                        databaseReference.child("users").child(getCurrentUser().getID()).child("proposedExpenses").child(expenseID).setValue(false);
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 //Elimino gruppo da cache
                 GroupsFragment.groups.remove(groupID);
 
@@ -532,6 +576,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         String memberID = memberSnapshot.getKey();
                         //In user's groups, set this group to deleted
                         databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
+                    }
+
+                    //For each pending expense in the group
+                    for (DataSnapshot pendingExpenseSnap: dataSnapshot.child("proposedExpenses").getChildren())
+                    {
+                        //Delete pending expense
+                        String expenseID = pendingExpenseSnap.getKey();
+                        databaseReference.child("proposedExpenses").child(expenseID).child("deleted").setValue(true);
                     }
 
 
