@@ -766,6 +766,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 currentUser.setProfileImage(dataSnapshot.child("image").getValue(String.class));
                 currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
+                currentUser.setPassword(dataSnapshot.child("password").getValue(String.class));
+                currentUser.setUsername(dataSnapshot.child("username").getValue(String.class));
                 // get user friends's IDs
                 for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
                     currentUser.getUserFriends().put(friend.getKey(),null);

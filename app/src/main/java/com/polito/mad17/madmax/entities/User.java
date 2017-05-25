@@ -172,7 +172,7 @@ public class User implements Parcelable {
     }
 
     public void setPassword(String password) {
-        this.password = encryptPassword(password);
+        this.password = password;
     }
 
     public String getProfileImage() {

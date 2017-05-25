@@ -4,8 +4,6 @@ import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,13 +17,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -54,10 +48,10 @@ public class ProfileEdit extends AppCompatActivity {
     private EditText nameView;
     private EditText surnameView;
     private EditText usernameView;
-    private EditText emailView;
+    //private EditText emailView; todo edit email ???
     private EditText passwordView;
     private Button saveButton;
-    private ProgressDialog progressDialog;
+    //private ProgressDialog progressDialog;
 
     User currentUser = MainActivity.getCurrentUser();
 
@@ -75,12 +69,12 @@ public class ProfileEdit extends AppCompatActivity {
         usernameView = (EditText) this.findViewById(R.id.username);
         usernameView.setText(currentUser.getUsername());
 
-        emailView = (EditText) this.findViewById(R.id.email);
-        emailView.setText(currentUser.getEmail());
+        //emailView = (EditText) this.findViewById(R.id.email);
+        //emailView.setText(currentUser.getEmail());
 
         passwordView = (EditText) this.findViewById(R.id.password);
 
-        progressDialog = new ProgressDialog(this);
+        //progressDialog = new ProgressDialog(ProfileEdit.this);
 
         profileImageView = (ImageView) this.findViewById(R.id.profile_image);
         if (!currentUser.loadImage(this, profileImageView)) {
@@ -114,12 +108,12 @@ public class ProfileEdit extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "save clicked");
-                updateAccount();
-
-                Toast.makeText(ProfileEdit.this, "Saved", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
-                finish();
+                if (updateAccount()) {
+                    Toast.makeText(ProfileEdit.this, "Saved", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(i);
+                    finish();
+                }
             }
         });
     }
@@ -141,14 +135,14 @@ public class ProfileEdit extends AppCompatActivity {
         }
     }
 
-    private void updateAccount(){
+    private boolean updateAccount(){
         Log.i(TAG, "createAccount");
 
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
             Toast.makeText(this, "Invalid form!", Toast.LENGTH_SHORT).show();
-            return;
+            return false;
         }
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -156,59 +150,29 @@ public class ProfileEdit extends AppCompatActivity {
             Log.e(TAG, "Error while retriving current user from db");
 
             Toast.makeText(this, "Error while retriving current user from db",Toast.LENGTH_LONG).show();
-            return;
+            return false;
         }
 
-        String currentUserID = currentUser.getID();
+        final String currentUserID = currentUser.getID();
 
         String newName = nameView.getText().toString();
         String newSurname = surnameView.getText().toString();
         String newUsername = usernameView.getText().toString();
-        String newEmail = emailView.getText().toString();
+        //String newEmail = emailView.getText().toString();
         String newPassword = passwordView.getText().toString();
-
-        if (!newEmail.isEmpty() && !currentUser.getEmail().equals(newEmail)) {
-            user.updateEmail(emailView.toString());
-            currentUser.setEmail(newEmail);
-
-            progressDialog.setMessage("Sending email verification, please wait...");
-            progressDialog.show();
-
-            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    progressDialog.dismiss();
-                    if (task.isSuccessful()) {
-                        Log.i(TAG, "verification email successful sent");
-                    } else {
-                        Log.e(TAG, "verification email not sent, exception: " + task.getException());
-                    }
-                }
-            });
-        }
-
-        if (!newPassword.isEmpty() && !currentUser.getPassword().equals(User.encryptPassword(newPassword))) {
-            user.updatePassword(newPassword);
-            currentUser.setPassword(newPassword);
-
-            databaseReference.child("users").child(currentUserID).child("password").setValue(currentUser.getPassword());
-        }
 
         if (!newName.isEmpty() && (currentUser.getName() == null || !currentUser.getName().equals(newName))) {
             currentUser.setName(newName);
-
             databaseReference.child("users").child(currentUserID).child("name").setValue(currentUser.getName());
         }
 
         if (!newSurname.isEmpty() && (currentUser.getSurname() == null || !currentUser.getSurname().equals(newSurname))) {
             currentUser.setSurname(newSurname);
-
             databaseReference.child("users").child(currentUserID).child("surname").setValue(currentUser.getSurname());
         }
 
         if (!newUsername.isEmpty() && (currentUser.getUsername() == null || !currentUser.getUsername().equals(newUsername))) {
             currentUser.setUsername(newUsername);
-
             databaseReference.child("users").child(currentUserID).child("username").setValue(currentUser.getUsername());
         }
 
@@ -227,22 +191,60 @@ public class ProfileEdit extends AppCompatActivity {
             UploadTask uploadTask = uProfileImageFilenameRef.putBytes(data);
 
             uploadTask
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // todo Handle unsuccessful uploads
-                            Log.e(TAG, "image upload failed");
-                        }
-                    })
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // todo Handle unsuccessful uploads
+                        Log.e(TAG, "image upload failed");
+                    }
+                })
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        currentUser.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
 
-                            currentUser.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
-                        }
-                    });
+                        databaseReference.child("users").child(currentUserID).child("image").setValue(currentUser.getProfileImage());
+                    }
+                });
         }
+
+        /*if (!newEmail.isEmpty() && !currentUser.getEmail().equals(newEmail)) {
+            user.updateEmail(emailView.toString());
+            currentUser.setEmail(newEmail);
+
+            progressDialog.setMessage("Sending email verification, please wait...");
+            progressDialog.show();
+
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    progressDialog.dismiss();
+
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "verification email successful sent");
+                    } else {
+                        Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                    }
+                }
+            });
+        }*/
+
+        if (!newPassword.isEmpty() && !currentUser.getPassword().equals(User.encryptPassword(newPassword))) {
+            try {
+                user.updatePassword(newPassword);
+            }
+            catch(Exception e) {
+                Log.e(TAG, e.getClass().toString() + ", message: " + e.getMessage());
+                Toast.makeText(this, "Can't update password", Toast.LENGTH_LONG).show();
+                return false;
+            }
+
+            currentUser.setPassword(newPassword);
+            databaseReference.child("users").child(currentUserID).child("password").setValue(currentUser.getPassword());
+        }
+
+        return true;
     }
 
     private boolean validateForm() {
@@ -252,7 +254,7 @@ public class ProfileEdit extends AppCompatActivity {
 
         String name = nameView.getText().toString();
         if (TextUtils.isEmpty(name)) {
-            nameView.setError(getString(R.string.required));
+            nameView.setError(getString(R.string.notnull));
             valid = false;
         } else {
             nameView.setError(null);
@@ -260,7 +262,7 @@ public class ProfileEdit extends AppCompatActivity {
 
         String surname = surnameView.getText().toString();
         if (TextUtils.isEmpty(surname)) {
-            surnameView.setError(getString(R.string.required));
+            surnameView.setError(getString(R.string.notnull));
             valid = false;
         } else {
             surnameView.setError(null);
@@ -268,7 +270,7 @@ public class ProfileEdit extends AppCompatActivity {
 
         String username = usernameView.getText().toString();
         if (TextUtils.isEmpty(username)) {
-            usernameView.setError(getString(R.string.required));
+            usernameView.setError(getString(R.string.notnull));
             valid = false;
         } else {
             usernameView.setError(null);
@@ -285,16 +287,12 @@ public class ProfileEdit extends AppCompatActivity {
             emailView.setError(null);
         }*/
 
-        /*String password = passwordView.getText().toString();
-        if (TextUtils.isEmpty(password)) {
-            passwordView.setError(getString(R.string.required));
-            valid = false;
-        } else if (passwordView.length() < 6){
+        if (passwordView.length() > 0 && passwordView.length() < 6){
             passwordView.setError(getString(R.string.weak_password));
             valid = false;
         } else {
             passwordView.setError(null);
-        }*/
+        }
 
         return valid;
     }
