@@ -44,12 +44,14 @@ import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.widget.Toast.makeText;
 import static com.polito.mad17.madmax.R.string.friends;
 
 //import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
@@ -59,15 +61,17 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference, usersRef, groupRef;
-
+    private DatabaseReference databaseReference;
     public static FirebaseAuth auth;
+    private DatabaseReference usersRef;
+    private DatabaseReference groupRef;
+
     private String[] drawerOptions;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
     private MenuItem one, two, three;
     private ViewPager viewPager;
-    private PagerAdapter adapter;
+    private TabLayout tabLayout;
 
  //   private ActionBarDrawerToggle drawerToggle;
 
@@ -76,9 +80,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private static User currentUser;
     private String currentUID, inviterUID, groupToBeAddedID;
 
-
-    private HashMap<String, String> userFriends;
-    private HashMap<String, String> userGroups;
+    private HashMap<String, String> userFriends = new HashMap<>();
+    private HashMap<String, String> userGroups = new HashMap<>();
 
     private ProgressDialog progressDialog;
 
@@ -93,34 +96,76 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         progressDialog = new ProgressDialog(this);
         progressDialog.show();
 
-        getDatabase();
-        databaseReference = firebaseDatabase.getReference();
+//        getDatabase();
         auth = FirebaseAuth.getInstance();
 
-        userFriends = new HashMap<>();
-        userGroups = new HashMap<>();
-
+        databaseReference = firebaseDatabase.getReference();
         usersRef = databaseReference.child("users");
         groupRef = databaseReference.child("groups");
 
+        DatabaseReference currentUserRef = null;
+
+        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
+        Intent intent = getIntent();
+        if(intent.hasExtra("UID"))
+        {
+            currentUID = intent.getStringExtra("UID");
+            Log.i(TAG, "currentUID da LoginSignUpActivity : " +  currentUID);
+
+            // getting reference to the user from db
+            currentUserRef = usersRef.child(currentUID);
+        }
+        else
+        {
+            if ((currentUID == null) || (currentUserRef == null))
+            {
+                Log.e(TAG, "Unable to retrieve logged user from db or UID is null, going back to Login");
+                makeText(MainActivity.this, "Unable to retrieve user, please login again", Toast.LENGTH_LONG).show();
+
+                // if the current user is not in the database or UID is null do the logout and restart from login
+                auth.signOut();
+                Intent intentToExit = new Intent(getApplicationContext(), LoginSignUpActivity.class);
+                startActivity(intentToExit);
+                finish();
+            }
+        }
+
+        // getting invitation info if coming from LoginSignUpActivity after an Invitation
+        if (intent.hasExtra("inviterUID"))
+        {
+            inviterUID = intent.getStringExtra("inviterUID");
+            Log.i(TAG, "present inviterUID: " + inviterUID);
+        }
+        else
+        {
+            inviterUID = null;
+        }
+
+        if (intent.hasExtra("groupToBeAddedID"))
+        {
+            groupToBeAddedID = intent.getStringExtra("groupToBeAddedID");
+            Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
+        }
+        else
+        {
+            groupToBeAddedID = null;
+        }
+
         // insert tabs and current fragment in the main layout
         mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(friends));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        //viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-//        viewPager.setCurrentItem(1);
-//        updateFab(1);
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                Log.d(TAG, tab.getPosition() + "");
+                Log.d(TAG, String.valueOf(tab.getPosition()));
                 updateFab(tab.getPosition());
                 viewPager.setCurrentItem(tab.getPosition());
             }
@@ -136,6 +181,61 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         appBarLayout.setExpanded(false);
         //todo: capire come bloccare la barra nel main
+
+        // attach a listener on all the current user data
+        currentUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "onDataChange");
+                currentUser = new User();
+                currentUser.setID(currentUID);
+                currentUser.setName(dataSnapshot.child("name").getValue(String.class));
+                currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
+                currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
+                // get user friends's IDs
+                for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
+                    currentUser.getUserFriends().put(friend.getKey(),null);
+                }
+                // get user groups's IDs
+                for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
+                    currentUser.getUserGroups().put(group.getKey(), null);
+                }
+                //todo mettere altri dati in myself?
+
+                // control if user that requires the friendship is already a friend
+                if (inviterUID != null) {
+                    if(!currentUser.getUserFriends().containsKey(inviterUID)){
+                        currentUser.addFriend(inviterUID);
+                        makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                        makeText(MainActivity.this, "You and "+currentUser.getUserFriends().get(inviterUID).getName()+" are already friends!", Toast.LENGTH_LONG).show();
+                }
+
+                // control if user is already part of requested group
+                if (groupToBeAddedID  != null) {
+                    if(!currentUser.getUserGroups().containsKey(groupToBeAddedID))
+                    {
+//                        currentUser.joinGroup(groupToBeAddedID); //todo usare questa? non aggiorna il numero dei membri
+                        makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                        makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
+                }
+
+                // load nav menu header data for the current user
+                loadNavHeader();
+                Log.d(TAG, "logged user name: "+currentUser.getName());
+                Log.d(TAG, "logged user surname: "+currentUser.getSurname());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // TODO: come gestire?
+                Log.d(TAG, "getting current user failed");
+            }
+        });
     }
 
     private void updateFab(int position){
@@ -200,56 +300,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         }
     }
 
-    public class PagerAdapter extends FragmentPagerAdapter {
-
-        int numberOfTabs;
-
-        FriendsFragment friendsFragment = null;
-        GroupsFragment groupsFragment = null;
-        PendingExpensesFragment pendingExpensesFragment = null;
-
-        public PagerAdapter(FragmentManager fragmentManager, int numberOfTabs) {
-            super(fragmentManager);
-            this.numberOfTabs = numberOfTabs;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            return super.instantiateItem(container, position);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-
-            switch(position) {
-                case 0:
-                    Log.i(TAG, "here in case 0: FriendsFragment");
-                    friendsFragment = new FriendsFragment();
-                    return friendsFragment;
-                case 1:
-                    Log.i(TAG, "here in case 1: GroupsFragment");
-                    groupsFragment = new GroupsFragment();
-                    return groupsFragment;
-                case 2:
-                    Log.i(TAG, "here in case 2: PendingExpensesFragment");
-                    pendingExpensesFragment = new PendingExpensesFragment();
-                    return pendingExpensesFragment;
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return numberOfTabs;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return super.isViewFromObject(view, object);
-        }
-    }
-
     @Override
     public void itemClicked(String fragmentName, String itemID) {
 
@@ -309,7 +359,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 popup.getMenu().findItem(R.id.two).setVisible(false);
                 popup.getMenu().findItem(R.id.three).setVisible(false);
 
-
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
@@ -344,11 +393,30 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                             case "Leave this Group":
 
-                                leaveGroupFirebase(itemID);
+                                Integer returnValue = FirebaseUtils.getInstance().leaveGroupFirebase(currentUID, itemID);
+
+                                if(returnValue == 0)
+                                {
+                                    Toast toast = Toast.makeText(getApplicationContext(), "Hai un credito verso questo gruppo.\nAbbandonare comunque?", Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+                                else if(returnValue == 1)
+                                {
+                                    makeText(getApplicationContext(), "Hai un debito verso questo gruppo.\nSalda il debito per poter abbandonare.", Toast.LENGTH_LONG).show();
+                                }
+                                else if(returnValue == 2)
+                                {
+                                    makeText(getApplicationContext(), "Nessuno debito, abbandono in corso.", Toast.LENGTH_LONG).show();
+                                }
+                                else if(returnValue == null)
+                                {
+                                    makeText(getApplicationContext(), "Bilancio del gruppo: non disponibile adesso.\nRiprovare.", Toast.LENGTH_LONG).show();
+                                }
+
                                 break;
 
                             case "Remove this Group":
-                                removeGroupFirebase (itemID);
+                                FirebaseUtils.getInstance().removeGroupFirebase(currentUID, itemID, getApplicationContext());
                                 break;
                         }
 
@@ -362,51 +430,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         }
     }
 
-    public String addExpenseFirebase(Expense expense) {
-
-        //Aggiungo spesa a Firebase
-        String eID = databaseReference.child("expenses").push().getKey();
-        databaseReference.child("expenses").child(eID).setValue(expense);
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-        databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
-
-        //Per ogni participant setto la quota che ha già pagato per questa spesa
-        //e aggiungo spesa alla lista spese di ogni participant
-        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet())
-        {
-            //Se il participant corrente è il creatore della spesa
-            if (participant.getKey().equals(expense.getCreatorID()))
-            {
-                //paga tutto lui
-                databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(expense.getAmount());
-            }
-            else
-            {
-                //gli altri participant inizialmente non pagano niente
-                databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(0);
-            }
-
-            //risetto fraction di spesa che deve pagare l'utente, visto che prima si sputtana
-            databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("fraction").setValue(expense.getParticipants().get(participant.getKey()));
-
-
-
-            //Aggiungo spesaID a elenco spese dello user
-            //todo controllare se utile
-            databaseReference.child("users").child(participant.getKey()).child("expenses").child(eID).setValue("true");
-        }
-
-        //Aggiungo spesa alla lista spese del gruppo
-        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
-        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue("true");
-
-        return eID;
-
-        //u.updateBalance(expense);
-        //updateBalanceFirebase(u, expense);
-    }
-
-    public void joinGroupFirebase (final String userID, String groupID) {
+    public void joinGroupFirebase (final String userID, String groupID)
+    {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         //Aggiungo gruppo alla lista gruppi dello user
@@ -421,7 +446,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
     }
 
-    public void addFriendFirebase (final String user1ID, final String user2ID) {
+    public void addFriendFirebase (final String user1ID, final String user2ID)
+    {
         //Add u2 to friend list of u1
         databaseReference.child("users").child(user1ID).child("friends").push();
         databaseReference.child("users").child(user1ID).child("friends").child(user2ID).setValue("true");
@@ -467,14 +493,9 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(DatabaseError databaseError) { }
                 });
-
-
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -625,7 +646,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     public static FirebaseDatabase getDatabase() {
         if (firebaseDatabase == null) {
             firebaseDatabase = FirebaseDatabase.getInstance();
-            firebaseDatabase.setPersistenceEnabled(true);
+//            firebaseDatabase.setPersistenceEnabled(true);
         }
 
         return firebaseDatabase;
@@ -653,7 +674,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 // Sending failed or it was canceled, show failure message to the user
                 Log.e(TAG, "onActivityResult: failed sent");
 
-                Toast.makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
+                makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -780,6 +801,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 loadNavHeader();
                 Log.d(TAG, "logged user name: "+currentUser.getName());
                 Log.d(TAG, "logged user surname: "+currentUser.getSurname());
+
+                MainActivityPagerAdapter adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(1);
