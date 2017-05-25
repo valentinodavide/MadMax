@@ -27,9 +27,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     final private ListItemClickListener itemClickListener;
     private ListItemLongClickListener itemLongClickListener = null;
 
-    private static HashMap<String, User> friends = new HashMap<>();
-    private static User myself;
-    private int currentFriend = 0;
     private final ArrayList mData;
 
     private LayoutInflater layoutInflater;
@@ -68,6 +65,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
         private ImageView imageView;
         private TextView nameTextView;
+        private TextView balanceTextTextView;
         private TextView balanceTextView;
         private String ID;
 
@@ -75,7 +73,10 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
+            balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
+            balanceTextTextView.setVisibility(View.INVISIBLE);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
+            balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -99,10 +100,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             Log.d(TAG, "longClickedFriend " + itemClicked.getKey());
             itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
-
-
             return true;
-
         }
     }
 
@@ -136,12 +134,9 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             holder.imageView.setImageResource(photoUserId);*/
         }
 
-
         holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
         holder.ID = item.getValue().getID();
         holder.balanceTextView.setVisibility(View.GONE);
-
-
     }
 
     public Map.Entry<String, User> getItem(int position) {

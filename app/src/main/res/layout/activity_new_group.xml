@@ -5,7 +5,8 @@
                 android:layout_height="match_parent"
 
                 android:orientation="vertical"
-                tools:context="com.polito.mad17.madmax.activities.groups.NewGroupActivity">
+                tools:context="com.polito.mad17.madmax.activities.groups.NewGroupActivity"
+                android:focusableInTouchMode="true" >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -37,6 +38,7 @@
                     android:hint="@string/name"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"/>
+
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -51,44 +53,8 @@
                     android:hint="@string/description"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"/>
+
             </android.support.design.widget.TextInputLayout>
-
-<!--            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-
-            <TextView
-                android:id="@+id/memberstext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Members of group"
-                android:textAllCaps="true"
-                android:textColor="@color/colorPrimaryText"/>
-
-            &lt;!&ndash;<android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/members"
-                android:layout_below="@id/memberstext"
-                />&ndash;&gt;
-                <ListView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/members"
-                    android:layout_below="@id/memberstext"
-                    />
-
-                <Button
-                    android:id="@+id/addmember"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/members"
-                    android:text="Invite new member"
-                    android:layout_marginBottom="16dp"
-                    />
-
-            </RelativeLayout>-->
 
         </LinearLayout>
 

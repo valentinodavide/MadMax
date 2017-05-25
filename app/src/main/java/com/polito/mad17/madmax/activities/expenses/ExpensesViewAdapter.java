@@ -13,6 +13,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
     private ListItemLongClickListener itemLongClickListener = null;
+    private Context context;
 
 
     // The interface that receives the onClick messages
@@ -38,13 +40,15 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public ExpensesViewAdapter(ListItemClickListener listener, Map<String, Expense> expensesMap) {
+    public ExpensesViewAdapter(Context context, ListItemClickListener listener, Map<String, Expense> expensesMap) {
+        this.context = context;
         itemClickListener = listener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
     }
 
-    public ExpensesViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Expense> expensesMap) {
+    public ExpensesViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Expense> expensesMap) {
+        this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
         this.expenses = new ArrayList<>();
@@ -55,14 +59,16 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
         private ImageView imageView;
         private TextView nameTextView;
-        private TextView smallTextView;
+        private TextView balanceTextTextView;
+        private TextView balanceTextView;
         //private String ID;
 
         ItemExpensesViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
-            smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
+            balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
+            balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
@@ -103,20 +109,59 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(final ExpensesViewAdapter.ItemExpensesViewHolder holder, int position) {
+    public void onBindViewHolder(final ExpensesViewAdapter.ItemExpensesViewHolder expensesViewHolder, int position) {
 
         Expense expense = getItem(position).getValue();
 
         if(expense.getExpensePhoto() != null) {
             String photo = expense.getExpensePhoto();
             int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);
+            expensesViewHolder.imageView.setImageResource(photoUserId);
         }
 
-        holder.nameTextView.setText(expense.getDescription());
-        //holder.ID = expense.getID();
+        expensesViewHolder.nameTextView.setText(expense.getDescription());
 
-        holder.smallTextView.setText(expense.getAmount() + " " + expense.getCurrency());
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        expensesViewHolder.balanceTextTextView.setText(R.string.expense_amount);
+        expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+
+        String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
+        Log.d(TAG, "balance "  + balance);
+
+        expensesViewHolder.balanceTextView.setText(balance);
+        expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+
+//        if (expense.getAmount() > 0)
+//        {
+//            expensesViewHolder.balanceTextTextView.setText(R.string.credit_of);
+//            expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
+//
+//            String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
+//            Log.d(TAG, "balance "  + balance);
+//
+//            expensesViewHolder.balanceTextView.setText(balance);
+//            expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
+//
+//        }
+//        else
+//        {
+//            if (expense.getAmount() < 0)
+//            {
+//                expensesViewHolder.balanceTextTextView.setText(R.string.debt_of);
+//                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+//
+//                String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
+//                Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
+//                expensesViewHolder.balanceTextView.setText(balance);
+//                expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+//            }
+//            else
+//            {
+//                expensesViewHolder.balanceTextTextView.setText(R.string.no_debts);
+//                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
+//            }
+//        }
 
     }
 

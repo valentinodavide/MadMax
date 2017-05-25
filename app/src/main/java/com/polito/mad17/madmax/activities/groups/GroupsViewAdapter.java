@@ -1,6 +1,9 @@
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +23,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.polito.mad17.madmax.R.string.balance;
+
 public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final ArrayList mData;
@@ -28,15 +33,12 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ListItemClickListener itemClickListener;
     private ListItemLongClickListener itemLongClickListener = null;
-
-
+    private Context context;
 
     //public static HashMap<String, Group> groups = new HashMap<>();
     public static User myself;
 
     private LayoutInflater layoutInflater;
-
-
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -47,21 +49,19 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public GroupsViewAdapter(ListItemClickListener listener, Map<String, Group> map) {
+    public GroupsViewAdapter(Context context, ListItemClickListener listener, Map<String, Group> map) {
+        this.context = context;
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
-
-
     }
 
-    public GroupsViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map) {
+    public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map) {
+        this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
-
-
     }
 
     public void update(Map<String, Group> map) {
@@ -73,14 +73,16 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         private ImageView imageView;
         private TextView nameTextView;
-        private TextView smallTextView;
+        private TextView balanceTextTextView;
+        private TextView balanceTextView;
         //private String ID;
 
         public ItemGroupViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
-            smallTextView = (TextView) itemView.findViewById(R.id.tv_balance);
+            balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
+            balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
 
@@ -146,39 +148,48 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(groupViewHolder.imageView);
         }
-
-        //groupViewHolder.nameTextView.setText(groups.get(String.valueOf(position)).getName());
-        //groupViewHolder.ID = groups.get(String.valueOf(position)).getID();
         groupViewHolder.nameTextView.setText(item.getValue().getName());
-        //groupViewHolder.ID = item.getValue().getID();
-        //groupViewHolder.smallTextView.setText(item.getValue().getBalance().toString());
 
         //todo mettere debito verso il gruppo
         //mydebt = mio debito con il gruppo
 
         Double mygroupdebt = item.getValue().getBalance();
         if (mygroupdebt == null) {
-            groupViewHolder.smallTextView.setVisibility(View.GONE);
+            groupViewHolder.balanceTextTextView.setVisibility(View.GONE);
+            groupViewHolder.balanceTextView.setVisibility(View.GONE);
             return;
         }
 
         DecimalFormat df = new DecimalFormat("#.##");
-
         if (mygroupdebt > 0)
         {
-            groupViewHolder.smallTextView.setText("+ " + df.format(mygroupdebt) + " €");
-            groupViewHolder.smallTextView.setTextColor(R.color.colorPrimary);
+            groupViewHolder.balanceTextTextView.setText(R.string.credit_of);
+            groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
 
-        }
-        else if (mygroupdebt < 0)
-        {
-            groupViewHolder.smallTextView.setText("- " + df.format(Math.abs(mygroupdebt)) + " €");
-            groupViewHolder.smallTextView.setTextColor(R.color.colorAccent);
+            String balance = df.format(Math.abs(mygroupdebt)) + " €";
+            Log.d(TAG, "balance "  + balance);
+
+            groupViewHolder.balanceTextView.setText(balance);
+            groupViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
+
         }
         else
         {
-            groupViewHolder.smallTextView.setText("" + df.format(mygroupdebt) + " €");
-            groupViewHolder.smallTextView.setTextColor(R.color.colorPrimary);
+            if (mygroupdebt < 0)
+            {
+                groupViewHolder.balanceTextTextView.setText(R.string.debt_of);
+                groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+
+                String balance = df.format(Math.abs(mygroupdebt)) + " €";
+                Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
+                groupViewHolder.balanceTextView.setText(balance);
+                groupViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+            }
+            else
+            {
+                groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
+                groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
+            }
         }
 
     }

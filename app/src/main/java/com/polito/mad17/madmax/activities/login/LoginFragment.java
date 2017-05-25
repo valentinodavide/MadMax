@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -69,22 +70,12 @@ public class LoginFragment extends Fragment {
         setInterface((OnItemClickInterface) getActivity());
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
-
         emailView = (EditText) view.findViewById(R.id.email);
         passwordView = (EditText) view.findViewById(R.id.password);
         signupView = (TextView) view.findViewById(R.id.link_signup);
         signupView.setPaintFlags(signupView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG); // to make the link underlined
         loginButton = (Button) view.findViewById(R.id.btn_login);
         progressDialog = new ProgressDialog(getContext());
-
-        emailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus && !passwordView.hasFocus()) {
-                   hideKeyboard(v);
-                }
-            }
-        });
 
         auth = FirebaseAuth.getInstance();
         authListener = new FirebaseAuth.AuthStateListener() {
@@ -234,10 +225,5 @@ public class LoginFragment extends Fragment {
             passwordView.setError(null);
         }
         return valid;
-    }
-
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

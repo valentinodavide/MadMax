@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".activities.login.LoginSignUpActivity"
-            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/AppTheme.Login">
 
             <intent-filter>
@@ -59,14 +59,9 @@
             android:name=".activities.groups.NewGroupActivity"
             android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".activities.groups.GroupInfoActivity"
-            android:label="@string/title_activity_group_info"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".activities.users.NewMemberActivity"
             android:label="@string/title_activity_new_member"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.login.EmailVerificationActivity" />
         <activity
             android:name=".activities.MainActivity"
             android:launchMode="singleInstance"

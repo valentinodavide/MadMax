@@ -26,6 +26,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 public class GroupDetailActivity extends BasicActivity implements OnItemClickInterface, OnItemLongClickInterface {
 
@@ -85,9 +86,6 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                     .replace(R.id.main, detailFragment)
                     .commit();
         }
-
-
-
     }
 
     @Override
@@ -156,8 +154,6 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 }
                 */
 
-
-
                 break;
 
             case "GroupsFragment":
@@ -196,60 +192,15 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
                         //Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                        removeExpenseFirebase(itemID);
+                        FirebaseUtils.getInstance().removeExpenseFirebase(itemID, getApplicationContext());
                         return true;
                     }
                 });
 
                 popup.show();//showing popup menu
 
-
-
                 break;
         }
-
-    }
-
-    public void removeExpenseFirebase (final String expenseID)
-    {
-        databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String groupID = dataSnapshot.child("groupID").getValue(String.class);
-
-                //Elimino spesa dal gruppo
-                databaseReference.child("groups").child(groupID).child("expenses").child(expenseID).setValue(false);
-
-                //Per ogni participant elimino la spesa dal suo elenco spese
-                for (DataSnapshot participantSnapshot : dataSnapshot.child("participants").getChildren())
-                {
-                    String participantID = participantSnapshot.getKey();
-                    databaseReference.child("users").child(participantID).child("expenses").child(expenseID).setValue(false);
-                }
-                //Elimino commenti sulla spesa
-                databaseReference.child("comments").child(groupID).removeValue();
-                //Elimino spesa
-                databaseReference.child("expenses").child(expenseID).child("deleted").setValue(true);
-                Toast.makeText(GroupDetailActivity.this,"Expense successfully removed",Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    //To remove member from group
-    public void removeMemberFirebase (String memberID, String groupID)
-    {
-        databaseReference.child("groups").child(groupID).child("members").child(memberID).child("deleted").setValue(true);
-        databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
-        //todo aggiornare shared groups tra memberID e ogni altro member del group
-
     }
 }
 

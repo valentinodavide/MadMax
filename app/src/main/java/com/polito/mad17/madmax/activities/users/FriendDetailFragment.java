@@ -26,6 +26,7 @@ import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -88,7 +89,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         recyclerView.setLayoutManager(layoutManager);
 
         //todo mettere a posto
-        groupsViewAdapter = new GroupsViewAdapter(this, this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Extract data from bundle
@@ -119,9 +120,8 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
 
                 for (DataSnapshot sharedGroupSnapshot: dataSnapshot.getChildren())
                 {
-                    getGroup(sharedGroupSnapshot.getKey());
+                    FirebaseUtils.getInstance().getGroup(sharedGroupSnapshot.getKey(), groups, groupsViewAdapter);
                 }
-
             }
 
             @Override
@@ -196,34 +196,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         Log.d(TAG, "longClickedItemIndex " + friendID);
         onLongClickGroupInterface.itemLongClicked(getClass().getSimpleName(), friendID, v);
 
-
-
         return true;
-
-    }
-
-    //todo metodo ripetuto in diverse activity, correggere
-    public void getGroup(final String id)
-    {
-        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
-        {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                Group g = new Group();
-                g.setName(dataSnapshot.child("name").getValue(String.class));
-                groups.put(id, g);
-                groupsViewAdapter.update(groups);
-                groupsViewAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, databaseError.getMessage());
-            }
-        });
     }
 
 }

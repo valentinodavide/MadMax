@@ -19,6 +19,9 @@
     <string name="owes_you">OWES YOU</string>
     <string name="you_should_receive">"YOU SHOULD RECEIVE"</string>
     <string name="no_debts">NO DEBTS</string>
+    <string name="credit_of">CREDIT OF</string>
+    <string name="debt_of">DEBT OF</string>
+    <string name="expense_amount">TOTAL AMOUNT</string>
     <string name="edit_description_hint">Expense Name</string>
     <string name="edit_amount_hint">Amount</string>
     <string name="expense_saved">Expense saved</string>

@@ -21,6 +21,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
 
@@ -40,18 +41,12 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         onLongClickGroupInterface = onItemLongClickInterface;
     }
 
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
     private ExpensesViewAdapter expensesViewAdapter;
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
-    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
     private DatabaseReference groupRef;
 
-    private String groupID = null;
-
     private HashMap<String, Expense> expensesMap = new HashMap<>();
-    //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
 
     public ExpensesFragment() {}
@@ -66,11 +61,6 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         RecyclerView recyclerView;
         RecyclerView.LayoutManager layoutManager;
         String groupID;
-        DatabaseReference groupRef;
-
-        //firebaseDatabase = FirebaseDatabase.getInstance();
-        //databaseReference = firebaseDatabase.getReference();
-
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
@@ -85,7 +75,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        expensesViewAdapter = new ExpensesViewAdapter(this, this, expensesMap);
+        expensesViewAdapter = new ExpensesViewAdapter(this.getContext(), this, this, expensesMap);
         recyclerView.setAdapter(expensesViewAdapter);
 
         groupRef = databaseReference.child("groups");
@@ -98,9 +88,8 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
                 for(DataSnapshot expense : expensesSnapshot.getChildren())
                 {
-                    getExpense(expense.getKey());
+                    FirebaseUtils.getInstance().getExpense(expense.getKey(), expensesMap, expensesViewAdapter);
                     Log.d(TAG, expense.getKey());
-
                 }
 
                 expensesViewAdapter.update(expensesMap);
@@ -112,8 +101,6 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
-
-        Log.d(TAG, "dopo setAdapter");
 
         return view;
     }
@@ -149,50 +136,5 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         Log.d(TAG, "longClickedItemIndex " + friendID);
         onLongClickGroupInterface.itemLongClicked(getClass().getSimpleName(), friendID, v);
         return true;
-    }
-
-    public void getExpense(final String id) {
-        databaseReference.child("expenses").child(id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Log.d (TAG, "Spesa: " + dataSnapshot.getKey());
-                for (DataSnapshot d : dataSnapshot.getChildren())
-                {
-                    Log.d (TAG, "Campo " + d.getKey() + ": " + d.getValue());
-                }
-                Log.d(TAG, " ");
-
-
-                //Se io sono tra i participant e la spesa non è stata eliminata
-                if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUser().getID()) &&
-                        dataSnapshot.hasChild("deleted") &&
-                        !dataSnapshot.child("deleted").getValue(Boolean.class))
-                {
-                    Expense expense = new Expense();
-                    expense.setDescription(dataSnapshot.child("description").getValue(String.class));
-                    expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
-                    expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
-                    expensesMap.put(id, expense);
-                    expensesViewAdapter.update(expensesMap);
-                    expensesViewAdapter.notifyDataSetChanged();
-                }
-                //Se user non è più participant della spesa
-                else
-                {
-                    expensesMap.remove(id);
-                    expensesViewAdapter.update(expensesMap);
-                    expensesViewAdapter.notifyDataSetChanged();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-
-                Log.e(TAG, databaseError.getMessage());
-            }
-        });
     }
 }

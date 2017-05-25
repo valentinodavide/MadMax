@@ -22,6 +22,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
 
@@ -32,18 +33,24 @@ public class NewMemberActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    private ListView lv;
+    private ListView addedFriendsListView;
+    private ListView friendsListView;
     private HashMap<String, User> friends = new HashMap<>();
     //todo usare SharedPreferences invece della map globale alreadySelected
     public static HashMap<String, User> alreadySelected = new HashMap<>();
-    private HashMapFriendsAdapter adapter;
+    private HashMapFriendsAdapter friendsAdapter;
+    private HashMapFriendsAdapter addedAdapter;
 
     private Button buttonInvite;
+    private String groupID;
 
     private static final int REQUEST_INVITE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreate di NewMemeberAcitivity");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_member);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -52,19 +59,25 @@ public class NewMemberActivity extends AppCompatActivity {
         buttonInvite = (Button) findViewById(R.id.btn_new_friend);
 
         Intent intent = getIntent();
-        //myselfID = intent.getStringExtra("UID");
+        groupID = intent.getStringExtra("groupID");
 
-        lv = (ListView) findViewById(R.id.members);
+        Log.d(TAG, groupID);
+
+        friendsListView = (ListView) findViewById(R.id.lv_friends);
+
+        addedFriendsListView = (ListView) findViewById(R.id.lv_added_members);
+        addedAdapter = new HashMapFriendsAdapter(alreadySelected);
+        addedFriendsListView.setAdapter(addedAdapter);
 
         databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
-                    getFriend(friendSnapshot.getKey());
+                    FirebaseUtils.getInstance().getFriendInviteToGroup(friendSnapshot.getKey(), friends, friendsAdapter);
                 }
 
-                adapter = new HashMapFriendsAdapter(friends);
-                lv.setAdapter(adapter);
+                friendsAdapter = new HashMapFriendsAdapter(friends);
+                friendsListView.setAdapter(friendsAdapter);
             }
 
             @Override
@@ -74,15 +87,18 @@ public class NewMemberActivity extends AppCompatActivity {
         });
 
         //When i click on one friend of the list
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        friendsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User item = adapter.getItem(position).getValue();
+                User item = friendsAdapter.getItem(position).getValue();
                 friends.remove(item.getID());
-                adapter.update(friends);
-                adapter.notifyDataSetChanged();
+                friendsAdapter.update(friends);
+                friendsAdapter.notifyDataSetChanged();
 
                 alreadySelected.put(item.getID(), item);
+
+                addedAdapter.update(alreadySelected);
+                addedAdapter.notifyDataSetChanged();
 
                 Context context = NewMemberActivity.this;
                 Class destinationActivity = NewGroupActivity.class;
@@ -132,28 +148,4 @@ public class NewMemberActivity extends AppCompatActivity {
 
     }
 
-    public void getFriend(final String id) {
-        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User u = new User();
-                u.setName(dataSnapshot.child("name").getValue(String.class));
-                u.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                u.setID(dataSnapshot.getKey());
-
-                //se l'amico letto da db non è già stato scelto, lo metto nella lista di quelli
-                //che saranno stampati
-                if (!alreadySelected.containsKey(u.getID())) {
-                    friends.put(id, u);
-                    adapter.update(friends);
-                    adapter.notifyDataSetChanged();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, databaseError.getMessage());
-            }
-        });
-    }
 }

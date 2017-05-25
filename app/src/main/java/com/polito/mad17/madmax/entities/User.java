@@ -412,25 +412,6 @@ public class User implements Parcelable {
         });
     }
 
-    // todo verifica duplicazione metodo
-    public void joinGroup (Group group) {
-        group.getMembers().put(this.getID(), this); //aggiunto user alla lista di membri del gruppo
-        //this.userGroups.add(g); //gruppo aggiunto alla lista di gruppi di cui user fa parte
-        this.userGroups.put(group.getID(), group);
-
-        //creo un debito verso il gruppo
-        balanceWithGroups.put(group.getID(), 0d);
-
-        //per ogni membro del gruppo
-        for (HashMap.Entry<String, User> friend : group.getMembers().entrySet()) {
-            //se non sono io stesso
-            if (!friend.getKey().equals(this.getID())) {
-                balanceWithUsers.put(friend.getKey(), 0d); //creo un debito verso il membro
-                friend.getValue().getBalanceWithUsers().put(this.getID(), 0d); //creo un debito dal membro verso di me
-            }
-        }
-    }
-
     public void joinGroup (String groupID, String inviterUID) {
         final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
         final String currentUID = this.getID();

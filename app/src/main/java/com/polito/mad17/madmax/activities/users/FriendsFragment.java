@@ -30,12 +30,10 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private static final String TAG = FriendsFragment.class.getSimpleName();
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
+
     private HashMap<String, User> friends = new HashMap<>();
-    private ListView lv;
-    private HashMapFriendsAdapter adapter;
     private Query query;
     private String groupID;
-
 
     private OnItemClickInterface onClickFriendInterface;
     private OnItemLongClickInterface onLongClickFriendInterface;
@@ -43,7 +41,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickFriendInterface = onItemClickInterface;
         onLongClickFriendInterface = onItemLongClickInterface;
-
     }
 
     private RecyclerView recyclerView;
@@ -193,35 +190,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         Log.d(TAG, "longClickedItemIndex " + friendID);
         onLongClickFriendInterface.itemLongClicked(getClass().getSimpleName(), friendID, v);
 
-
-
         return true;
-
-    }
-
-    public void getFriend(final String id)
-    {
-        databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
-        {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-
-
-                User u = new User();
-                u.setName(dataSnapshot.child("name").getValue(String.class));
-                u.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                friends.put(id, u);
-                friendsViewAdapter.update(friends);
-                friendsViewAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, databaseError.getMessage());
-            }
-        });
     }
 }

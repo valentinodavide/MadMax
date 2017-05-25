@@ -71,7 +71,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        groupsViewAdapter = new GroupsViewAdapter(this, this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user
@@ -99,12 +99,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                         e.printStackTrace();
                         Log.d(TAG, groupSnapshot.getValue().toString());
                     }
-
                 }
-
-
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, databaseError.toException());

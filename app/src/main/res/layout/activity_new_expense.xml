@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.polito.mad17.madmax.activities.expenses.NewExpenseActivity">
+    tools:context="com.polito.mad17.madmax.activities.expenses.NewExpenseActivity"
+    android:focusableInTouchMode="true">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -30,7 +31,7 @@
                     android:inputType="textCapSentences"
                     android:maxLines="1"
                     android:textColor="@color/colorPrimaryText"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -56,7 +57,7 @@
                         android:hint="@string/edit_amount_hint"
                         android:inputType="numberDecimal"
                         android:textColor="@color/colorPrimaryText"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"/>
 
                     <Spinner
                         android:id="@+id/currency"

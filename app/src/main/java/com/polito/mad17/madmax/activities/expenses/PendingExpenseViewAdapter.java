@@ -151,11 +151,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                         Log.d(TAG, "postTransaction:onComplete:" + databaseError);
                     }
                 });
-
             }
-
-
-
             else if (v.getId() == thumbDownButton.getId())
             {
                 Log.d (TAG, "clicked thumb down");
@@ -188,16 +184,12 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                         Log.d(TAG, "postTransaction:onComplete:" + databaseError);
                     }
                 });
-
             }
-
             else
             {
                 Log.d (TAG, "altro");
                 itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
             }
-
-
         }
 
         @Override
@@ -208,7 +200,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             //itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
             return true;
-
         }
     }
 
@@ -223,12 +214,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         PendingExpenseViewAdapter.ItemExpensesViewHolder itemExpensesViewHolder = new PendingExpenseViewAdapter.ItemExpensesViewHolder(view);
 
         Log.d(TAG, "dopo aver istanziato il view holder");
-
-
-
-
-
-
 
         return itemExpensesViewHolder;
     }
@@ -270,9 +255,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
             holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
         }
-
-
-
     }
 
     @Override
@@ -288,13 +270,4 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         pendingExpenses.clear();
         pendingExpenses.addAll(map.entrySet());
     }
-
-    void setThumbsColor (String expense)
-    {
-
-    }
-
-
-
-
 }

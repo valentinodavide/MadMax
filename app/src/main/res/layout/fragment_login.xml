@@ -22,7 +22,8 @@
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:textColor="@color/colorPrimaryText"/>
+                android:textColor="@color/colorPrimaryText"
+                android:focusableInTouchMode="true" />
         </android.support.design.widget.TextInputLayout>
 
 
@@ -41,7 +42,8 @@
                 android:imeOptions="actionUnspecified"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:textColor="@color/colorPrimaryText"/>
+                android:textColor="@color/colorPrimaryText"
+                android:focusableInTouchMode="true" />
 
         </android.support.design.widget.TextInputLayout>
 

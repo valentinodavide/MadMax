@@ -19,6 +19,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
 
@@ -73,7 +74,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                     //Se la pending expense non è stata eliminata (NELLO USER)
                     if (pendingExpenseSnap.getValue(Boolean.class))
                     {
-                        getPendingExpense(pendingExpenseSnap.getKey());
+                        FirebaseUtils.getInstance().getPendingExpense(pendingExpenseSnap.getKey(), pendingExpensesMap, pendingExpenseViewAdapter);
                         pendingExpenseViewAdapter.update(pendingExpensesMap);
                         pendingExpenseViewAdapter.notifyDataSetChanged();
                     }
@@ -84,9 +85,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                         pendingExpenseViewAdapter.update(pendingExpensesMap);
                         pendingExpenseViewAdapter.notifyDataSetChanged();
                     }
-
                 }
-
             }
 
             @Override
@@ -95,12 +94,8 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
             }
         });
 
-
-
         return view;
     }
-
-
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -126,79 +121,6 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     public void onListItemClick(String groupID) {
         Log.d(TAG, "clickedItemIndex " + groupID);
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
-    }
-
-    void getPendingExpense (final String pendingID)
-    {
-        databaseReference.child("proposedExpenses").child(pendingID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Integer participantsCount = 0;
-                Integer yes = 0;
-                Integer no = 0;
-                String myvote = "null";
-
-                //Questo listener è chiamato ogni volta che questa spesa pending è modificata, quindi devo controllare
-                //che io faccia ancora parte di questa spesa e che la spesa pending esista ancora (NELLE PROPOSED EXPESES)
-                if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUser().getID()) &&
-                        !dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class) &&
-                        !dataSnapshot.child("deleted").getValue(Boolean.class))
-                {
-                    for (DataSnapshot participantSnap : dataSnapshot.child("participants").getChildren())
-                    {
-                        //Se il partecipante alla spesa pending esiste ancora (nella spesa pending)
-                        if (participantSnap.child("deleted").getValue(Boolean.class) == false)
-                        {
-                            participantsCount++;
-                            if (participantSnap.child("vote").getValue(String.class).equals("yes"))
-                            {
-                                yes++;
-                                if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
-                                    myvote = "yes";
-
-                            }
-                            if (participantSnap.child("vote").getValue(String.class).equals("no"))
-                            {
-                                no++;
-                                if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
-                                    myvote = "no";
-                            }
-                        }
-                    }
-
-                    //todo mettere foto
-
-                    Expense pendingExpense = new Expense();
-                    pendingExpense.setDescription(dataSnapshot.child("description").getValue(String.class));
-                    pendingExpense.setGroupName(dataSnapshot.child("groupName").getValue(String.class));
-                    pendingExpense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
-                    pendingExpense.setParticipantsCount(participantsCount);
-                    pendingExpense.setYes(yes);
-                    pendingExpense.setNo(no);
-                    pendingExpense.setMyVote(myvote);
-                    pendingExpense.setCurrency(dataSnapshot.child("currency").getValue(String .class));
-                    pendingExpensesMap.put(pendingID, pendingExpense);
-                    pendingExpenseViewAdapter.update(pendingExpensesMap);
-                    pendingExpenseViewAdapter.notifyDataSetChanged();
-                }
-
-                //Se io non faccio più parte di questa spesa pending
-                else
-                {
-                    pendingExpensesMap.remove(pendingID);
-                    pendingExpenseViewAdapter.update(pendingExpensesMap);
-                    pendingExpenseViewAdapter.notifyDataSetChanged();
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 }
 
