@@ -24,6 +24,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -48,18 +49,14 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private Toolbar toolbar;
 
 
-
-
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
 
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-
-
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_expense_detail);
         //setInterface((OnItemClickInterface) this);
@@ -78,13 +75,9 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         groupTextView = (TextView) findViewById(R.id.tv_group_name);
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
 
-
         Intent intent = getIntent();
         expenseID = intent.getStringExtra("expenseID");
         userID = intent.getStringExtra("userID");
-
-
-
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
@@ -108,29 +101,21 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 groupTextView.setText(groupName);
                 amountTextView.setText(amount.toString());
 
-
                 DecimalFormat df = new DecimalFormat("#.##");
 
                 amountTextView.setText(df.format(amount) + " €");
-
 
                 //Show list of voters for this pending expense
                 for (DataSnapshot voterSnap : dataSnapshot.child("participants").getChildren())
                 {
                     String vote = voterSnap.child("vote").getValue(String.class);
-                    getFriend(voterSnap.getKey(), vote);
+                    FirebaseUtils.getInstance().getFriend(voterSnap.getKey(), vote, voters, votersViewAdapter, creatorNameTextView);
                 }
-
-
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
+            public void onCancelled(DatabaseError databaseError) { }
         });
-
-
     }
 
     //Per creare overflow button
@@ -151,7 +136,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 return true;
             case R.id.two:
                 Log.d (TAG, "clicked Remove Expense");
-                removePendingExpenseFirebase(expenseID);
+                FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 return true;
@@ -167,67 +152,4 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
     }
 
-    public void getFriend(final String id, final String vote)
-    {
-        databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
-        {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-
-
-                User u = new User();
-                u.setName(dataSnapshot.child("name").getValue(String.class));
-                u.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                u.setVote(vote);
-                voters.put(id, u);
-                votersViewAdapter.update(voters);
-                votersViewAdapter.notifyDataSetChanged();
-
-                creatorNameTextView.setText(u.getName() + " " + u.getSurname());
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, databaseError.getMessage());
-            }
-        });
-    }
-
-    public void removePendingExpenseFirebase (final String expenseID)
-    {
-        databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String groupID = dataSnapshot.child("groupID").getValue(String.class);
-
-                //Elimino spesa pending dal gruppo
-                databaseReference.child("groups").child(groupID).child("proposedExpenses").child(expenseID).setValue(false);
-
-                //Per ogni participant elimino la spesa pending dal suo elenco spese pending
-                for (DataSnapshot participantSnapshot : dataSnapshot.child("participants").getChildren())
-                {
-                    String participantID = participantSnapshot.getKey();
-                    databaseReference.child("users").child(participantID).child("proposedExpenses").child(expenseID).setValue(false);
-                }
-                //todo Elimino commenti sulla spesa pending
-                //databaseReference.child("comments").child(groupID).removeValue();
-
-                //Elimino spesa pending
-                databaseReference.child("proposedExpenses").child(expenseID).child("deleted").setValue(true);
-                Toast.makeText(PendingExpenseDetailActivity.this,"Expense successfully removed",Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 }

@@ -1,34 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.polito.mad17.madmax.activities.users.NewMemberActivity"
-    tools:showIn="@layout/activity_new_member"
-    android:layout_margin="@dimen/activity_horizontal_margin">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/friendstext"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Friends"
-        android:textSize="20sp"/>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.polito.mad17.madmax.activities.users.NewMemberActivity"
+        tools:showIn="@layout/activity_new_member"
+        android:layout_margin="@dimen/activity_horizontal_margin">
 
-    <ListView
-        android:id="@+id/members"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/friendstext"/>
+        <TextView
+            android:id="@+id/tv_addedfriendstext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Added Friends"
+            android:textSize="20sp"
+            android:layout_marginBottom="8dp"/>
 
-    <Button
-        android:id="@+id/btn_new_friend"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Invite a new friend"
-        android:textSize="16sp"
-        android:layout_centerInParent="true"
-        android:layout_alignParentBottom="true"/>
+        <ListView
+            android:id="@+id/lv_added_members"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_below="@id/tv_addedfriendstext" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tv_friendstext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Friends"
+            android:textSize="20sp"
+            android:layout_below="@id/lv_added_members"
+            android:layout_marginBottom="8dp"/>
+
+        <ListView
+            android:id="@+id/lv_friends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_friendstext"/>
+
+        <Button
+            android:id="@+id/btn_new_friend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Invite a new friend"
+            android:textSize="16sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/lv_friends"/>
+
+    </RelativeLayout>
+</ScrollView>

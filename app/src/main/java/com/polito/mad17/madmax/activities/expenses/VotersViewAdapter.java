@@ -39,7 +39,6 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-
     public VotersViewAdapter(VotersViewAdapter.ListItemClickListener listener, Map<String, User> map) {
         itemClickListener = listener;
         mData = new ArrayList();
@@ -135,10 +134,6 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         {
             holder.voteTextView.setVisibility(View.GONE);
         }
-
-
-
-
     }
 
     public Map.Entry<String, User> getItem(int position) {

@@ -20,6 +20,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
 
@@ -39,11 +40,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
-
     }
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +55,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        groupsViewAdapter = new GroupsViewAdapter(this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(getBaseContext(), this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user
@@ -70,7 +67,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
                 {
                     //Se il gruppo è true, ossia è ancora tra quelli dello user
                     if (groupSnapshot.getValue(Boolean.class))
-                        getGroup(groupSnapshot.getKey());
+                        FirebaseUtils.getInstance().getGroup(groupSnapshot.getKey(), groups, groupsViewAdapter);
                     else
                     {
                         //tolgo il gruppo da quelli che verranno stampati, così lo vedo sparire realtime
@@ -80,8 +77,6 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
 
                     }
                 }
-
-
             }
 
             @Override
@@ -89,10 +84,6 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
                 Log.w(TAG, databaseError.toException());
             }
         });
-
-
-
-
     }
 
     @Override
@@ -107,27 +98,4 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         startActivity(myIntent);
     }
 
-    public void getGroup(final String id)
-    {
-        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
-        {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                Group g = new Group();
-                g.setName(dataSnapshot.child("name").getValue(String.class));
-                groups.put(id, g);
-
-                groupsViewAdapter.update(groups);
-                groupsViewAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        });
-    }
 }

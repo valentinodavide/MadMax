@@ -1,8 +1,10 @@
 package com.polito.mad17.madmax.activities.groups;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,7 +16,9 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -31,8 +35,10 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
 import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
+import com.polito.mad17.madmax.activities.users.NewMemberActivity;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -128,45 +134,28 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
             newgroup_id = databaseReference.child("groups").push().getKey();
 
-            Log.d(TAG, "invite a member to join the group");
+            Log.d(TAG, "Second step: invite members to group");
             //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
 
-            Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
-                    .appendQueryParameter("groupToBeAddedID", newgroup_id)
-                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
+            Intent intent = new Intent(this, NewMemberActivity.class);
+            intent.putExtra("groupID", newgroup_id);
+            startActivity(intent);
 
-            Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                    .setDeepLink(builder.build())
-                    .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                    .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
-                    .build();
-
-            startActivityForResult(intent, REQUEST_INVITE);
+//            Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
+//                    .appendQueryParameter("groupToBeAddedID", newgroup_id)
+//                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
+//
+//            Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
+//                    .setDeepLink(builder.build())
+//                    .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
+//                    .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
+//                    .build();
+//
+//            startActivityForResult(intent, REQUEST_INVITE);
 
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void joinGroupFirebase (final String userID, String groupID) {
-        //Aggiungo gruppo alla lista gruppi dello user
-        databaseReference.child("users").child(userID).child("groups").push();
-        databaseReference.child("users").child(userID).child("groups").child(groupID).setValue(true);
-        //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
-        databaseReference.child("groups").child(groupID).child("members").push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
-        if(userID.equals(MainActivity.getCurrentUser().getID())) {
-            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("true");
-        }
-        else {
-            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
-        }
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("deleted").setValue(false);
-
-
-
     }
 
     public String BitMapToString(Bitmap bitmap){
@@ -206,8 +195,9 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                     .into(imageGroup);*/
             return;
         }
-        else // control if is the requested result and if it return something
-            if(requestCode == REQUEST_INVITE) {
+        else {
+            // control if is the requested result and if it return something
+            if (requestCode == REQUEST_INVITE) {
                 if (resultCode == RESULT_OK) {
                     Log.d(TAG, "onActivityResult REQUEST_INVITE");
                     // Get the invitation IDs of all sent messages
@@ -248,7 +238,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                             String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
                             databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
                             databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                            joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
+                            FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
 
                             Log.d(TAG, "group " + newgroup_id + " created");
                             finish();
@@ -256,5 +246,23 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                     });
                 }
             }
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
     }
 }

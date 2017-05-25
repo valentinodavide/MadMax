@@ -8,7 +8,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.polito.mad17.madmax.activities.login.LoginSignUpActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusableInTouchMode="true">
 
     <ImageView
         android:layout_width="match_parent"

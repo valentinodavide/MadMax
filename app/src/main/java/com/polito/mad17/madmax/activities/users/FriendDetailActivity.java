@@ -76,7 +76,8 @@ public class FriendDetailActivity extends BasicActivity implements OnItemClickIn
 
 
     @Override
-    public void itemClicked(String fragmentName, String itemID) {
+    public void itemClicked(String fragmentName, String itemID)
+    {
         Log.d(TAG, fragmentName + itemID);
 
         Intent intent = new Intent(this, GroupDetailActivity.class);
@@ -87,8 +88,8 @@ public class FriendDetailActivity extends BasicActivity implements OnItemClickIn
 
     //Apro popup menu quando ho tenuto premuto un friend o gruppo per 1 secondo
     @Override
-    public void itemLongClicked(String fragmentName, String itemID, View v) {
-
+    public void itemLongClicked(String fragmentName, String itemID, View v)
+    {
         Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
     }

@@ -1,8 +1,10 @@
 package com.polito.mad17.madmax.activities.expenses;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,7 +15,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -36,13 +40,13 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
-
 
 public class NewExpenseActivity extends AppCompatActivity {
 
@@ -232,13 +236,13 @@ public class NewExpenseActivity extends AppCompatActivity {
                     if (callingActivity.equals("ChooseGroupActivity"))
                     {
                         newExpense.setGroupName(groupName);
-                        addPendingExpenseFirebase(newExpense);
+                        FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, billPhoto);
 
                     }
                     //Aggiungo una spesa normale
                     else
                     {
-                        addExpenseFirebase(newExpense);
+                        FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto);
                     }
                 }
 
@@ -249,12 +253,26 @@ public class NewExpenseActivity extends AppCompatActivity {
                 }
             });
         }
-
-
         this.finish();
 
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
     }
 
    /* riky: probabilmente non più necessaria
@@ -312,163 +330,4 @@ public class NewExpenseActivity extends AppCompatActivity {
         }
         return valid;
     }
-
-    public String addExpenseFirebase(final Expense expense) {
-        Log.d(TAG, "addExpenseFirebase");
-
-        //Aggiungo spesa a Firebase
-        final String eID = databaseReference.child("expenses").push().getKey();
-        databaseReference.child("expenses").child(eID).setValue(expense);
-
-
-        StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_expensePhoto.jpg");
-
-        // Get the data from an ImageView as bytes
-        expensePhoto.setDrawingCacheEnabled(true);
-        expensePhoto.buildDrawingCache();
-        Bitmap bitmap = expensePhoto.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = uExpensePhotoFilenameRef.putBytes(data);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // todo Handle unsuccessful uploads
-                Log.e(TAG, "image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
-            }
-        });
-
-        StorageReference uBillPhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_billPhoto.jpg");
-
-        // Get the data from an ImageView as bytes
-        billPhoto.setDrawingCacheEnabled(true);
-        billPhoto.buildDrawingCache();
-        bitmap = billPhoto.getDrawingCache();
-        baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        data = baos.toByteArray();
-
-        uploadTask = uBillPhotoFilenameRef.putBytes(data);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // todo Handle unsuccessful uploads
-                Log.e(TAG, "image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                databaseReference.child("expenses").child(eID).child("billPhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
-            }
-        });
-
-        Log.d(TAG, "creator expense " + expense.getCreatorID());
-
-        //Per ogni participant setto la quota che ha già pagato per questa spesa
-        //e aggiungo spesa alla lista spese di ogni participant
-        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet())
-        {
-            Log.d(TAG, "partecipant " + participant.getKey());
-            //Se il participant corrente è il creatore della spesa
-            if (participant.getKey().equals(expense.getCreatorID()))
-            {
-
-                //paga tutto lui
-                databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(expense.getAmount());
-            }
-            else
-            {
-                //gli altri participant inizialmente non pagano niente
-                databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("alreadyPaid").setValue(0);
-            }
-
-            //risetto fraction di spesa che deve pagare l'utente, visto che prima si sputtana
-            databaseReference.child("expenses").child(eID).child("participants").child(participant.getKey()).child("fraction").setValue(expense.getParticipants().get(participant.getKey()));
-
-
-            //Aggiungo spesaID a elenco spese dello user
-            //todo controllare se utile
-            databaseReference.child("users").child(participant.getKey()).child("expenses").child(eID).setValue(true);
-        }
-
-        //Aggiungo spesa alla lista spese del gruppo
-        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").push();
-        databaseReference.child("groups").child(expense.getGroupID()).child("expenses").child(eID).setValue(true);
-
-        return eID;
-
-    }
-
-    public void addPendingExpenseFirebase (Expense expense)
-    {
-        Log.d(TAG, "addPendingExpenseFirebase");
-
-
-        //Aggiungo pending expense a Firebase
-        final String eID = databaseReference.child("proposedExpenses").push().getKey();
-        databaseReference.child("proposedExpenses").child(eID).setValue(expense);
-
-
-        StorageReference uExpensePhotoFilenameRef = storageReference.child("proposedExpenses").child(eID).child(eID+"_expensePhoto.jpg");
-
-        // Get the data from an ImageView as bytes
-        expensePhoto.setDrawingCacheEnabled(true);
-        expensePhoto.buildDrawingCache();
-        Bitmap bitmap = expensePhoto.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = uExpensePhotoFilenameRef.putBytes(data);
-
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // todo Handle unsuccessful uploads
-                Log.e(TAG, "image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                databaseReference.child("proposedExpenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
-            }
-        });
-
-
-        Log.d(TAG, "creator expense " + expense.getCreatorID());
-
-        //Per ogni participant setto la quota che ha già pagato per questa spesa
-        //e aggiungo spesa alla lista spese di ogni participant
-        for (Map.Entry<String, Double> participant : expense.getParticipants().entrySet())
-        {
-            Log.d(TAG, "participant " + participant.getKey());
-
-            //Setto voto nel participant a null
-            databaseReference.child("proposedExpenses").child(eID).child("participants").child(participant.getKey()).child("vote").setValue("null");
-            //Aggiungo campo deleted al participant
-            databaseReference.child("proposedExpenses").child(eID).child("participants").child(participant.getKey()).child("deleted").setValue(false);
-            //Aggiungo spesaID a elenco spese pending dello user
-            databaseReference.child("users").child(participant.getKey()).child("proposedExpenses").child(eID).setValue(true);
-        }
-
-        //Aggiungo spesa pending alla lista spese pending del gruppo
-        databaseReference.child("groups").child(expense.getGroupID()).child("proposedExpenses").push();
-        databaseReference.child("groups").child(expense.getGroupID()).child("proposedExpenses").child(eID).setValue(true);
-
-        return;
-    }
-
-
 }

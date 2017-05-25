@@ -88,7 +88,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         // when an item in the list will be clicked the onListItemClicked will be called
-        groupsViewAdapter = new GroupsViewAdapter(this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, groups);
 
         if(activityName.equals("FriendDetailActivity")){
 

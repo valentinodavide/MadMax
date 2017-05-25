@@ -83,10 +83,6 @@ public class HashMapGroupsAdapter extends BaseAdapter {
             }
         });
 
-
-
-
-
         return result;
     }
 
