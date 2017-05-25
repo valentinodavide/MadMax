@@ -76,15 +76,21 @@ public class BasicActivity extends AppCompatActivity {
     }
 
     public void setUpNavigationView() {
+        final ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
+        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             // This method will trigger on item Click of navigation menu
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Intent intent;
+
                 switch (item.getItemId()){
                     case R.id.home:
-                        if(getLocalClassName().contains("MainActivity"))
+                        if(getLocalClassName().contains("MainActivity")) {
+                            drawerLayout.closeDrawers();
                             break;
+                        }
                         intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -118,9 +124,6 @@ public class BasicActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer);
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.menu);

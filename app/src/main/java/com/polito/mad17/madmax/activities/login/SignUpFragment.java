@@ -43,6 +43,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 
 import java.io.ByteArrayOutputStream;
@@ -167,6 +168,7 @@ public class SignUpFragment extends Fragment {
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
                         .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(this.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(profileImageView);
 
