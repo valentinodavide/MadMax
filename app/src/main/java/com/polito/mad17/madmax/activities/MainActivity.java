@@ -430,30 +430,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         }
     }
 
-    public void joinGroupFirebase (final String userID, String groupID)
-    {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        //Aggiungo gruppo alla lista gruppi dello user
-        databaseReference.child("users").child(userID).child("groups").push();
-        databaseReference.child("users").child(userID).child("groups").child(groupID).setValue("true");
-        //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
-        databaseReference.child("groups").child(groupID).child("members").push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
-
-    }
-
     public void addFriendFirebase (final String user1ID, final String user2ID)
     {
         //Add u2 to friend list of u1
         databaseReference.child("users").child(user1ID).child("friends").push();
-        databaseReference.child("users").child(user1ID).child("friends").child(user2ID).setValue("true");
+        databaseReference.child("users").child(user1ID).child("friends").child(user2ID).setValue(true);
         //Add u1 to friend list of u2
         databaseReference.child("users").child(user2ID).child("friends").push();
-        databaseReference.child("users").child(user2ID).child("friends").child(user1ID).setValue("true");
+        databaseReference.child("users").child(user2ID).child("friends").child(user1ID).setValue(true);
 
         //Read groups u1 belongs to
         Query query = databaseReference.child("users").child(user1ID).child("groups");
@@ -485,8 +469,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         //ora in sharedGroups ci sono solo i gruppi di cui fanno parte entrambi gli utenti
                         for (String groupID : sharedGroups)
                         {
-                            databaseReference.child("users").child(user1ID).child("friends").child(user2ID).child(groupID).setValue("true");
-                            databaseReference.child("users").child(user2ID).child("friends").child(user1ID).child(groupID).setValue("true");
+                            databaseReference.child("users").child(user1ID).child("friends").child(user2ID).child(groupID).setValue(true);
+                            databaseReference.child("users").child(user2ID).child("friends").child(user1ID).child(groupID).setValue(true);
                         }
 
 
@@ -585,7 +569,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //Se io sono admin posso eliminare il gruppo, altrimenti no
-                if (dataSnapshot.child("members").child(getCurrentUser().getID()).child("admin").getValue().equals("true"))
+                if (dataSnapshot.child("members").child(getCurrentUser().getID()).child("admin").getValue(Boolean.class))
                 {
                     Log.d (TAG, "Sono admin, posso eliminare il gruppo");
 

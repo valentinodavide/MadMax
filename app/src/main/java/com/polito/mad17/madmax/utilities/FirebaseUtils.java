@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static android.R.attr.id;
 import static com.polito.mad17.madmax.R.string.friends;
@@ -177,7 +178,7 @@ public class FirebaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 //Se io sono admin posso eliminare il gruppo, altrimenti no
-                if (dataSnapshot.child("members").child(userID).child("admin").getValue().equals("true"))
+                if (dataSnapshot.child("members").child(userID).child("admin").getValue(Boolean.class))
                 {
                     Log.d (TAG, "Sono admin, posso eliminare il gruppo");
 
@@ -222,10 +223,10 @@ public class FirebaseUtils {
         databaseReference.child("groups").child(groupID).child("members").push();
         databaseReference.child("groups").child(groupID).child("members").child(userID).push();
         if(userID.equals(MainActivity.getCurrentUser().getID())) {
-            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("true");
+            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue(true);
         }
         else {
-            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue("false");
+            databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue(false);
         }
         databaseReference.child("groups").child(groupID).child("members").child(userID).push();
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
@@ -470,7 +471,7 @@ public class FirebaseUtils {
         databaseReference.child("groups").child(expense.getGroupID()).child("proposedExpenses").child(eID).setValue(true);
     }
 
-    public void getPendingExpense (final String pendingID, final HashMap<String, Expense> pendingExpensesMap, final PendingExpenseViewAdapter pendingExpenseViewAdapter)
+    public void getPendingExpense (final String pendingID, final TreeMap<String, Expense> pendingExpensesMap, final PendingExpenseViewAdapter pendingExpenseViewAdapter)
     {
         databaseReference.child("proposedExpenses").child(pendingID).addValueEventListener(new ValueEventListener() {
             @Override
@@ -570,7 +571,7 @@ public class FirebaseUtils {
 
     }
 
-    public void getFriend(final String id, final String vote, final HashMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)
+    public void getFriend(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)
     {
         databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
         {
@@ -595,7 +596,7 @@ public class FirebaseUtils {
         });
     }
 
-    public void getFriendInviteToGroup(final String id, final  HashMap<String, User> friends, final HashMapFriendsAdapter adapter ) {
+    public void getFriendInviteToGroup(final String id, final  TreeMap<String, User> friends, final HashMapFriendsAdapter adapter ) {
         databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

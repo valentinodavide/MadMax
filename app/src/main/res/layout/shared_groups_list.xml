@@ -23,7 +23,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/commongroupslist"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@+id/tv_shared_groups_text"
         >

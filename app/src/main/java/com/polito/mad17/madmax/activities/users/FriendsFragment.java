@@ -1,8 +1,11 @@
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,7 +26,9 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.User;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener, FriendsViewAdapter.ListItemLongClickListener {
 
@@ -31,7 +36,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    private HashMap<String, User> friends = new HashMap<>();
+    private TreeMap<String, User> friends = new TreeMap<>(Collections.reverseOrder());
     private Query query;
     private String groupID;
 
@@ -58,24 +63,31 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
-        //lv = (ListView) view.findViewById(R.id.rv_skeleton);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-        //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.HORIZONTAL);
+        Drawable verticalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.vertical_divider);
+        verticalDecoration.setDrawable(verticalDivider);
+        recyclerView.addItemDecoration(verticalDecoration);
+
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
+        horizontalDecoration.setDrawable(horizontalDivider);
+        recyclerView.addItemDecoration(horizontalDecoration);
+
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         friendsViewAdapter = new FriendsViewAdapter(this, this, friends);
         recyclerView.setAdapter(friendsViewAdapter);
-
 
         final String activityName = getActivity().getClass().getSimpleName();
         Log.d (TAG, "Sono nella activity: " + activityName);
@@ -109,11 +121,11 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                     if(activityName.equals("MainActivity")){
                         Log.d(TAG, "key: "+friendSnapshot.getKey());
                         Log.d(TAG, "value: "+friendSnapshot.getValue());
-                        deleted  = friendSnapshot.getValue().equals("false");
+                        deleted  = friendSnapshot.getValue().equals(false);
                     }
                     else
                         if(activityName.equals("GroupDetailActivity"))
-                            deleted  = friendSnapshot.child("deleted").getValue().equals("false");
+                            deleted  = friendSnapshot.child("deleted").getValue().equals(false);
                     //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
 
 

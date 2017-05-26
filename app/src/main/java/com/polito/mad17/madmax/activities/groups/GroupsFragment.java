@@ -24,7 +24,9 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Group;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener {
 
@@ -34,21 +36,16 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private OnItemClickInterface onClickGroupInterface;
     private OnItemLongClickInterface onLongClickGroupInterface;
 
-    public static HashMap<String, Group> groups = new HashMap<>();
-    //todo myselfID deve essere preso dalla MainActivty, non deve essere definito qui!!
-    //String myselfID = "-KjTCeDmpYY7gEOlYuSo";
-    Double totBalance;
+    public static TreeMap<String, Group> groups = new TreeMap<>(Collections.reverseOrder());
+    private Double totBalance;
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
-    private Double balance;
-
 
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickGroupInterface = onItemClickInterface;
         onLongClickGroupInterface = onItemLongClickInterface;
-
     }
 
     public GroupsFragment() {}

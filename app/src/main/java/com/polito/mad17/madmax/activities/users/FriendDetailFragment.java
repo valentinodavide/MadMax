@@ -1,8 +1,11 @@
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -85,6 +88,18 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.HORIZONTAL);
+        Drawable verticalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.vertical_divider);
+        verticalDecoration.setDrawable(verticalDivider);
+        recyclerView.addItemDecoration(verticalDecoration);
+
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
+        horizontalDecoration.setDrawable(horizontalDivider);
+        recyclerView.addItemDecoration(horizontalDecoration);
+
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -130,39 +145,6 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
             }
         });
 
-
-/*        User friendDetail = null;
-        if(bundle != null) {
-            friendDetail = bundle.getParcelable("friendDetails");
-
-            String photo = friendDetail.getProfileImage();
-            int photoUserId = Integer.parseInt(photo);
-            imageView.setImageResource(photoUserId);
-
-            nameTextView.setText(friendDetail.getName() + " " + friendDetail.getSurname());
-
-            Double balance = 0.0;
-            // todo controlla se giusto come dato
-            if(friendDetail.getBalanceWithUsers() != null) {
-                for (Map.Entry<String, Double> entry : friendDetail.getBalanceWithUsers().entrySet()) {
-                    if (entry.getKey().equals(MainActivity.myself.getID())) {
-                        balance = entry.getValue();
-                    }
-                }
-            }
-
-            DecimalFormat df = new DecimalFormat("#.##");
-            balanceTextView.setText(df.format(Math.abs(balance)) + " €");
-
-            if (balance > 0) {
-                balanceTextTextView.setText(R.string.you_should_receive);
-            } else if (balance < 0) {
-                balanceTextTextView.setText(R.string.owes_you);
-            } else {
-                balanceTextTextView.setText(R.string.no_debts);
-            }
-        }*/
-
         return view;
     }
 
@@ -198,5 +180,4 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
 
         return true;
     }
-
 }

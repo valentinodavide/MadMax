@@ -27,7 +27,9 @@ import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener {
 
@@ -36,7 +38,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private VotersViewAdapter votersViewAdapter;
-    private HashMap<String, User> voters = new HashMap<>();    //gruppi condivisi tra me e friend
+    private TreeMap<String, User> voters = new TreeMap<>(Collections.reverseOrder());    //gruppi condivisi tra me e friend
     private String expenseID;
     private String userID;
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();

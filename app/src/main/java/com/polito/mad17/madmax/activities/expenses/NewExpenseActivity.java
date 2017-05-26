@@ -216,8 +216,10 @@ public class NewExpenseActivity extends AppCompatActivity {
                     //Attenzione! Non contare i membri eliminati tra i partecipanti alla spesa
                     for (DataSnapshot memberSnap : membersSnapshot.getChildren())
                     {
-                        if (memberSnap.child("deleted").getValue().toString().contains("false"))
-                            participantsCount ++;
+                        if (!memberSnap.child("deleted").getValue(Boolean.class))
+                        {
+                            participantsCount++;
+                        }
                     }
 
                     Double amountPerMember = 1 / (double) participantsCount;
@@ -225,8 +227,10 @@ public class NewExpenseActivity extends AppCompatActivity {
                     for(DataSnapshot member : membersSnapshot.getChildren())
                     {
                         //Aggiungo alla spesa solo i membri non eliminati dal gruppo
-                        if (member.child("deleted").getValue().toString().contains("false"))
-                                newExpense.getParticipants().put(member.getKey(), amountPerMember);
+                        if (!member.child("deleted").getValue(Boolean.class))
+                        {
+                            newExpense.getParticipants().put(member.getKey(), amountPerMember);
+                        }
                     }
 
                     String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();

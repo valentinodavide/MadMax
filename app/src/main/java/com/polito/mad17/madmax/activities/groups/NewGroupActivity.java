@@ -44,6 +44,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import static android.R.attr.bitmap;
 
@@ -73,7 +74,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     private HashMapFriendsAdapter adapter;
     //private String myselfID;
 
-    public static HashMap<String, Group> groups = MainActivity.getCurrentUser().getUserGroups();
+    public static TreeMap<String, Group> groups = MainActivity.getCurrentUser().getUserGroups();
     private Uri ImageUri;
     private String newgroup_id;
 

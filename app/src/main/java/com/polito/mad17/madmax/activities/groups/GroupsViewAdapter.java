@@ -36,7 +36,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private ListItemLongClickListener itemLongClickListener = null;
     private Context context;
 
-    //public static HashMap<String, Group> groups = new HashMap<>();
     public static User myself;
 
     private LayoutInflater layoutInflater;
@@ -124,10 +123,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
-        ItemGroupViewHolder itemGroupViewHolder = new ItemGroupViewHolder(view);
-        Log.d(TAG, "created new itemGroupViewHolder, viewType " + viewType);
-
-        return itemGroupViewHolder;
+        return new ItemGroupViewHolder(view);
     }
 
     @Override
@@ -138,7 +134,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if(position == (mData.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
-//            groupViewHolder.imageView.
+            groupViewHolder.imageView.setVisibility(View.GONE);
             groupViewHolder.nameTextView.setText("");
             groupViewHolder.balanceTextTextView.setText("");
             groupViewHolder.balanceTextView.setText("");
@@ -147,7 +143,10 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         {
             Map.Entry<String, Group> item = getItem(position);
 
+            Log.d(TAG, "item ID " + item.getKey());
+
             //String p = groups.get(String.valueOf(position)).getImage();
+            groupViewHolder.imageView.setVisibility(View.VISIBLE);
             String p = item.getValue().getImage();
             if (p != null) {
                 Log.d(TAG, "Image not null");
@@ -180,8 +179,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
                 String balance = df.format(Math.abs(mygroupdebt)) + " €";
-                Log.d(TAG, "balance " + balance);
-
                 groupViewHolder.balanceTextView.setText(balance);
                 groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
@@ -191,12 +188,12 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
                     String balance = df.format(Math.abs(mygroupdebt)) + " €";
-                    Log.d(TAG, "balance " + balance + " " + R.color.colorAccent);
                     groupViewHolder.balanceTextView.setText(balance);
                     groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
                 } else {
                     groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
                     groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    groupViewHolder.balanceTextView.setText("");
                 }
             }
         }

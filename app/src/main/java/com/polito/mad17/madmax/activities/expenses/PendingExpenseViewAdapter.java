@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.expenses;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.polito.mad17.madmax.R.mipmap.expense;
+import static com.polito.mad17.madmax.R.string.amount;
 
 public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpenseViewAdapter.ItemExpensesViewHolder>  {
 
@@ -59,21 +61,24 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, Map<String, Expense> pendingMap, Activity activity) {
         itemClickListener = listener;
         this.pendingExpenses = new ArrayList<>();
-        pendingExpenses.addAll(pendingMap.entrySet());
         this.activity = activity;
+        pendingExpenses.addAll(pendingMap.entrySet());
+        pendingExpenses.add("");
     }
 
     public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap, Activity activity) {
         itemClickListener = listener;
         itemLongClickListener = longListener;
         this.pendingExpenses = new ArrayList<>();
-        pendingExpenses.addAll(pendingMap.entrySet());
         this.activity = activity;
+        pendingExpenses.addAll(pendingMap.entrySet());
+        pendingExpenses.add("");
     }
 
     class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private ImageView imageView;
+        private ImageView partecipantsImageView;
         private TextView nameTextView;
         private TextView groupTextView;
         private TextView amountTextView;
@@ -93,16 +98,15 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             yesTextView = (TextView) itemView.findViewById(R.id.tv_up_count);
             noTextView = (TextView) itemView.findViewById(R.id.tv_down_count);
             participantsCountTextView = (TextView) itemView.findViewById(R.id.tv_participants_count);
+            partecipantsImageView = (ImageView) itemView.findViewById(R.id.participants_icon);
 
             thumbUpButton = (Button) itemView.findViewById(R.id.thumb_up_button);
             thumbDownButton = (Button) itemView.findViewById(R.id.thumb_down_button);
-
 
             itemView.setOnClickListener(this);
             thumbUpButton.setOnClickListener(this);
             thumbDownButton.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
-
         }
 
         @Override
@@ -220,12 +224,17 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         if(position == (pendingExpenses.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
-//            groupViewHolder.imageView.
+            holder.imageView.setVisibility(View.GONE);
             holder.nameTextView.setText("");
             holder.groupTextView.setText("");
             holder.yesTextView.setText("");
             holder.noTextView.setText("");
             holder.participantsCountTextView.setText("");
+            holder.amountTextView.setText("");
+            holder.partecipantsImageView.setVisibility(View.GONE);
+
+            holder.thumbUpButton.setVisibility(View.GONE);
+            holder.thumbDownButton.setVisibility(View.GONE);
         }
         else {
             Expense expense = getItem(position).getValue();

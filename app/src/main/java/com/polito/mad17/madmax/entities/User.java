@@ -20,6 +20,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -39,14 +40,14 @@ public class User implements Parcelable {
 
     private String vote;
 
-    private HashMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
-    private HashMap<String, User> userFriends;  //String = UID, User = friend of this user
+    private TreeMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
+    private TreeMap<String, User> userFriends;  //String = UID, User = friend of this user
 
-    private HashMap<String, Double> balanceWithUsers;   //String = userID,  Double = debito(-) o credito (+) verso gli altri utenti
-    private HashMap<String, Double> balanceWithGroups;  //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
-    private SortedMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
+    private TreeMap<String, Double> balanceWithUsers;   //String = userID,  Double = debito(-) o credito (+) verso gli altri utenti
+    private TreeMap<String, Double> balanceWithGroups;  //String = groupID, Double = debito(-) o credito (+) verso gli altri gruppi
+    private TreeMap<String, Expense> addedExpenses;   //String = timestamp dell'aggiunta, Expense = oggetto spesa
 
-    private HashMap<String, HashMap<String, Group>> sharedGroupPerFriend;   //String = UID of the friend, HashMap<String, Group> : String = GID of the shared group, Group = shared group
+    private TreeMap<String, HashMap<String, Group>> sharedGroupPerFriend;   //String = UID of the friend, HashMap<String, Group> : String = GID of the shared group, Group = shared group
 
     // constructor typically used for creting the current user logged in
     public User(String ID, String username, String name, String surname, String email, String password, String profileImage, String defaultCurrency) {
@@ -58,12 +59,12 @@ public class User implements Parcelable {
         this.password = encryptPassword(password);
         this.profileImage = profileImage;
         this.defaultCurrency = defaultCurrency;
-        this.userGroups = new HashMap<>();
-        this.userFriends = new HashMap<>();
-        this.balanceWithUsers = new HashMap<>();
-        this.balanceWithGroups = new HashMap<>();
-        this.addedExpenses = new TreeMap<>();
-        this.sharedGroupPerFriend = new HashMap<>();
+        this.userGroups = new TreeMap<>(Collections.reverseOrder());
+        this.userFriends = new TreeMap<>(Collections.reverseOrder());
+        this.balanceWithUsers = new TreeMap<>();
+        this.balanceWithGroups = new TreeMap<>();
+        this.addedExpenses = new TreeMap<>(Collections.reverseOrder());
+        this.sharedGroupPerFriend = new TreeMap<>(Collections.reverseOrder());
     }
 
     // constructor typically used for populate userFriends of current User
@@ -81,14 +82,14 @@ public class User implements Parcelable {
      */
     public User() {
         // altrimenti da null pointer exception se l'utente viene creato senza argomenti
-        this.userGroups = new HashMap<>();
-        this.userFriends = new HashMap<>();
+        this.userGroups = new TreeMap<>(Collections.reverseOrder());
+        this.userFriends = new TreeMap<>(Collections.reverseOrder());
 
-        this.balanceWithUsers = new HashMap<>();
-        this.balanceWithGroups = new HashMap<>();
-        this.addedExpenses = new TreeMap<>();
+        this.balanceWithUsers = new TreeMap<>();
+        this.balanceWithGroups = new TreeMap<>();
+        this.addedExpenses = new TreeMap<>(Collections.reverseOrder());
 
-        this.sharedGroupPerFriend = new HashMap<>();
+        this.sharedGroupPerFriend = new TreeMap<>(Collections.reverseOrder());
     }
 
     protected User(Parcel in) {
@@ -187,35 +188,35 @@ public class User implements Parcelable {
 
     public void setDefaultCurrency(String defaultCurrency) { this.defaultCurrency = defaultCurrency;}
 
-    public HashMap<String, Group> getUserGroups() {
+    public TreeMap<String, Group> getUserGroups() {
         return userGroups;
     }
 
-    public void setUserGroups(HashMap<String, Group> userGroups) {
+    public void setUserGroups(TreeMap<String, Group> userGroups) {
         this.userGroups = userGroups;
     }
 
-    public HashMap<String, User> getUserFriends() {
+    public TreeMap<String, User> getUserFriends() {
         return userFriends;
     }
 
-    public void setUserFriends(HashMap<String, User> friends) {
+    public void setUserFriends(TreeMap<String, User> friends) {
         this.userFriends = friends;
     }
 
-    public HashMap<String, Double> getBalanceWithUsers() {
+    public TreeMap<String, Double> getBalanceWithUsers() {
         return balanceWithUsers;
     }
 
-    public void setBalanceWithUsers(HashMap<String, Double> balanceWithUsers) {
+    public void setBalanceWithUsers(TreeMap<String, Double> balanceWithUsers) {
         this.balanceWithUsers = balanceWithUsers;
     }
 
-    public HashMap<String, Double> getBalanceWithGroups() {
+    public TreeMap<String, Double> getBalanceWithGroups() {
         return balanceWithGroups;
     }
 
-    public void setBalanceWithGroups(HashMap<String, Double> balanceWithGroups) {
+    public void setBalanceWithGroups(TreeMap<String, Double> balanceWithGroups) {
         this.balanceWithGroups = balanceWithGroups;
     }
 
@@ -223,15 +224,15 @@ public class User implements Parcelable {
         return addedExpenses;
     }
 
-    public void setAddedExpenses(SortedMap<String, Expense> addedExpenses) {
+    public void setAddedExpenses(TreeMap<String, Expense> addedExpenses) {
         this.addedExpenses = addedExpenses;
     }
 
-    public HashMap<String, HashMap<String, Group>> getSharedGroupPerFriend() {
+    public TreeMap<String, HashMap<String, Group>> getSharedGroupPerFriend() {
         return sharedGroupPerFriend;
     }
 
-    public void setSharedGroupPerFriend(HashMap<String, HashMap<String, Group>> sharedGroupPerFriend) {
+    public void setSharedGroupPerFriend(TreeMap<String, HashMap<String, Group>> sharedGroupPerFriend) {
         this.sharedGroupPerFriend = sharedGroupPerFriend;
     }
 
@@ -285,9 +286,9 @@ public class User implements Parcelable {
     }
     
 
-    public HashMap<String, Group> getSharedGroupsMap(User friend) {
-        HashMap<String, Group> mygroups = new HashMap<>();
-        mygroups = this.getUserGroups();
+    public TreeMap<String, Group> getSharedGroupsMap(User friend)
+    {
+        TreeMap<String, Group> mygroups = this.getUserGroups();
 
         mygroups.keySet().retainAll(friend.getUserGroups().keySet());
 
@@ -297,8 +298,8 @@ public class User implements Parcelable {
 
     public ArrayList<Group> getSharedGroupsList (User friend) {
         ArrayList<Group> mygroups = new ArrayList<>();
-        HashMap<String, Group> mygroupsmap = new HashMap<>(this.getUserGroups());
-        HashMap<String, Group> friendgroupsmap = new HashMap<>(friend.getUserGroups());
+        TreeMap<String, Group> mygroupsmap = new TreeMap<>(this.getUserGroups());
+        TreeMap<String, Group> friendgroupsmap = new TreeMap<>(friend.getUserGroups());
         //mygroupsmap = this.getUserGroups();
         //friendgroupsmap = friend.getUserGroups();
 
@@ -345,11 +346,11 @@ public class User implements Parcelable {
         //Add friendID to friend list of currentUID
         this.userFriends.put(friendID, friend); // add friend to current user local HashMap
         usersRef.child(currentUID).child("friends").push();
-        usersRef.child(currentUID).child("friends").child(friendID).setValue("true");
+        usersRef.child(currentUID).child("friends").child(friendID).setValue(true);
 
         //Add currentUID to friend list of friendID
         usersRef.child(friendID).child("friends").push();
-        usersRef.child(friendID).child("friends").child(currentUID).setValue("true");
+        usersRef.child(friendID).child("friends").child(currentUID).setValue(true);
 
         //Read groups currentUID belongs to
         Query query = databaseReference.child("users").child(currentUID).child("groups");
@@ -390,8 +391,8 @@ public class User implements Parcelable {
                             );
 
                             groups.put(friendID, group);
-                            usersRef.child(currentUID).child("friends").child(friendID).child(groupID).setValue("true");
-                            usersRef.child(friendID).child("friends").child(currentUID).child(groupID).setValue("true");
+                            usersRef.child(currentUID).child("friends").child(friendID).child(groupID).setValue(true);
+                            usersRef.child(friendID).child("friends").child(currentUID).child(groupID).setValue(true);
                         }
 
                         // add shared groups to local sharedGroupPerFriend HashMap
@@ -418,17 +419,17 @@ public class User implements Parcelable {
 
         //Aggiungo gruppo alla lista gruppi dello user
         databaseReference.child("users").child(currentUID).child("groups").push();
-        databaseReference.child("users").child(currentUID).child("groups").child(groupID).setValue("true");
+        databaseReference.child("users").child(currentUID).child("groups").child(groupID).setValue(true);
 
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
         databaseReference.child("groups").child(groupID).child("members").push();
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("admin").setValue("false");
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("admin").setValue(false);
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue("time");
         // aggiunto da riky
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("deleted").setValue("false");
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("deleted").setValue(false);
 
         // aggiungo l'invitante agli amici se non lo è già
         if(!userFriends.containsKey(inviterUID)){

@@ -29,6 +29,7 @@ import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class NewMemberActivity extends AppCompatActivity {
 
@@ -39,7 +40,7 @@ public class NewMemberActivity extends AppCompatActivity {
 
     private ListView addedFriendsListView;
     private ListView friendsListView;
-    private HashMap<String, User> friends = new HashMap<>();
+    private TreeMap<String, User> friends = new TreeMap<>();
     //todo usare SharedPreferences invece della map globale alreadySelected
     public static HashMap<String, User> alreadySelected = new HashMap<>();
     private HashMapFriendsAdapter friendsAdapter;
