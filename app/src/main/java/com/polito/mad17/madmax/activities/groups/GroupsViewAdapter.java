@@ -164,13 +164,13 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (mygroupdebt > 0)
         {
             groupViewHolder.balanceTextTextView.setText(R.string.credit_of);
-            groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
+            groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
             String balance = df.format(Math.abs(mygroupdebt)) + " €";
             Log.d(TAG, "balance "  + balance);
 
             groupViewHolder.balanceTextView.setText(balance);
-            groupViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
+            groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
         }
         else
@@ -178,17 +178,17 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (mygroupdebt < 0)
             {
                 groupViewHolder.balanceTextTextView.setText(R.string.debt_of);
-                groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+                groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
                 String balance = df.format(Math.abs(mygroupdebt)) + " €";
                 Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
                 groupViewHolder.balanceTextView.setText(balance);
-                groupViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+                groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             }
             else
             {
                 groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
-                groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
+                groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
             }
         }
 

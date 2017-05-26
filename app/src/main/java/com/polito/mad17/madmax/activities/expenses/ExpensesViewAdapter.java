@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,9 +78,9 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getValue().getID());
+            Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getKey());
 
-            itemClickListener.onListItemClick(getItem(clickedPosition).getValue().getID());
+            itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
         }
 
         @Override
@@ -124,13 +125,13 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         DecimalFormat df = new DecimalFormat("#.##");
 
         expensesViewHolder.balanceTextTextView.setText(R.string.expense_amount);
-        expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+        expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
         String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
         Log.d(TAG, "balance "  + balance);
 
         expensesViewHolder.balanceTextView.setText(balance);
-        expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+        expensesViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
 //        if (expense.getAmount() > 0)
 //        {

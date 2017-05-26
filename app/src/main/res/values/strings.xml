@@ -9,6 +9,8 @@
     <string name="friends">FRIENDS</string>
     <string name="pending">PENDING</string>
     <string name="paydebt">PAY DEBT</string>
+    <string name="expense_detail">EXPENSE DETAIL</string>
+    <string name="comments">COMMENTS</string>
     <string name="name">Name</string>
     <string name="amount">Amount</string>
     <string name="category">Category</string>

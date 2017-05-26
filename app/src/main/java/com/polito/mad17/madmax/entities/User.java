@@ -39,6 +39,10 @@ public class User implements Parcelable {
 
     private String vote;
 
+    //Servono per stampare quota già pagata e quota dovuta da un utente per una certa spesa
+    private Double alreadyPaid;
+    private Double dueImport;
+
     private HashMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
     private HashMap<String, User> userFriends;  //String = UID, User = friend of this user
 
@@ -238,6 +242,14 @@ public class User implements Parcelable {
     public String getVote() {return vote;}
 
     public void setVote(String vote) {this.vote = vote;}
+
+    public Double getAlreadyPaid() {return alreadyPaid;}
+
+    public void setAlreadyPaid(Double alreadyPaid) {this.alreadyPaid = alreadyPaid;}
+
+    public Double getDueImport() {return dueImport;}
+
+    public void setDueImport(Double dueImport) {this.dueImport = dueImport;}
     /*
         END GETTERS & SETTERS
      */
