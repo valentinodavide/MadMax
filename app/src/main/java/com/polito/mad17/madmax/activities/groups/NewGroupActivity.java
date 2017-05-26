@@ -45,6 +45,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+import static android.R.attr.bitmap;
+
 public class NewGroupActivity extends AppCompatActivity implements FriendsViewAdapter.ListItemClickListener {
 
     private static final String TAG = "NewGroupActivity";
@@ -132,26 +134,54 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 return false;
             }
 
-            newgroup_id = databaseReference.child("groups").push().getKey();
-
             Log.d(TAG, "Second step: invite members to group");
             //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
 
-            Intent intent = new Intent(this, NewMemberActivity.class);
+            newgroup_id = databaseReference.child("groups").push().getKey();
+
+            String name = nameGroup.getText().toString();
+            String description = descriptionGroup.getText().toString();
+
+            final Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
+
+            // for saving image
+            StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id + "_profileImage.jpg");
+
+            // Get the data from an ImageView as bytes
+            imageGroup.setDrawingCacheEnabled(true);
+            imageGroup.buildDrawingCache();
+            Bitmap bitmap = imageGroup.getDrawingCache();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageData = baos.toByteArray();
+
+            UploadTask uploadTask = uProfileImageFilenameRef.putBytes(imageData);
+
+            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                    if (task.isSuccessful()) {
+                        newGroup.setImage(task.getResult().getDownloadUrl().toString());
+                        Log.d(TAG, "group img url: " + newGroup.getImage());
+                    }
+                    databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
+                    String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                    databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
+                    databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
+                    FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
+
+
+                    Log.d(TAG, "group " + newgroup_id + " created");
+                }
+            });
+
+            Intent intent = new Intent(getApplicationContext(), NewMemberActivity.class);
             intent.putExtra("groupID", newgroup_id);
             startActivity(intent);
 
-//            Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
-//                    .appendQueryParameter("groupToBeAddedID", newgroup_id)
-//                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
-//
-//            Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-//                    .setDeepLink(builder.build())
-//                    .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-//                    .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
-//                    .build();
-//
-//            startActivityForResult(intent, REQUEST_INVITE);
+            finish();
 
             return true;
         }
@@ -197,54 +227,53 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         }
         else {
             // control if is the requested result and if it return something
-            if (requestCode == REQUEST_INVITE) {
-                if (resultCode == RESULT_OK) {
-                    Log.d(TAG, "onActivityResult REQUEST_INVITE");
-                    // Get the invitation IDs of all sent messages
-                    String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                    for (String id : ids) {
-                        Log.d(TAG, "sent invitation " + id);
-                    }
-
-                    //Integer newID = groups.size();
-                    String name = nameGroup.getText().toString();
-                    String description = descriptionGroup.getText().toString();
-
-                    final Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
-
-                    // for saving image
-                    StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id + "_profileImage.jpg");
-
-                    // Get the data from an ImageView as bytes
-                    imageGroup.setDrawingCacheEnabled(true);
-                    imageGroup.buildDrawingCache();
-                    Bitmap bitmap = imageGroup.getDrawingCache();
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] imageData = baos.toByteArray();
-
-                    UploadTask uploadTask = uProfileImageFilenameRef.putBytes(imageData);
-
-                    uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                            if (task.isSuccessful()) {
-                                newGroup.setImage(task.getResult().getDownloadUrl().toString());
-                                Log.d(TAG, "group img url: " + newGroup.getImage());
-                            }
-                            databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-                            String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
-                            databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-                            databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                            FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
-
-                            Log.d(TAG, "group " + newgroup_id + " created");
-                            finish();
-                        }
-                    });
+            if (resultCode == RESULT_OK) {
+                Log.d(TAG, "onActivityResult REQUEST_INVITE");
+                // Get the invitation IDs of all sent messages
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+                for (String id : ids) {
+                    Log.d(TAG, "sent invitation " + id);
                 }
+
+                //Integer newID = groups.size();
+                /*String name = nameGroup.getText().toString();
+                String description = descriptionGroup.getText().toString();
+
+                final Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
+
+                // for saving image
+                StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id + "_profileImage.jpg");
+
+                // Get the data from an ImageView as bytes
+                imageGroup.setDrawingCacheEnabled(true);
+                imageGroup.buildDrawingCache();
+                Bitmap bitmap = imageGroup.getDrawingCache();
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] imageData = baos.toByteArray();
+
+                UploadTask uploadTask = uProfileImageFilenameRef.putBytes(imageData);
+
+                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+
+                        if (task.isSuccessful()) {
+                            newGroup.setImage(task.getResult().getDownloadUrl().toString());
+                            Log.d(TAG, "group img url: " + newGroup.getImage());
+                        }
+                        databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
+                        String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                        databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
+                        databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
+                        FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
+
+
+                        Log.d(TAG, "group " + newgroup_id + " created");
+                        finish();
+                    }
+                });*/
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +55,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map) {
@@ -62,11 +64,14 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         itemLongClickListener = longListener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     public void update(Map<String, Group> map) {
         mData.clear();
+        Log.d(TAG, map.size() + " ");
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -128,70 +133,73 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
-        Log.d(TAG, "type " + getItemViewType(position));
-
-        if(holder instanceof ItemGroupViewHolder)
-            Log.d(TAG, "group " + holder.getItemViewType());
-
         final ItemGroupViewHolder groupViewHolder = (ItemGroupViewHolder) holder;
 
-        Map.Entry<String, Group> item = getItem(position);
-
-
-        //String p = groups.get(String.valueOf(position)).getImage();
-        String p = item.getValue().getImage();
-        if (p!= null)
+        if(position == (mData.size() - 1))
         {
-            Glide.with(layoutInflater.getContext()).load(p)
-                    .centerCrop()
-                    .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(groupViewHolder.imageView);
-        }
-        groupViewHolder.nameTextView.setText(item.getValue().getName());
-
-        //todo mettere debito verso il gruppo
-        //mydebt = mio debito con il gruppo
-
-        Double mygroupdebt = item.getValue().getBalance();
-        if (mygroupdebt == null) {
-            groupViewHolder.balanceTextTextView.setVisibility(View.GONE);
-            groupViewHolder.balanceTextView.setVisibility(View.GONE);
-            return;
-        }
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        if (mygroupdebt > 0)
-        {
-            groupViewHolder.balanceTextTextView.setText(R.string.credit_of);
-            groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
-
-            String balance = df.format(Math.abs(mygroupdebt)) + " €";
-            Log.d(TAG, "balance "  + balance);
-
-            groupViewHolder.balanceTextView.setText(balance);
-            groupViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
-
+            Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+//            groupViewHolder.imageView.
+            groupViewHolder.nameTextView.setText("");
+            groupViewHolder.balanceTextTextView.setText("");
+            groupViewHolder.balanceTextView.setText("");
         }
         else
         {
-            if (mygroupdebt < 0)
-            {
-                groupViewHolder.balanceTextTextView.setText(R.string.debt_of);
-                groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+            Map.Entry<String, Group> item = getItem(position);
 
-                String balance = df.format(Math.abs(mygroupdebt)) + " €";
-                Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
-                groupViewHolder.balanceTextView.setText(balance);
-                groupViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+            //String p = groups.get(String.valueOf(position)).getImage();
+            String p = item.getValue().getImage();
+            if (p != null) {
+                Log.d(TAG, "Image not null");
+                Glide.with(layoutInflater.getContext()).load(p)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(groupViewHolder.imageView);
             }
             else
             {
-                groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
-                groupViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
+                groupViewHolder.imageView.setImageResource(R.drawable.group);
+            }
+
+            groupViewHolder.nameTextView.setText(item.getValue().getName());
+
+            //todo mettere debito verso il gruppo
+            //mydebt = mio debito con il gruppo
+
+            Double mygroupdebt = item.getValue().getBalance();
+            if (mygroupdebt == null) {
+                groupViewHolder.balanceTextTextView.setText("");
+                groupViewHolder.balanceTextView.setText("");
+                return;
+            }
+
+            DecimalFormat df = new DecimalFormat("#.##");
+            if (mygroupdebt > 0) {
+                groupViewHolder.balanceTextTextView.setText(R.string.credit_of);
+                groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+                String balance = df.format(Math.abs(mygroupdebt)) + " €";
+                Log.d(TAG, "balance " + balance);
+
+                groupViewHolder.balanceTextView.setText(balance);
+                groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+            } else {
+                if (mygroupdebt < 0) {
+                    groupViewHolder.balanceTextTextView.setText(R.string.debt_of);
+                    groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                    String balance = df.format(Math.abs(mygroupdebt)) + " €";
+                    Log.d(TAG, "balance " + balance + " " + R.color.colorAccent);
+                    groupViewHolder.balanceTextView.setText(balance);
+                    groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                } else {
+                    groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
+                    groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                }
             }
         }
-
     }
 
 

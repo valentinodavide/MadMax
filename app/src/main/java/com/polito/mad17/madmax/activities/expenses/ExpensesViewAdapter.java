@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         itemClickListener = listener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
+        expenses.add("");
     }
 
     public ExpensesViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Expense> expensesMap) {
@@ -90,7 +92,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
             return true;
-
         }
     }
 
@@ -104,33 +105,41 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
         ItemExpensesViewHolder itemExpensesViewHolder = new ItemExpensesViewHolder(view);
 
-        Log.d(TAG, "dopo aver istanziato il view holder");
         return itemExpensesViewHolder;
     }
 
     @Override
     public void onBindViewHolder(final ExpensesViewAdapter.ItemExpensesViewHolder expensesViewHolder, int position) {
 
-        Expense expense = getItem(position).getValue();
-
-        if(expense.getExpensePhoto() != null) {
-            String photo = expense.getExpensePhoto();
-            int photoUserId = Integer.parseInt(photo);
-            expensesViewHolder.imageView.setImageResource(photoUserId);
+        if(position == (expenses.size() - 1))
+        {
+            Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+//            groupViewHolder.imageView.
+            expensesViewHolder.nameTextView.setText("");
+            expensesViewHolder.balanceTextTextView.setText("");
+            expensesViewHolder.balanceTextView.setText("");
         }
+        else {
+            Expense expense = getItem(position).getValue();
 
-        expensesViewHolder.nameTextView.setText(expense.getDescription());
+            if (expense.getExpensePhoto() != null) {
+                String photo = expense.getExpensePhoto();
+                int photoUserId = Integer.parseInt(photo);
+                expensesViewHolder.imageView.setImageResource(photoUserId);
+            }
 
-        DecimalFormat df = new DecimalFormat("#.##");
+            expensesViewHolder.nameTextView.setText(expense.getDescription());
 
-        expensesViewHolder.balanceTextTextView.setText(R.string.expense_amount);
-        expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
+            DecimalFormat df = new DecimalFormat("#.##");
 
-        String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
-        Log.d(TAG, "balance "  + balance);
+            expensesViewHolder.balanceTextTextView.setText(R.string.expense_amount);
+            expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
-        expensesViewHolder.balanceTextView.setText(balance);
-        expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
+            String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
+            Log.d(TAG, "balance " + balance);
+
+            expensesViewHolder.balanceTextView.setText(balance);
+            expensesViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
 //        if (expense.getAmount() > 0)
 //        {
@@ -162,6 +171,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 //                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
 //            }
 //        }
+        }
 
     }
 

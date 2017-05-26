@@ -6,11 +6,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.database.DataSnapshot;
@@ -64,6 +68,7 @@ public class NewMemberActivity extends AppCompatActivity {
         Log.d(TAG, groupID);
 
         friendsListView = (ListView) findViewById(R.id.lv_friends);
+        friendsAdapter = new HashMapFriendsAdapter(friends);
 
         addedFriendsListView = (ListView) findViewById(R.id.lv_added_members);
         addedAdapter = new HashMapFriendsAdapter(alreadySelected);
@@ -76,7 +81,6 @@ public class NewMemberActivity extends AppCompatActivity {
                     FirebaseUtils.getInstance().getFriendInviteToGroup(friendSnapshot.getKey(), friends, friendsAdapter);
                 }
 
-                friendsAdapter = new HashMapFriendsAdapter(friends);
                 friendsListView.setAdapter(friendsAdapter);
             }
 
@@ -99,16 +103,22 @@ public class NewMemberActivity extends AppCompatActivity {
 
                 addedAdapter.update(alreadySelected);
                 addedAdapter.notifyDataSetChanged();
+            }
+        });
 
-                Context context = NewMemberActivity.this;
-                Class destinationActivity = NewGroupActivity.class;
-                Intent intent = new Intent(context, destinationActivity);
-                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("userAdded", item);
-                intent.putExtras(bundle);
+        //When i click on one added friend of the list
+        addedFriendsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                User item = addedAdapter.getItem(position).getValue();
+                alreadySelected.remove(item.getID());
+                addedAdapter.update(friends);
+                addedAdapter.notifyDataSetChanged();
 
-                startActivity(intent);
+                friends.put(item.getID(), item);
+
+                friendsAdapter.update(friends);
+                friendsAdapter.notifyDataSetChanged();
             }
         });
 
@@ -120,8 +130,8 @@ public class NewMemberActivity extends AppCompatActivity {
                 //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
 
                 Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
-
-                        .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
+                    .appendQueryParameter("groupToBeAddedID", groupID)
+                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
 
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(builder.build())
@@ -130,22 +140,42 @@ public class NewMemberActivity extends AppCompatActivity {
                         .build();
 
                 startActivityForResult(intent, REQUEST_INVITE);
-
-
-
-
-                String deepLink = R.string.invitation_deep_link + "?inviterUID=" + MainActivity.getCurrentUser().getID();
-
-               /* Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                        .setDeepLink(Uri.parse(deepLink))
-                        //                     .setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                        .setCallToActionText(getString(R.string.invitation_cta))
-                        .build();
-
-                startActivityForResult(intent, REQUEST_INVITE);*/
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.save_menu, menu);
+        return true;
+    }
+
+
+    //When I click SAVE
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int itemThatWasClickedId = item.getItemId();
+
+        if (itemThatWasClickedId == R.id.action_save)
+        {
+            for(User newMemeber : alreadySelected.values())
+            {
+                FirebaseUtils.getInstance().joinGroupFirebase(newMemeber.getID(), groupID);
+            }
+
+            alreadySelected.clear();
+
+            Toast.makeText(getApplicationContext(), "Friends added to group", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+
+            finish();
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

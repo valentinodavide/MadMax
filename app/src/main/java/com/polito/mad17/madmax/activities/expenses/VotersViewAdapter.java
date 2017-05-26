@@ -43,6 +43,7 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     public VotersViewAdapter(VotersViewAdapter.ListItemClickListener listener, VotersViewAdapter.ListItemLongClickListener longListener, Map<String, User> map) {
@@ -50,11 +51,13 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         itemLongClickListener = longListener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     public void update(Map<String, User> map) {
         mData.clear();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     class ItemVotersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -109,30 +112,33 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
     @Override
     public void onBindViewHolder(final VotersViewAdapter.ItemVotersViewHolder holder, int position) {
 
-        Map.Entry<String, User> item = getItem(position);
-
-
-        String photo = item.getValue().getProfileImage();
-        if (photo != null)
+        if(position == (mData.size() - 1))
         {
-            int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);
+            Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+//            groupViewHolder.imageView.
+            holder.nameTextView.setText("");
+            holder.voteTextView.setText("");
         }
+        else
+        {
+            Map.Entry<String, User> item = getItem(position);
 
 
-        holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
+            String photo = item.getValue().getProfileImage();
+            if (photo != null) {
+                int photoUserId = Integer.parseInt(photo);
+                holder.imageView.setImageResource(photoUserId);
+            }
 
-        if (item.getValue().getVote().equals("yes"))
-        {
-            holder.voteTextView.setBackgroundResource(R.drawable.thumb_up_black);
-        }
-        else if (item.getValue().getVote().equals("no"))
-        {
-            holder.voteTextView.setBackgroundResource(R.drawable.thumb_down_black);
-        }
-        else if (item.getValue().getVote().equals("null"))
-        {
-            holder.voteTextView.setVisibility(View.GONE);
+            holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
+
+            if (item.getValue().getVote().equals("yes")) {
+                holder.voteTextView.setBackgroundResource(R.drawable.thumb_up_black);
+            } else if (item.getValue().getVote().equals("no")) {
+                holder.voteTextView.setBackgroundResource(R.drawable.thumb_down_black);
+            } else if (item.getValue().getVote().equals("null")) {
+                holder.voteTextView.setVisibility(View.GONE);
+            }
         }
     }
 

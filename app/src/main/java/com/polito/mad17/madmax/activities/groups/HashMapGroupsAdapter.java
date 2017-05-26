@@ -17,6 +17,8 @@ import com.polito.mad17.madmax.entities.Group;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
+
 /**
  * Created by alessandro on 07/05/17.
  */
@@ -27,12 +29,14 @@ public class HashMapGroupsAdapter extends BaseAdapter {
     public HashMapGroupsAdapter(Map<String, Group> map) {
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
 
     public void update(Map<String, Group> map) {
         mData.clear();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     @Override
@@ -62,27 +66,36 @@ public class HashMapGroupsAdapter extends BaseAdapter {
             result = convertView;
         }
 
-        Map.Entry<String, Group> item = getItem(position);
+        TextView name = (TextView) result.findViewById(R.id.tv_name);
 
-        TextView name=(TextView)result.findViewById(R.id.tv_name);
-        name.setText(item.getValue().getName());
+        if(position == (mData.size() - 1))
+        {
+            Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+//            groupViewHolder.imageView.
+            name.setText("");
+        }
+        else
+        {
+            Map.Entry<String, Group> item = getItem(position);
 
-        ImageView img_photo = (ImageView)result.findViewById(R.id.img_photo);
-        Glide.with(parent.getContext()).load(item.getValue().getImage())
-                .centerCrop()
-                .bitmapTransform(new CropCircleTransformation(parent.getContext()))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(img_photo);
-        Log.d("Adapter image: ", item.getValue().getImage());
+            name.setText(item.getValue().getName());
 
-        result.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            ImageView img_photo = (ImageView)result.findViewById(R.id.img_photo);
+            Glide.with(parent.getContext()).load(item.getValue().getImage())
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(parent.getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(img_photo);
+            Log.d("Adapter image: ", item.getValue().getImage());
 
-                String groupID = getItem(position).getKey();
-            }
-        });
-
+            result.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    String groupID = getItem(position).getKey();
+                }
+            });
+        }
         return result;
     }
 

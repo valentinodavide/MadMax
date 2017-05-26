@@ -55,6 +55,8 @@ public class FirebaseUtils {
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
 
+    private Boolean firstStart = true;
+
     // created only to defeat instantiation
     private FirebaseUtils()
     {
@@ -62,7 +64,11 @@ public class FirebaseUtils {
     public void setUp()
     {
         firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseDatabase.setPersistenceEnabled(true);
+
+        if(firstStart) {
+            firebaseDatabase.setPersistenceEnabled(true);
+            firstStart = false;
+        }
 
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();

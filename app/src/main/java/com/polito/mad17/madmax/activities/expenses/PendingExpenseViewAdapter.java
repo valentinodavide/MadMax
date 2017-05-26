@@ -29,9 +29,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by alessandro on 19/05/17.
- */
+import static com.polito.mad17.madmax.R.mipmap.expense;
 
 public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpenseViewAdapter.ItemExpensesViewHolder>  {
 
@@ -47,8 +45,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Context mContext;
     private Activity activity;
-
-
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -221,39 +217,45 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     @Override
     public void onBindViewHolder(final PendingExpenseViewAdapter.ItemExpensesViewHolder holder, int position) {
 
-        Expense expense = getItem(position).getValue();
-
-        if(expense.getExpensePhoto() != null) {
-            String photo = expense.getExpensePhoto();
-            int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);
-        }
-
-        holder.nameTextView.setText(expense.getDescription());
-        holder.groupTextView.setText(expense.getGroupName());
-        holder.yesTextView.setText(expense.getYes().toString());
-        holder.noTextView.setText(expense.getNo().toString());
-        holder.participantsCountTextView.setText(expense.getParticipantsCount().toString());
-
-
-        DecimalFormat df = new DecimalFormat("#.##");
-        Double amount = expense.getAmount();
-        holder.amountTextView.setText(df.format(amount) + " " + expense.getCurrency());
-
-        if (expense.getMyVote().equals("yes"))
+        if(position == (pendingExpenses.size() - 1))
         {
-            holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_blue);
-            holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+            Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+//            groupViewHolder.imageView.
+            holder.nameTextView.setText("");
+            holder.groupTextView.setText("");
+            holder.yesTextView.setText("");
+            holder.noTextView.setText("");
+            holder.participantsCountTextView.setText("");
         }
-        else if (expense.getMyVote().equals("no"))
-        {
-            holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
-            holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_blue);
-        }
-        else if (expense.getMyVote().equals("null"))
-        {
-            holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
-            holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+        else {
+            Expense expense = getItem(position).getValue();
+
+            if (expense.getExpensePhoto() != null) {
+                String photo = expense.getExpensePhoto();
+                int photoUserId = Integer.parseInt(photo);
+                holder.imageView.setImageResource(photoUserId);
+            }
+
+            holder.nameTextView.setText(expense.getDescription());
+            holder.groupTextView.setText(expense.getGroupName());
+            holder.yesTextView.setText(expense.getYes().toString());
+            holder.noTextView.setText(expense.getNo().toString());
+            holder.participantsCountTextView.setText(expense.getParticipantsCount().toString());
+
+            DecimalFormat df = new DecimalFormat("#.##");
+            Double amount = expense.getAmount();
+            holder.amountTextView.setText(df.format(amount) + " " + expense.getCurrency());
+
+            if (expense.getMyVote().equals("yes")) {
+                holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_blue);
+                holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+            } else if (expense.getMyVote().equals("no")) {
+                holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
+                holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_blue);
+            } else if (expense.getMyVote().equals("null")) {
+                holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
+                holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
+            }
         }
     }
 
@@ -269,5 +271,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     public void update(Map<String, Expense> map) {
         pendingExpenses.clear();
         pendingExpenses.addAll(map.entrySet());
+        pendingExpenses.add("");
     }
 }

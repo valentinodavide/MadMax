@@ -1,8 +1,11 @@
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -68,6 +71,18 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.HORIZONTAL);
+        Drawable verticalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.vertical_divider);
+        verticalDecoration.setDrawable(verticalDivider);
+        recyclerView.addItemDecoration(verticalDecoration);
+
+        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL);
+        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
+        horizontalDecoration.setDrawable(horizontalDivider);
+        recyclerView.addItemDecoration(horizontalDecoration);
+
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -107,7 +122,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
             }
         });
 
-
         return view;
     }
 
@@ -142,31 +156,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         Log.d(TAG, "longClickedItemIndex " + friendID);
         onLongClickGroupInterface.itemLongClicked(getClass().getSimpleName(), friendID, v);
         return true;
-    }
-
-    public void getGroup(final String id)
-    {
-        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
-        {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                Group g = new Group();
-                g.setName(dataSnapshot.child("name").getValue(String.class));
-                //g.setBalance(getBalanceWithGroup(myselfID, id));
-                groups.put(id, g);
-
-                groupsViewAdapter.update(groups);
-                groupsViewAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        });
     }
 
     ///versione più complessa dell getGroup. Quest'ultima non verrà più usata.
@@ -265,9 +254,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                                 }
                             });
-
                         }
-
                     }
 
                     //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
@@ -279,21 +266,22 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                     g.setDeleted(deleted);
                     if (!deleted &&
                             groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class))
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)) {
                         groups.put(groupID, g);
+                    }
                     else
+                    {
                         groups.remove(groupID);
-                    //}
+                    }
+
+//                    Group nullGroup = new Group();
+//                    nullGroup.setID(groupID + 1);
+//                    groups.put(nullGroup.getID(), nullGroup);
 
                     groupsViewAdapter.update(groups);
                     groupsViewAdapter.notifyDataSetChanged();
                     totBalance = 0d;
                 }
-
-
-
-
-
             }
 
             @Override

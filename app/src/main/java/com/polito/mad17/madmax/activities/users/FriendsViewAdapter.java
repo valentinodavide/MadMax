@@ -47,6 +47,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     public FriendsViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
@@ -54,11 +55,13 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         itemLongClickListener = longListener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     public void update(Map<String, User> map) {
         mData.clear();
         mData.addAll(map.entrySet());
+        mData.add("");
     }
 
     class ItemFriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -90,7 +93,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             Log.d(TAG, "clickedFriend " + itemClicked.getKey());
 
             itemClickListener.onListItemClick(itemClicked.getKey());
-
         }
 
         @Override
@@ -119,24 +121,32 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     @Override
     public void onBindViewHolder(final FriendsViewAdapter.ItemFriendsViewHolder holder, int position) {
 
-        Map.Entry<String, User> item = getItem(position);
 
-
-        String photo = item.getValue().getProfileImage();
-        if (photo != null)
+        if(position == (mData.size() - 1))
         {
-            Glide.with(layoutInflater.getContext()).load(photo)
-                    .centerCrop()
-                    .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(holder.imageView);
-           /* int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);*/
+            Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+//            groupViewHolder.imageView.
+            holder.nameTextView.setText("");
+            holder.balanceTextView.setText("");
         }
+        else
+        {
+            Map.Entry<String, User> item = getItem(position);
 
-        holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
-        holder.ID = item.getValue().getID();
-        holder.balanceTextView.setVisibility(View.GONE);
+            String photo = item.getValue().getProfileImage();
+            if (photo != null) {
+                Glide.with(layoutInflater.getContext()).load(photo)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
+               /* int photoUserId = Integer.parseInt(photo);
+                holder.imageView.setImageResource(photoUserId);*/
+            }
+
+            holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
+            holder.balanceTextView.setVisibility(View.GONE);
+        }
     }
 
     public Map.Entry<String, User> getItem(int position) {

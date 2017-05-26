@@ -6,7 +6,7 @@
     android:layout_height="fill_parent"
     android:orientation="horizontal"
     android:layout_marginTop="8dp"
-    android:layout_marginBottom="100dp"
+    android:layout_marginBottom="8dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     android:id="@+id/ll_list_skeleton"
@@ -16,8 +16,7 @@
         android:id="@+id/rv_skeleton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:descendantFocusability="beforeDescendants"
-        />
+        android:descendantFocusability="beforeDescendants" />
 
 </LinearLayout>
 
