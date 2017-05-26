@@ -26,11 +26,12 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 
-public class ExpenseDetailActivity extends AppCompatActivity {
+public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface {
 
     private ViewPager viewPager;
     private PagerAdapter adapter;
@@ -163,6 +164,42 @@ public class ExpenseDetailActivity extends AppCompatActivity {
         }
 
         return(super.onOptionsItemSelected(item));
+    }
+
+    @Override
+    public void itemClicked(String fragmentName, String itemID) {
+
+        /*Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        Bundle bundle = new Bundle();
+        Intent intent = null;
+
+        switch(fragmentName) {
+            case "FriendsFragment":
+                intent = new Intent(this, FriendDetailActivity.class);
+                intent.putExtra("friendID", itemID);
+                intent.putExtra("userID", currentUser.getID());
+                startActivity(intent);
+                break;
+
+            case "GroupsFragment":
+                intent = new Intent(this, GroupDetailActivity.class);
+                intent.putExtra("groupID", itemID);
+                intent.putExtra("userID", currentUser.getID());
+                startActivity(intent);
+                break;
+
+            case "PendingExpensesFragment":
+                intent = new Intent(this, PendingExpenseDetailActivity.class);
+                intent.putExtra("expenseID", itemID);
+                intent.putExtra("userID", currentUser.getID());
+                startActivity(intent);
+                break;
+        }*/
+
     }
 
 
