@@ -22,8 +22,10 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.BarDetailFragment;
 import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.DetailFragment;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
+import com.polito.mad17.madmax.activities.expenses.ExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
@@ -44,8 +46,10 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
     private Group groupDetails = new Group();
     private PopupMenu popup;
     private MenuItem one;
-
     private Bundle bundle = new Bundle();
+
+    static final int EXPENSE_DETAIL_REQUEST = 1;  // The request code
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +105,11 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         switch(fragmentName) {
             case "ExpensesFragment":
                 Log.d(TAG, "hai cliccato sulla spesa: " + fragmentName +" "+ itemID);
+                intent = new Intent(this, ExpenseDetailActivity.class);
+                intent.putExtra("expenseID", itemID);
+                intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("groupID", groupID);
+                startActivityForResult(intent, EXPENSE_DETAIL_REQUEST);
                 break;
 
             case "FriendsFragment":
@@ -202,6 +211,20 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 break;
         }
     }
+
+    //When i return from ExpenseDetailActivity
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                userID = data.getStringExtra("userID");
+                groupID = data.getStringExtra("groupID");
+
+            }
+        }
+    }
 }
+
+
 
 

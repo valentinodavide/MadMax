@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
@@ -63,6 +65,10 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         setContentView(R.layout.activity_pending_expense_detail);
         //setInterface((OnItemClickInterface) this);
 
+        Intent intent = getIntent();
+        expenseID = intent.getStringExtra("expenseID");
+        userID = intent.getStringExtra("userID");
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(0x0000FF00);
@@ -76,10 +82,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         creatorNameTextView = (TextView) findViewById(R.id.tv_creator_name);
         groupTextView = (TextView) findViewById(R.id.tv_group_name);
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
-
-        Intent intent = getIntent();
-        expenseID = intent.getStringExtra("expenseID");
-        userID = intent.getStringExtra("userID");
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);

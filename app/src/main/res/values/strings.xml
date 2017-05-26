@@ -9,6 +9,8 @@
     <string name="friends">FRIENDS</string>
     <string name="pending">PENDING</string>
     <string name="paydebt">PAY DEBT</string>
+    <string name="expense_detail">EXPENSE DETAIL</string>
+    <string name="comments">COMMENTS</string>
     <string name="name">Name</string>
     <string name="amount">Amount</string>
     <string name="category">Category</string>
@@ -34,7 +36,8 @@
     <string name="prompt_username">Username</string>
     <string name="prompt_registered_user">Already a member? Login</string>
     <string name="auth_failed">Authentication failed</string>
-    <string name="required">This filed is required</string>
+    <string name="required">This field is required</string>
+    <string name="notnull">Field cannot be null</string>
     <string name="emailVerification_text">A verification email has been sent to your email address.\n\nPlease, look for the verification email in your inbox and click the link in the email</string>
     <string name="shared_groups">Shared Groups</string>
     <string name="verify_email">Verify Email</string>

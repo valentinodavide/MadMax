@@ -68,7 +68,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public void update(Map<String, Group> map) {
         mData.clear();
-        Log.d(TAG, map.size() + " ");
         mData.addAll(map.entrySet());
         mData.add("");
     }
@@ -197,6 +196,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             }
         }
+
     }
 
 

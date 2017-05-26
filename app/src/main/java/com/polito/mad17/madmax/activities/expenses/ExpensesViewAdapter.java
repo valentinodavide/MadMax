@@ -79,9 +79,9 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         @Override
         public void onClick(View v) {
             int clickedPosition = getAdapterPosition();
-            Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getValue().getID());
+            Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getKey());
 
-            itemClickListener.onListItemClick(getItem(clickedPosition).getValue().getID());
+            itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
         }
 
         @Override
@@ -92,6 +92,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
             return true;
+
         }
     }
 
@@ -105,6 +106,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
         ItemExpensesViewHolder itemExpensesViewHolder = new ItemExpensesViewHolder(view);
 
+        Log.d(TAG, "dopo aver istanziato il view holder");
         return itemExpensesViewHolder;
     }
 
@@ -172,7 +174,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 //            }
 //        }
         }
-
     }
 
     @Override

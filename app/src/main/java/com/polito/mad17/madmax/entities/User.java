@@ -239,6 +239,14 @@ public class User implements Parcelable {
     public String getVote() {return vote;}
 
     public void setVote(String vote) {this.vote = vote;}
+
+    public Double getAlreadyPaid() {return alreadyPaid;}
+
+    public void setAlreadyPaid(Double alreadyPaid) {this.alreadyPaid = alreadyPaid;}
+
+    public Double getDueImport() {return dueImport;}
+
+    public void setDueImport(Double dueImport) {this.dueImport = dueImport;}
     /*
         END GETTERS & SETTERS
      */
@@ -419,7 +427,7 @@ public class User implements Parcelable {
 
         //Aggiungo gruppo alla lista gruppi dello user
         databaseReference.child("users").child(currentUID).child("groups").push();
-        databaseReference.child("users").child(currentUID).child("groups").child(groupID).setValue(true);
+        databaseReference.child("users").child(currentUID).child("groups").child(groupID).setValue("true");
 
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
         databaseReference.child("groups").child(groupID).child("members").push();

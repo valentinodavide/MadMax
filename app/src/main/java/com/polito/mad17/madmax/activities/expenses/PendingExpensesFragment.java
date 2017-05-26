@@ -51,10 +51,19 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        /*getSupportFragmentManager().beginTransaction()
+                .add(detailFragment, "detail")
+                // Add this transaction to the back stack
+                .addToBackStack()
+                .commit();*/
+
+
 
         setInterface((OnItemClickInterface) getActivity());
 
