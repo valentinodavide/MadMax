@@ -40,6 +40,10 @@ public class User implements Parcelable {
 
     private String vote;
 
+    //Servono per stampare quota già pagata e quota dovuta da un utente per una certa spesa
+    private Double alreadyPaid;
+    private Double dueImport;
+
     private TreeMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
     private TreeMap<String, User> userFriends;  //String = UID, User = friend of this user
 
