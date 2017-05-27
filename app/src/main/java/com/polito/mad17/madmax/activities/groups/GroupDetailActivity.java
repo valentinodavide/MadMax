@@ -27,8 +27,12 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.expenses.ExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
+
+import java.text.SimpleDateFormat;
 
 public class GroupDetailActivity extends BasicActivity implements OnItemClickInterface, OnItemLongClickInterface {
 
@@ -202,6 +206,31 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                     public boolean onMenuItemClick(MenuItem item) {
                         //Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
                         FirebaseUtils.getInstance().removeExpenseFirebase(itemID, getApplicationContext());
+
+                        // add event for EXPENSE_REMOVE
+                        databaseReference.child("expenses").child(itemID)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    User currentUser = MainActivity.getCurrentUser();
+                                    Event event = new Event(
+                                            groupID,
+                                            Event.EventType.EXPENSE_REMOVE,
+                                            currentUser.getUsername(),
+                                            dataSnapshot.child("description").getValue(String.class)
+                                    );
+                                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                                    FirebaseUtils.getInstance().addEvent(event);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.w(TAG, databaseError.toException());
+                                }
+                            }
+                        );
+
                         return true;
                     }
                 });

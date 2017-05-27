@@ -26,4 +26,32 @@
     <string name="members">Membri</string>
     <string name="weak_password">Almeno 6 caratteri!</string>
 
+
+    <string name="GROUP_ADD"> ha creato il gruppo </string>
+    <!--string name="GROUP_REMOVE"> ha rimosso il gruppo </string-->
+    <string name="GROUP_EDIT"> ha modificato il gruppo </string>
+    <string name="GROUP_MEMBER_ADD"> ha aggiunto </string>
+    <string name="GROUP_MEMBER_REMOVE"> ha rimosso </string>
+    <string name="EXPENSE_ADD"> ha aggiunto la spesa </string>
+    <string name="EXPENSE_REMOVE"> ha rimosso la spesa </string>
+    <string name="EXPENSE_EDIT"> ha modificato la spesa </string>
+    <string name="PENDING_EXPENSE_ADD"> ha proposto la spesa </string>
+    <string name="PENDING_EXPENSE_REMOVE"> ha rimosso la proposta per la spesa </string>
+    <string name="PENDING_EXPENSE_EDIT"> ha modificato la proposta per la spesa </string>
+    <string name="PENDING_EXPENSE_VOTE"> ha votato la proposta sulla spesa </string>
+    <string name="PENDING_EXPENSE">La proposta sulla spesa </string>
+    <string name="PENDING_EXPENSE_APPROVED"> è stata approvata!</string>
+    <string name="PENDING_EXPENSE_NEGLECTED"> è stata rifiutata!</string>
+    <!--string name="FRIEND_INVITE"> Nuovo amico invitato da </string-->
+    <string name="FRIEND_GROUP_INVITE"> Nuovo membro invitato da </string>
+    <string name="FRIEND_PAY"> ti ha pagato </string>
+    <string name="ME_PAY">Hai pagato </string>
+    <string name="FRIEND_COMMENT_ADD"> ha commentato la spesa </string>
+    <string name="ME_COMMENT_ADD">Hai commentato la spesa </string>
+
+    <string name="to"> a </string>
+    <string name="did"> ha fatto </string>
+    <string name="day"> Il giorno </string>
+    <string name="at"> alle </string>
+
 </resources>

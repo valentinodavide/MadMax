@@ -30,7 +30,6 @@ import static com.polito.mad17.madmax.activities.MainActivity.getCurrentUser;
 public class BasicActivity extends AppCompatActivity {
 
     private static final String TAG = BasicActivity.class.getSimpleName();
-    private static final int REQUEST_INVITE = 0;
     protected FrameLayout mainView;
     //private String[] drawerOptions; // nav menu item
     private DrawerLayout drawerLayout;
@@ -106,7 +105,7 @@ public class BasicActivity extends AppCompatActivity {
                                 .setCallToActionText(getString(R.string.invitation_cta))
                                 .build();
 
-                        startActivityForResult(intent, REQUEST_INVITE);
+                        startActivityForResult(intent, MainActivity.REQUEST_INVITE);
                         break;
                     case R.id.settings:
                         intent = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -137,13 +136,25 @@ public class BasicActivity extends AppCompatActivity {
 
         Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
 
-        if(requestCode == REQUEST_INVITE){
+        if(requestCode == MainActivity.REQUEST_INVITE){
             if(resultCode == RESULT_OK){
                 // Get the invitation IDs of all sent messages
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
                 for (String id : ids) {
                     Log.i(TAG, "onActivityResult: sent invitation " + id);
                 }
+
+                // add event for FRIEND_INVITE todo da modificare
+                /*User currentUser = MainActivity.getCurrentUser();
+                Event event = new Event(
+                        groupID,
+                        Event.EventType.GROUP_MEMBER_ADD,
+                        currentUser.getUsername(),
+                        newMemeber.getUsername()
+                );
+                event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                FirebaseUtils.getInstance().addEvent(event);*/
             } else {
                 // Sending failed or it was canceled, show failure message to the user
                 Log.e(TAG, "onActivityResult: failed sent");

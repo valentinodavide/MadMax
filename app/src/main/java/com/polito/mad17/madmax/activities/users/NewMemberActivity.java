@@ -1,12 +1,10 @@
 package com.polito.mad17.madmax.activities.users;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,10 +22,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
-import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -48,8 +47,6 @@ public class NewMemberActivity extends AppCompatActivity {
 
     private Button buttonInvite;
     private String groupID;
-
-    private static final int REQUEST_INVITE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,10 +137,44 @@ public class NewMemberActivity extends AppCompatActivity {
                         .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
                         .build();
 
-                startActivityForResult(intent, REQUEST_INVITE);
+                startActivityForResult(intent, MainActivity.REQUEST_INVITE_GROUP);
             }
         });
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if(requestCode == MainActivity.REQUEST_INVITE_GROUP){
+            if(resultCode == RESULT_OK){
+                // Get the invitation IDs of all sent messages
+                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
+
+                for (String id : ids) {
+                    Log.i(TAG, "onActivityResult: sent invitation " + id);
+                }
+
+                // add event for FRIEND_GROUP_INVITE
+                User currentUser = MainActivity.getCurrentUser();
+                Event event = new Event(
+                        groupID,
+                        Event.EventType.FRIEND_GROUP_INVITE,
+                        currentUser.getUsername()
+                );
+                event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                FirebaseUtils.getInstance().addEvent(event);
+            }
+            else {
+                // Sending failed or it was canceled, show failure message to the user
+                Log.e(TAG, "onActivityResult: failed sent");
+
+                Toast.makeText(this, "Unable to send invitation", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -164,6 +195,18 @@ public class NewMemberActivity extends AppCompatActivity {
             for(User newMemeber : alreadySelected.values())
             {
                 FirebaseUtils.getInstance().joinGroupFirebase(newMemeber.getID(), groupID);
+
+                // add event for GROUP_MEMBER_ADD
+                User currentUser = MainActivity.getCurrentUser();
+                Event event = new Event(
+                        groupID,
+                        Event.EventType.GROUP_MEMBER_ADD,
+                        currentUser.getUsername(),
+                        newMemeber.getUsername()
+                );
+                event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                FirebaseUtils.getInstance().addEvent(event);
             }
 
             alreadySelected.clear();

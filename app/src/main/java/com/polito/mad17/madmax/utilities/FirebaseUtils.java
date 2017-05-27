@@ -22,13 +22,13 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
-import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.VotersViewAdapter;
-import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
+import com.polito.mad17.madmax.activities.groups.EventsViewAdapter;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static android.R.attr.id;
-import static com.polito.mad17.madmax.R.string.friends;
 import static com.polito.mad17.madmax.activities.users.NewMemberActivity.alreadySelected;
 
 public class FirebaseUtils {
@@ -51,7 +49,7 @@ public class FirebaseUtils {
 
     private static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference databaseReference;
-    public static FirebaseAuth auth;
+    private static FirebaseAuth auth;
 
     private FirebaseStorage firebaseStorage;
     private StorageReference storageReference;
@@ -59,11 +57,10 @@ public class FirebaseUtils {
     private Boolean firstStart = true;
 
     // created only to defeat instantiation
-    private FirebaseUtils()
-    {
+    private FirebaseUtils() {
     }
-    public void setUp()
-    {
+
+    public void setUp() {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         if(firstStart) {
@@ -77,7 +74,6 @@ public class FirebaseUtils {
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
     }
-
 
     public static FirebaseUtils getInstance()
     {
@@ -248,7 +244,7 @@ public class FirebaseUtils {
         //Aggiungo spesa a Firebase
         final String eID = databaseReference.child("expenses").push().getKey();
         databaseReference.child("expenses").child(eID).setValue(expense);
-        String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
         databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
         //databaseReference.child("expenses").child(eID).child("deleted").setValue(false);
 
@@ -570,6 +566,60 @@ public class FirebaseUtils {
         });
 
     }
+
+    /*
+        EVENT
+     */
+    public String addEvent(final Event event) {
+        Log.d(TAG, "addEvent");
+
+        final String ID = databaseReference.child("events").push().getKey();
+        DatabaseReference eventReference = databaseReference.child("events").child(ID);
+        DatabaseReference groupReference = databaseReference.child("groups").child(event.getGroupID());
+
+        eventReference.setValue(event);
+        groupReference.child("events").child(ID).setValue(true);
+
+        return ID;
+    }
+
+    public void getEvent(final String ID, final Map<String, Event> eventMap, final EventsViewAdapter eventsViewAdapter) {
+        databaseReference.child("events").child(ID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d (TAG, "Evento: " + dataSnapshot.getKey());
+
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    Log.d (TAG, "Campo " + d.getKey() + ": " + d.getValue());
+                }
+                Log.d(TAG, " ");
+
+                Event event = new Event(
+                        dataSnapshot.getKey(),
+                        dataSnapshot.child("groupID").getValue(String .class),
+                        dataSnapshot.child("eventType").getValue(Event.EventType.class),
+                        dataSnapshot.child("subject").getValue(String.class),
+                        dataSnapshot.child("object").getValue(String.class),
+                        dataSnapshot.child("date").getValue(String.class),
+                        dataSnapshot.child("time").getValue(String.class),
+                        dataSnapshot.child("amount").getValue(Double.class),
+                        dataSnapshot.child("description").getValue(String.class)
+                );
+
+                eventMap.put(ID, event);
+                eventsViewAdapter.update(eventMap);
+                eventsViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+    /*
+        END EVENT
+     */
 
     public void getFriend(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)
     {

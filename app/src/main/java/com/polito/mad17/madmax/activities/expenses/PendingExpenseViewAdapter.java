@@ -2,8 +2,6 @@ package com.polito.mad17.madmax.activities.expenses;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,16 +20,16 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.polito.mad17.madmax.R.mipmap.expense;
-import static com.polito.mad17.madmax.R.string.amount;
 
 public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpenseViewAdapter.ItemExpensesViewHolder>  {
 
@@ -62,6 +60,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         itemClickListener = listener;
         this.pendingExpenses = new ArrayList<>();
         this.activity = activity;
+        this.mContext = activity.getApplicationContext();
         pendingExpenses.addAll(pendingMap.entrySet());
         pendingExpenses.add("");
     }
@@ -124,22 +123,46 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                 databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).runTransaction(new Transaction.Handler() {
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
-
                         String myVote = mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").getValue(String.class);
+                        final Event.EventType eventType;
 
                         if (myVote.equals("null") || myVote.equals("no"))
                         {
                             //up diventa blu, down diventa nero
                             mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("yes");
-
+                            eventType = Event.EventType.PENDING_EXPENSE_VOTE_UP;
 
                         }
-                        else if (myVote.equals("yes"))
+                        else
                         {
                             //up diventa nero
                             mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
-
+                            eventType = Event.EventType.PENDING_EXPENSE_VOTE_DOWN;
                         }
+
+                        // add event for PENDING_EXPENSE_VOTE
+                        databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey())
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    User currentUser = MainActivity.getCurrentUser();
+                                    Event event = new Event(
+                                            dataSnapshot.child("groupID").getValue(String.class),
+                                            eventType,
+                                            currentUser.getUsername(),
+                                            dataSnapshot.child("description").getValue(String.class)
+                                    );
+                                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                                    FirebaseUtils.getInstance().addEvent(event);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.w(TAG, databaseError.toException());
+                                }
+                            }
+                        );
 
                         return Transaction.success(mutableData);
                     }

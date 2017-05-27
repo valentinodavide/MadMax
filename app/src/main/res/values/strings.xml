@@ -76,4 +76,32 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <string name="GROUP_ADD"> create new group </string>
+    <!--string name="GROUP_REMOVE"> remove group </string-->
+    <string name="GROUP_EDIT"> edit group </string>
+    <string name="GROUP_MEMBER_ADD"> add new member </string>
+    <string name="GROUP_MEMBER_REMOVE"> remove member </string>
+    <string name="EXPENSE_ADD"> add expense </string>
+    <string name="EXPENSE_REMOVE"> remove expense </string>
+    <string name="EXPENSE_EDIT"> edit expense </string>
+    <string name="PENDING_EXPENSE_ADD"> propose new expense </string>
+    <string name="PENDING_EXPENSE_REMOVE"> remove proposed expense </string>
+    <string name="PENDING_EXPENSE_EDIT"> edit proposed expense </string>
+    <string name="PENDING_EXPENSE_VOTE"> vote proposed expense </string>
+    <string name="PENDING_EXPENSE">Proposed expense </string>
+    <string name="PENDING_EXPENSE_APPROVED"> has been approved!</string>
+    <string name="PENDING_EXPENSE_NEGLECTED"> has been neglected!</string>
+    <!--string name="FRIEND_INVITE"> New friend invited by </string-->
+    <string name="FRIEND_GROUP_INVITE"> New member invited by </string>
+    <string name="FRIEND_PAY"> give you back </string>
+    <string name="ME_PAY">You have paid </string>
+    <string name="FRIEND_COMMENT_ADD"> commented on </string>
+    <string name="ME_COMMENT_ADD">You left a comment on </string>
+
+    <string name="to"> to </string>
+    <string name="did"> did </string>
+    <string name="day"> The </string>
+    <string name="at"> at </string>
+
 </resources>

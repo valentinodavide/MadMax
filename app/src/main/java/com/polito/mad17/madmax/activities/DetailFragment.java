@@ -27,12 +27,15 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
-import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
-import com.polito.mad17.madmax.activities.groups.HistoryFragment;
+import com.polito.mad17.madmax.activities.groups.EventsFragment;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
@@ -61,7 +64,6 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
     private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
     private FloatingActionButton fab;
 
-    private static final int REQUEST_INVITE = 0;
 
 
     public DetailFragment() {
@@ -253,7 +255,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                                 .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
                                 .build();
 
-                        startActivityForResult(intent, REQUEST_INVITE);
+                        startActivityForResult(intent, MainActivity.REQUEST_INVITE_GROUP);
                     }
                 });
                 /*fab.setOnClickListener(new View.OnClickListener() {
@@ -311,8 +313,10 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                     return membersFragment;
                 case 2:
                     Log.d(TAG, "here in case 2");
-                    HistoryFragment historyFragment = new HistoryFragment();
-                    return historyFragment;
+                    EventsFragment eventsFragment = new EventsFragment();
+                    bundle.putString("groupID", groupID);
+                    eventsFragment.setArguments(bundle);
+                    return eventsFragment;
                 default:
                     return null;
             }
@@ -334,7 +338,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
         super.onActivityResult(requestCode, resultCode, data);
         Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
 
-        if(requestCode == REQUEST_INVITE){
+        if(requestCode == MainActivity.REQUEST_INVITE_GROUP){
             if(resultCode == RESULT_OK){
                 // Get the invitation IDs of all sent messages
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
@@ -342,6 +346,17 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 for (String id : ids) {
                     Log.i(TAG, "onActivityResult: sent invitation " + id);
                 }
+
+                // add event for FRIEND_GROUP_INVITE
+                User currentUser = MainActivity.getCurrentUser();
+                Event event = new Event(
+                        groupID,
+                        Event.EventType.FRIEND_GROUP_INVITE,
+                        currentUser.getUsername()
+                );
+                event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                FirebaseUtils.getInstance().addEvent(event);
             }
             else {
                 // Sending failed or it was canceled, show failure message to the user

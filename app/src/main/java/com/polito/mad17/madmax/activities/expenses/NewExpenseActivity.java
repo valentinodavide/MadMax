@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,8 +25,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,18 +32,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class NewExpenseActivity extends AppCompatActivity {
 
@@ -233,7 +229,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         }
                     }
 
-                    String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                    String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     newExpense.setTimestamp(timeStamp);
 
                     //Aggiungo una pending expense
@@ -242,11 +238,37 @@ public class NewExpenseActivity extends AppCompatActivity {
                         newExpense.setGroupName(groupName);
                         FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, billPhoto);
 
+                        // add event for PENDING_EXPENSE_ADD
+                        User currentUser = MainActivity.getCurrentUser();
+                        Event event = new Event(
+                                groupID,
+                                Event.EventType.PENDING_EXPENSE_ADD,
+                                currentUser.getUsername(),
+                                newExpense.getDescription(),
+                                newExpense.getAmount()
+                        );
+                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                        FirebaseUtils.getInstance().addEvent(event);
+
                     }
                     //Aggiungo una spesa normale
                     else
                     {
                         FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto);
+
+                        // add event for EXPENSE_ADD
+                        User currentUser = MainActivity.getCurrentUser();
+                        Event event = new Event(
+                                newExpense.getGroupID(),
+                                Event.EventType.EXPENSE_ADD,
+                                currentUser.getUsername(),
+                                newExpense.getDescription(),
+                                newExpense.getAmount()
+                        );
+                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                        FirebaseUtils.getInstance().addEvent(event);
                     }
                 }
 

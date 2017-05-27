@@ -12,11 +12,9 @@ import android.widget.TextView;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.Group;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemExpensesViewHolder> {

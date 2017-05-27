@@ -1,7 +1,6 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,16 +20,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener {
@@ -141,6 +139,31 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
             case R.id.two:
                 Log.d (TAG, "clicked Remove Expense");
                 FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
+
+                // add event for PENDING_EXPENSE_REMOVE
+                databaseReference.child("proposedExpenses").child(expenseID)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User currentUser = MainActivity.getCurrentUser();
+                            Event event = new Event(
+                                    dataSnapshot.child("groupID").getValue(String.class),
+                                    Event.EventType.PENDING_EXPENSE_REMOVE,
+                                    currentUser.getUsername(),
+                                    dataSnapshot.child("description").getValue(String.class)
+                            );
+                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                            FirebaseUtils.getInstance().addEvent(event);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.w(TAG, databaseError.toException());
+                        }
+                    }
+                );
+
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 return true;

@@ -36,6 +36,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
 import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
 import com.polito.mad17.madmax.activities.users.NewMemberActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
@@ -45,8 +46,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.TreeMap;
-
-import static android.R.attr.bitmap;
 
 public class NewGroupActivity extends AppCompatActivity implements FriendsViewAdapter.ListItemClickListener {
 
@@ -62,7 +61,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
     private ImageView imageGroup;
     private String imageString = null;
     private int PICK_IMAGE_REQUEST = 1; // to use for selecting the group image
-    private int REQUEST_INVITE = 2; // to use for selecting a contact to invite
+    //private int REQUEST_INVITE = 2; // to use for selecting a contact to invite
  //   private ListView lv;
     String tempGroupID;
     public static HashMap<String, User> newmembers = new HashMap<>();
@@ -173,8 +172,19 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                     databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
                     FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
 
-
                     Log.d(TAG, "group " + newgroup_id + " created");
+
+                    // add event for GROUP_ADD
+                    User currentUser = MainActivity.getCurrentUser();
+                    Event event = new Event(
+                            newgroup_id,
+                            Event.EventType.GROUP_ADD,
+                            currentUser.getUsername(),
+                            newGroup.getName()
+                    );
+                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                    FirebaseUtils.getInstance().addEvent(event);
                 }
             });
 
@@ -265,7 +275,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                             Log.d(TAG, "group img url: " + newGroup.getImage());
                         }
                         databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-                        String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                         databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
                         databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
                         FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);

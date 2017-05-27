@@ -1,15 +1,14 @@
 package com.polito.mad17.madmax.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -18,7 +17,6 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,29 +26,19 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ChooseGroupActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
-import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
-import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
-import com.polito.mad17.madmax.activities.users.FriendDetailFragment;
-import com.polito.mad17.madmax.activities.users.FriendsFragment;
-import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import static android.widget.Toast.makeText;
 import static com.polito.mad17.madmax.R.string.friends;
@@ -76,7 +64,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
  //   private ActionBarDrawerToggle drawerToggle;
 
-    private static final int REQUEST_INVITE = 0;
+    public static final int REQUEST_INVITE = 0;
+    public static final int REQUEST_INVITE_GROUP = 0;
 
     private static User currentUser;
     private String currentUID, inviterUID, groupToBeAddedID;
@@ -258,7 +247,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                                 .setCallToActionText(getString(R.string.invitation_cta))
                                 .build();
 
-                        startActivityForResult(intent, REQUEST_INVITE);
+                        startActivityForResult(intent, MainActivity.REQUEST_INVITE);
                     }
                 });
                 break;
@@ -453,13 +442,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         return currentUser;
     }
 
+    /*
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
 
-        if(requestCode == REQUEST_INVITE){
+        if(requestCode == MainActivity.REQUEST_INVITE){
             if(resultCode == RESULT_OK){
                 // Get the invitation IDs of all sent messages
                 String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
@@ -474,6 +464,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             }
         }
     }
+    */
 
     /* in this way calls to getIntent() will return the latest intent that was used to start this activity
      * rather than the first intent */
