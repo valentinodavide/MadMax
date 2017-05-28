@@ -24,7 +24,6 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.expenses.ExpenseCommentsViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.ParticipantsViewAdapter;
-import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.VotersViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsViewAdapter;
@@ -146,7 +145,7 @@ public class FirebaseUtils {
         });
     }
 
-    public Integer leaveGroupFirebase (String userID, String groupID)
+    public Integer leaveGroupFirebase (String userID, final String groupID)
     {
         Group g = GroupsFragment.groups.get(groupID);
         if (g != null)
@@ -173,6 +172,9 @@ public class FirebaseUtils {
                 //Elimino gruppo da cache
                 GroupsFragment.groups.remove(groupID);
 
+                //Elimino gruppo dagli shared groups tra me e ogni membro del gruppo
+                deleteSharedGroup(MainActivity.getCurrentUser().getID(), groupID);
+
                 return 2;
             }
         }
@@ -183,6 +185,67 @@ public class FirebaseUtils {
             return null;
         }
     }
+
+    public void deleteSharedGroup(final String userID, final String groupID)
+    {
+        databaseReference.child("groups").child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot memberSnap : dataSnapshot.getChildren())
+                {
+                    //If members is still part of the group and it's not me
+                    if (memberSnap.hasChild("deleted") && !memberSnap.child("deleted").getValue(Boolean.class) && !memberSnap.getKey().equals(userID))
+                    {
+                        String friendID = memberSnap.getKey();
+                        //Group is no more in shared groups between user and friend
+                        databaseReference.child("users").child(userID).child("friends")
+                                .child(friendID).child("sharedGroups").child(groupID).setValue(false);
+                        //Group is no more in shared groups between friend and user
+                        databaseReference.child("users").child(friendID).child("friends")
+                                .child(userID).child("sharedGroups").child(groupID).setValue(false);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void addSharedGroup(final String userID, final String groupID)
+    {
+        databaseReference.child("groups").child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot memberSnap : dataSnapshot.getChildren())
+                {
+                    //If members is still part of the group and it's not me
+                    if (memberSnap.hasChild("deleted") && !memberSnap.child("deleted").getValue(Boolean.class) && !memberSnap.getKey().equals(userID))
+                    {
+                        String friendID = memberSnap.getKey();
+                        //Group is now in shared groups between user and friend
+                        databaseReference.child("users").child(userID).child("friends")
+                                .child(friendID).child("sharedGroups").child(groupID).setValue(true);
+                        //Group is now in shared groups between friend and user
+                        databaseReference.child("users").child(friendID).child("friends")
+                                .child(userID).child("sharedGroups").child(groupID).setValue(true);
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     public void removeGroupFirebase (final String userID, final String groupID, final Context context)
     {
@@ -203,10 +266,10 @@ public class FirebaseUtils {
                         String memberID = memberSnapshot.getKey();
                         //In user's groups, set this group to deleted
                         databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
+                        //Update shared groups between this member and any other member
+                        deleteSharedGroup(memberID, groupID);
                     }
 
-
-                    //todo aggiornare shared groups
 
                     //Segno il group come eliminato nei groups
                     databaseReference.child("groups").child(groupID).child("deleted").setValue(true);
@@ -244,6 +307,8 @@ public class FirebaseUtils {
         databaseReference.child("groups").child(groupID).child("members").child(userID).push();
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("deleted").setValue(false);
+
+        addSharedGroup(userID, groupID);
     }
 
     //To remove member from group
@@ -251,7 +316,7 @@ public class FirebaseUtils {
     {
         databaseReference.child("groups").child(groupID).child("members").child(memberID).child("deleted").setValue(true);
         databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
-        //todo aggiornare shared groups tra memberID e ogni altro member del group
+        deleteSharedGroup(memberID, groupID);
 
     }
 

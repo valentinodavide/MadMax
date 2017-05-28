@@ -109,7 +109,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             friendID = bundle.getString("friendID");
 
             //Show shared groups
-            databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
+            databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").child(friendID).child("sharedGroups").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
