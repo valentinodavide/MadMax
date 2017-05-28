@@ -136,7 +136,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             TabLayout tabLayout = (TabLayout) mainView.findViewById(R.id.tab_layout);
             tabLayout.addTab(tabLayout.newTab().setText(R.string.expenses));
             tabLayout.addTab(tabLayout.newTab().setText(R.string.members));
-            tabLayout.addTab(tabLayout.newTab().setText(R.string.history));
+            tabLayout.addTab(tabLayout.newTab().setText(R.string.activities));
             tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
             updateFab(0);
 

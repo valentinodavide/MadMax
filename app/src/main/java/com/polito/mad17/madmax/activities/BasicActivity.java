@@ -144,7 +144,7 @@ public class BasicActivity extends AppCompatActivity {
                     Log.i(TAG, "onActivityResult: sent invitation " + id);
                 }
 
-                // add event for FRIEND_INVITE todo da modificare
+                // add event for FRIEND_INVITE todo da modificare se abbiamo tempo di fare anche lo storico per utente
                 /*User currentUser = MainActivity.getCurrentUser();
                 Event event = new Event(
                         groupID,

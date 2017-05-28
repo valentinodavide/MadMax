@@ -3,16 +3,14 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-
-    >
+    android:padding="8dp">
 
     <ImageView
-        android:id="@+id/event_photo"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:id="@+id/author_photo"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
         android:layout_marginRight="5dp"
-        android:src="@drawable/default_event"
+        android:src="@drawable/anonymous"
         />
 
     <LinearLayout
@@ -21,30 +19,44 @@
         android:layout_weight="1"
         android:orientation="vertical"
 
-        android:paddingTop="5dp">
+        android:paddingTop="5dp"
+        android:paddingLeft="8dp">
 
         <TextView
-            android:id="@+id/event_description"
+            android:id="@+id/author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:maxLines="4"
-            android:paddingLeft="8dp"
+            android:maxLines="1"
+            android:layout_marginBottom="4dp"
 
             android:clickable="false"
 
             android:textSize="18sp"
-            android:text="@string/description"
+            android:textStyle="bold"
+            android:text="@string/name"
             android:textColor="@color/colorPrimaryText"
             />
 
         <TextView
-            android:id="@+id/event_timestamp"
+            android:id="@+id/comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:paddingLeft="8dp"
-            android:paddingTop="8dp"
+            android:layout_marginBottom="4dp"
+
+            android:clickable="false"
+
+            android:textSize="18sp"
+            android:text="@string/comments"
+            android:textColor="@color/colorPrimaryText"
+            />
+
+        <TextView
+            android:id="@+id/comment_timestamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
 
             android:clickable="false"
 
@@ -56,4 +68,3 @@
 
     </LinearLayout>
 </LinearLayout>
-

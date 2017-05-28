@@ -38,18 +38,19 @@ public class ExpenseDetailPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        Bundle b = new Bundle();
+        b.putString("expenseID", expenseID);
 
         switch(position) {
             case 0:
                 Log.i(TAG, "here in case 0: ExpenseDetailFragment");
                 expenseDetailFragment = new ExpenseDetailFragment();
-                Bundle b = new Bundle();
-                b.putString("expenseID", expenseID);
                 expenseDetailFragment.setArguments(b);
                 return expenseDetailFragment;
             case 1:
                 Log.i(TAG, "here in case 1: ExpenseCommentsFragment");
                 expenseCommentsFragment = new ExpenseCommentsFragment();
+                expenseCommentsFragment.setArguments(b);
                 return expenseCommentsFragment;
             default:
                 return null;

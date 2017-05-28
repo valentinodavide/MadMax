@@ -61,7 +61,7 @@ public class EventsFragment extends Fragment {
         DatabaseReference groupRef = databaseReference.child("groups");
 
         Log.d(TAG, "groupID: " + groupID);
-        // retrieving history of events for current group
+        // retrieving events for current group
         groupRef.child(groupID).child("events").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot eventSnapshot) {

@@ -11,9 +11,9 @@ public class Event {
         PENDING_EXPENSE_ADD, PENDING_EXPENSE_REMOVE, PENDING_EXPENSE_EDIT /*TODO to implement*/,
         PENDING_EXPENSE_VOTE_UP, PENDING_EXPENSE_VOTE_DOWN, PENDING_EXPENSE_APPROVED /*TODO to implement*/, PENDING_EXPENSE_NEGLECTED /*TODO to implement*/,
 
-        /*FRIEND_INVITE,*/ FRIEND_GROUP_INVITE,
+        /*FRIEND_INVITE, todo se abbiamo tempo di fare anche lo storico per utente*/ FRIEND_GROUP_INVITE,
 
-        USER_PAY, USER_COMMENT_ADD /*TODO to implement*/
+        USER_PAY, USER_COMMENT_ADD
     }
 
     private String ID;

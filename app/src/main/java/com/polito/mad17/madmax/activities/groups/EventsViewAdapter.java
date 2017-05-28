@@ -9,7 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.Event;
@@ -71,10 +74,9 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
 
     @Override
     public void onBindViewHolder(final EventViewHolder eventViewHolder, int position) {
-        Event event = getItem(position).getValue();
+        final Event event = getItem(position).getValue();
         User currentUser = MainActivity.getCurrentUser();
         DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
-        String username;
 
         switch(event.getEventType()) {
             case GROUP_ADD:
@@ -145,24 +147,44 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 eventViewHolder.imageView.setImageResource(R.drawable.member_add);
                 event.setDescription(context.getString(R.string.FRIEND_GROUP_INVITE) + " \"" + event.getObject() + "\"");
                 break;
-            case USER_PAY:
+            case USER_PAY: // instead of the username the subject must be the ID of the user
                 eventViewHolder.imageView.setImageResource(R.drawable.user_pay);
                 if (currentUser.getID().equals(event.getSubject())) {
                     event.setDescription(context.getString(R.string.ME_PAY) + " " + event.getAmount());
                 }
                 else {
-                    username = databaseReference.child("users").child(event.getSubject()).child("username").getRef().toString();
-                    event.setDescription("\"" + username + "\" " + context.getString(R.string.FRIEND_PAY) + " " + event.getAmount());
+                    databaseReference.child("users").child(event.getSubject()).child("username")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                event.setDescription("\"" + dataSnapshot.getValue(String.class) + "\" " + context.getString(R.string.FRIEND_PAY) + " " + event.getAmount());
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.w(TAG, databaseError.toException());
+                            }
+                        });
                 }
                 break;
-            case USER_COMMENT_ADD:
+            case USER_COMMENT_ADD: // instead of the username the subject must be the ID of the user
                 eventViewHolder.imageView.setImageResource(R.drawable.user_comment);
                 if (currentUser.getID().equals(event.getSubject())) {
-                    event.setDescription(context.getString(R.string.ME_COMMENT_ADD) + " " + event.getAmount());
+                    event.setDescription(context.getString(R.string.ME_COMMENT_ADD) + " " + "\"" + event.getObject() + "\"");
                 }
                 else {
-                    username = databaseReference.child("users").child(event.getSubject()).child("username").getRef().toString();
-                    event.setDescription("\"" + username + "\" " + context.getString(R.string.FRIEND_COMMENT_ADD) + " " + event.getAmount());
+                    databaseReference.child("users").child(event.getSubject()).child("username")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    event.setDescription("\"" + dataSnapshot.getValue(String.class) + "\" " + context.getString(R.string.FRIEND_COMMENT_ADD) + " " + "\"" + event.getObject() + "\"");
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.w(TAG, databaseError.toException());
+                                }
+                            });
                 }
                 break;
             default:

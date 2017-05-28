@@ -1,21 +1,22 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
-import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,15 +24,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 
-public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface {
+public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface, NewCommentDialogFragment.NewCommentDialogListener {
 
     private ViewPager viewPager;
     private PagerAdapter adapter;
@@ -39,6 +38,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private String groupID;
     private String userID;
     private String expenseID;
+    private String expenseName;
     private ImageView imageView;
     private TextView amountTextView;
     private TextView expenseNameTextView;
@@ -46,13 +46,15 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private Toolbar toolbar;
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-
-
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense_detail);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        updateFab(0);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,6 +83,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, String.valueOf(tab.getPosition()));
+                updateFab(tab.getPosition());
                 viewPager.setCurrentItem(tab.getPosition());
             }
 
@@ -91,12 +94,10 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-
         ExpenseDetailPagerAdapter adapter = new ExpenseDetailPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), expenseID);
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
-
 
         //Set data of upper part of Activity
 
@@ -110,7 +111,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String expenseName = dataSnapshot.child("description").getValue(String.class);
+                expenseName = dataSnapshot.child("description").getValue(String.class);
                 Double amount = dataSnapshot.child("amount").getValue(Double.class);
                 expenseNameTextView.setText(expenseName);
 
@@ -132,8 +133,6 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
                     }
                 });
-
-
             }
 
             @Override
@@ -202,7 +201,48 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
     }
 
+    private void updateFab(int position){
+        switch(position){
+            case 0:
+                // expense detail fragment
+                Log.d(TAG, "fab 0");
+                fab.setVisibility(View.GONE);
+                break;
+            case 1:
+                // comments fragment
+                Log.d(TAG, "fab 1");
+                fab.setVisibility(View.VISIBLE);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "add a comment");
+                        Bundle arguments = new Bundle();
+                        arguments.putString("groupID", groupID);
+                        arguments.putString("expenseID", expenseID);
+                        arguments.putString("expenseName", expenseName);
 
+                        NewCommentDialogFragment commentDialogFragment = new NewCommentDialogFragment();
+                        commentDialogFragment.setArguments(arguments);
+                        commentDialogFragment.show(getSupportFragmentManager(), "NewComment");
+                    }
+                });
+                break;
+        }
+    }
 
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+        Toast.makeText(this,getString(R.string.saved),Toast.LENGTH_SHORT).show();
+    }
+
+    /*@Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+
+    }*/
 }
 

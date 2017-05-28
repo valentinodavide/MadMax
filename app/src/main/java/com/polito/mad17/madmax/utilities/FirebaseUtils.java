@@ -21,6 +21,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.expenses.ExpenseCommentsViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.VotersViewAdapter;
@@ -28,6 +29,7 @@ import com.polito.mad17.madmax.activities.groups.EventsViewAdapter;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
+import com.polito.mad17.madmax.entities.Comment;
 import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
@@ -570,7 +572,7 @@ public class FirebaseUtils {
     /*
         EVENT
      */
-    public String addEvent(final Event event) {
+    public String addEvent(Event event) {
         Log.d(TAG, "addEvent");
 
         final String ID = databaseReference.child("events").push().getKey();
@@ -619,6 +621,58 @@ public class FirebaseUtils {
     }
     /*
         END EVENT
+     */
+
+    /*
+        COMMENT
+     */
+    public String addComment (Comment comment) {
+        Log.d(TAG, "addComment");
+
+        final String ID = databaseReference.child("comments").push().getKey();
+        DatabaseReference commentReference = databaseReference.child("comments").child(ID);
+        DatabaseReference expenseReference = databaseReference.child("expenses").child(comment.getExpenseID());
+
+        commentReference.setValue(comment);
+        expenseReference.child("comments").child(ID).setValue(true);
+
+        return ID;
+    }
+
+    public void getComment(final String ID, final Map<String, Comment> commentsMap, final ExpenseCommentsViewAdapter expenseCommentsViewAdapter) {
+        databaseReference.child("comments").child(ID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d (TAG, "Commento: " + dataSnapshot.getKey());
+
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                    Log.d (TAG, "Campo " + d.getKey() + ": " + d.getValue());
+                }
+                Log.d(TAG, " ");
+
+                Comment comment = new Comment(
+                        dataSnapshot.getKey(),
+                        dataSnapshot.child("expenseID").getValue(String.class),
+                        dataSnapshot.child("author").getValue(String.class),
+                        dataSnapshot.child("authorPhoto").getValue(String.class),
+                        dataSnapshot.child("message").getValue(String.class),
+                        dataSnapshot.child("date").getValue(String.class),
+                        dataSnapshot.child("time").getValue(String.class)
+                );
+
+                commentsMap.put(ID, comment);
+                expenseCommentsViewAdapter.update(commentsMap);
+                expenseCommentsViewAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, databaseError.getMessage());
+            }
+        });
+    }
+    /*
+        END COMMENT
      */
 
     public void getFriend(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)

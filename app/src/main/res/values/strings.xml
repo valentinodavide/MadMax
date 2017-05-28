@@ -47,7 +47,7 @@
     <string name="balance">Balance</string>
     <string name="positive_balance">To receive</string>
     <string name="negative_balance">You own</string>
-    <string name="history">History</string>
+    <string name="activities">Activities</string>
     <string name="members">Members</string>
     <string name="weak_password">At least 6 characters!</string>
 
@@ -103,5 +103,11 @@
     <string name="did"> did </string>
     <string name="day"> The </string>
     <string name="at"> at </string>
+    <string name="datetime"> Date and time </string>
+    <string name="cancel"> Cancel </string>
+    <string name="ok"> OK </string>
+    <string name="saved"> Saved </string>
+
+    <string name="prompt_comment"> Add comment </string>
 
 </resources>

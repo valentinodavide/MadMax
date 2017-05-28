@@ -22,7 +22,7 @@
     <string name="login">Login</string>
     <string name="expenses">Spese</string>
     <string name="balance">Bilancio</string>
-    <string name="history">Storico</string>
+    <string name="activities">Attività</string>
     <string name="members">Membri</string>
     <string name="weak_password">Almeno 6 caratteri!</string>
 
@@ -53,5 +53,11 @@
     <string name="did"> ha fatto </string>
     <string name="day"> Il giorno </string>
     <string name="at"> alle </string>
+    <string name="datetime"> Data e ora </string>
+    <string name="cancel"> Annulla </string>
+    <string name="ok"> OK </string>
+    <string name="saved"> Salvato </string>
+
+    <string name="prompt_comment"> Aggiungi commento </string>
 
 </resources>
