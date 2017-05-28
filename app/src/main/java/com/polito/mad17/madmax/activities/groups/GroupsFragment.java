@@ -24,8 +24,10 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Group;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener {
@@ -43,6 +45,10 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
 
+    private ValueEventListener groupListener;
+    private ArrayList<String> listenedGroups = new ArrayList<>();
+
+
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickGroupInterface = onItemClickInterface;
         onLongClickGroupInterface = onItemLongClickInterface;
@@ -53,6 +59,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d (TAG, "OnCreate from " + getActivity());
+
     }
 
     @Override
@@ -130,6 +138,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     @Override
     public void onStart() {
         super.onStart();
+        Log.d (TAG, "OnStart from " + getActivity());
+
     }
 
     @Override
@@ -164,12 +174,14 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         totalBalance.put(userID,0d);
         totBalance = 0d;
 
-        databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
+        groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(final DataSnapshot groupDataSnapshot) {
 
                 totalBalance.put(userID,0d);
+                if (!listenedGroups.contains(groupID))
+                    listenedGroups.add(groupID);
 
                 final String groupName = groupDataSnapshot.child("name").getValue(String.class);
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
@@ -288,7 +300,23 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
             }
         });
 
+
         return ;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d (TAG, "OnStop from " + getActivity());
+        //databaseReference.child("groups").child(groupID).removeEventListener(groupListener);
+        //todo come gestire il fatto che ci sono più listener da eliminare?
+        //Elimino una alla volta tutti i listener istanziati
+        /*for (String groupID : listenedGroups)
+        {
+            databaseReference.child("groups").child(groupID).removeEventListener(groupListener);
+            Log.d (TAG, "Detached listener on " + groupID);
+        }*/
+
     }
 
 

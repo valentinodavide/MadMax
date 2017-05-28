@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,8 +25,8 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.User;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener, FriendsViewAdapter.ListItemLongClickListener {
@@ -52,15 +51,23 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private RecyclerView.LayoutManager layoutManager;
     private FriendsViewAdapter friendsViewAdapter;
 
+    private ValueEventListener groupMembersListener;
+    private ArrayList<String> listenedGroups = new ArrayList<>();
+    private Boolean listenedFriends = false;
+
     public FriendsFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d (TAG, "OnCreate from " + getActivity());
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        Log.d (TAG, "OnCreateView from " + getActivity());
 
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
@@ -96,7 +103,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         if (activityName.equals("MainActivity"))
             query = databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends");
 
-            //Se sono dentro un gruppo, visualizzo lista membri del gruppo
+        //Se sono dentro un gruppo, visualizzo lista membri del gruppo
         else if (activityName.equals("GroupDetailActivity"))
         {
             Bundle b = this.getArguments();
@@ -107,8 +114,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             }
         }
 
-        Log.d(TAG, "query: "+query);
-        query.addValueEventListener(new ValueEventListener() {
+        Log.d(TAG, "query: "+ query);
+        groupMembersListener = query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(final DataSnapshot externalDataSnapshot) {
 
@@ -121,12 +128,19 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                     if(activityName.equals("MainActivity")){
                         Log.d(TAG, "key: "+friendSnapshot.getKey());
                         Log.d(TAG, "value: "+friendSnapshot.getValue());
-                        deleted  = friendSnapshot.getValue().equals(false);
+                        if (!listenedFriends)
+                            listenedFriends = true;
+                        deleted  = friendSnapshot.child("deleted").getValue().equals(true);
                     }
                     else
                         if(activityName.equals("GroupDetailActivity"))
-                            deleted  = friendSnapshot.child("deleted").getValue().equals(false);
-                    //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
+                        {
+                            deleted  = friendSnapshot.child("deleted").getValue().equals(true);
+                            //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
+                            if (!listenedGroups.contains(groupID))
+                                listenedGroups.add(groupID);
+                        }
+
 
 
                     final String id = friendSnapshot.getKey();
@@ -179,6 +193,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     @Override
     public void onStart() {
         super.onStart();
+        Log.d (TAG, "OnStart from " + getActivity());
+
     }
 
     @Override
@@ -204,4 +220,29 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
         return true;
     }
-}
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d (TAG, "OnStop from " + getActivity());
+        //databaseReference.child("groups").child(groupID).removeEventListener(groupListener);
+        //todo come gestire il fatto che ci sono più listener da eliminare?
+        //Elimino una alla volta tutti i listener istanziati
+        for (String groupID : listenedGroups)
+        {
+            databaseReference.child("groups").child(groupID).child("members").removeEventListener(groupMembersListener);
+            Log.d(TAG, "Detached members listener on " + groupID);
+        }
+
+        if (listenedFriends)
+        {
+            databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").removeEventListener(groupMembersListener);
+            Log.d(TAG, "Detached friends listener");
+
+        }
+    }
+
+
+
+
+    }

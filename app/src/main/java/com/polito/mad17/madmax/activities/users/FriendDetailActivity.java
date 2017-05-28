@@ -93,4 +93,14 @@ public class FriendDetailActivity extends BasicActivity implements OnItemClickIn
         Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
     }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        finish();
+        Intent myIntent = new Intent(FriendDetailActivity.this, MainActivity.class);
+        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("currentFragment", 0);
+        startActivity(myIntent);
+    }
 }

@@ -44,6 +44,9 @@ public class BarDetailFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Double totBalance;
+    private ValueEventListener groupListener;
+    Boolean listenedGroup = false;
+
 
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
@@ -114,9 +117,13 @@ public class BarDetailFragment extends Fragment {
                 userID = bundle.getString("userID");
 
                 //retrieve data of group
-                databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
+                groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        if (!listenedGroup)
+                            listenedGroup = true;
+
                         totBalance = 0d;
                         String name = dataSnapshot.child("name").getValue(String.class);
                         if (name != null)
@@ -263,5 +270,14 @@ public class BarDetailFragment extends Fragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d (TAG, "OnStop");
+        if (listenedGroup)
+            databaseReference.child("groups").child(groupID).removeEventListener(groupListener);
+
     }
 }

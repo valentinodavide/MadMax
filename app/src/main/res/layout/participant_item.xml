@@ -16,7 +16,7 @@
         />
 
     <TextView
-        android:id="@+id/tv_voter_name"
+        android:id="@+id/tv_participant_name"
         android:layout_width="160dp"
         android:layout_height="match_parent"
         android:clickable="false"
@@ -27,26 +27,72 @@
         />
 
 
-    <TextView
-        android:id="@+id/tv_share"
-        android:layout_width="60dp"
+    <RelativeLayout
+        android:layout_width="80dp"
         android:layout_height="match_parent"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
         android:gravity="center"
-        android:textSize="18sp"
-        android:text="25€"
-        />
-    <TextView
-        android:id="@+id/tv_already_paid"
-        android:layout_width="60dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_balance_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="@string/owes_you"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_share"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_balance_text"
+            android:layout_marginTop="3dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="25€"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="80dp"
         android:layout_height="match_parent"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
         android:gravity="center"
-        android:textSize="18sp"
-        android:text="25€"
-        />
+        >
+
+        <TextView
+            android:id="@+id/fake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="HAS PAID"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tv_already_paid"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fake"
+            android:layout_marginTop="3dp"
+
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="25€"
+            />
+
+
+    </RelativeLayout>
+
 
 
 

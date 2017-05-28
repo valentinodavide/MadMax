@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,9 @@ import com.polito.mad17.madmax.activities.users.FriendsViewAdapter;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 
+import org.w3c.dom.Text;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -30,6 +34,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
     // OnClick handler to help the Activity easier to interface with RecyclerView
     final private ParticipantsViewAdapter.ListItemClickListener itemClickListener;
     private ParticipantsViewAdapter.ListItemLongClickListener itemLongClickListener = null;
+    private Context context;
 
     private final ArrayList mData;
 
@@ -47,13 +52,15 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
     }
 
 
-    public ParticipantsViewAdapter(ParticipantsViewAdapter.ListItemClickListener listener, Map<String, User> map) {
+    public ParticipantsViewAdapter(Context context, ParticipantsViewAdapter.ListItemClickListener listener, Map<String, User> map) {
+        this.context = context;
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
     }
 
-    public ParticipantsViewAdapter(ParticipantsViewAdapter.ListItemClickListener listener, ParticipantsViewAdapter.ListItemLongClickListener longListener, Map<String, User> map) {
+    public ParticipantsViewAdapter(Context context, ParticipantsViewAdapter.ListItemClickListener listener, ParticipantsViewAdapter.ListItemLongClickListener longListener, Map<String, User> map) {
+        this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
         mData = new ArrayList();
@@ -69,18 +76,17 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
 
         private ImageView imageView;
         private TextView nameTextView;
+        private TextView toPayTextView;
+        private TextView alreadyPaidTextView;
         private TextView balanceTextTextView;
-        private TextView balanceTextView;
-        private String ID;
 
         public ItemParticipantsViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
-            nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
+            nameTextView = (TextView) itemView.findViewById(R.id.tv_participant_name);
+            toPayTextView = (TextView) itemView.findViewById(R.id.tv_share);
+            alreadyPaidTextView = (TextView) itemView.findViewById(R.id.tv_already_paid);
             balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
-            balanceTextTextView.setVisibility(View.INVISIBLE);
-            balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
-            balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -93,7 +99,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
 
             Log.d(TAG, "clickedParticipant " + itemClicked.getKey());
 
-            itemClickListener.onListItemClick(itemClicked.getKey());
+            //itemClickListener.onListItemClick(itemClicked.getKey());
 
         }
 
@@ -102,7 +108,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
             int clickedPosition = getAdapterPosition();
             Map.Entry<String, User> itemClicked = getItem(clickedPosition);
             Log.d(TAG, "longClickedParticipant " + itemClicked.getKey());
-            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+            //itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
             return true;
         }
@@ -113,7 +119,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
 
         Context context = parent.getContext();
         layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.list_item, parent, false);
+        View view = layoutInflater.inflate(R.layout.participant_item, parent, false);
 
         ParticipantsViewAdapter.ItemParticipantsViewHolder itemParticipantsViewHolder = new ParticipantsViewAdapter.ItemParticipantsViewHolder(view);
 
@@ -139,8 +145,49 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
         }
 
         holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
-        holder.ID = item.getValue().getID();
-        holder.balanceTextView.setVisibility(View.GONE);
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        //todo mettere getCurrency
+        //String share = df.format(Math.abs(item.getValue().getDueImport())) + " " + "€";
+        //holder.shareTextView.setText(share);
+        Double dueImport = item.getValue().getDueImport();
+
+        if (dueImport > 0)
+        {
+            holder.balanceTextTextView.setText(R.string.credit_of);
+            holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+            String balance = df.format(Math.abs(dueImport)) + " €";
+            Log.d(TAG, "balance "  + balance);
+
+            holder.toPayTextView.setText(balance);
+            holder.toPayTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+        }
+        else
+        {
+            if (dueImport < 0)
+            {
+                holder.balanceTextTextView.setText(R.string.debt_of);
+                holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                String balance = df.format(Math.abs(dueImport)) + " €";
+                Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
+                holder.toPayTextView.setText(balance);
+                holder.toPayTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            }
+            else
+            {
+                holder.balanceTextTextView.setText(R.string.no_debts);
+                holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+            }
+        }
+
+        //todo mettere getCurrency
+        String alreadyPaid = df.format(Math.abs(item.getValue().getAlreadyPaid())) + " " + "€";
+        holder.alreadyPaidTextView.setText(alreadyPaid);
+
     }
 
     public Map.Entry<String, User> getItem(int position) {

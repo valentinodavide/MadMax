@@ -51,6 +51,8 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d (TAG, "onCreate");
+
 
     }
 
@@ -64,6 +66,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
                 .commit();*/
 
 
+        Log.d (TAG, "onCreateView");
 
         setInterface((OnItemClickInterface) getActivity());
 

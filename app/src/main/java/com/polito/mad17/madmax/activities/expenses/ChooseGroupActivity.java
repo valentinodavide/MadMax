@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -44,6 +46,8 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Log.d (TAG, "onCreate");
 
         super.onCreate(savedInstanceState);
 
@@ -97,5 +101,34 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         myIntent.putExtra("groupName", groups.get(groupID).getName());
         startActivity(myIntent);
     }
+
+
+    //to manage back button click
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        finish();
+        Intent myIntent = new Intent(ChooseGroupActivity.this, MainActivity.class);
+        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("currentFragment", 2);
+        startActivity(myIntent);
+    }
+
+    //to manage up button click
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent myIntent = new Intent(ChooseGroupActivity.this, MainActivity.class);
+                myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                myIntent.putExtra("currentFragment", 2);
+                startActivity(myIntent);
+                return(true);
+            default:
+                return(super.onOptionsItemSelected(item));
+        }
+
+    }
+
 
 }

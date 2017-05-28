@@ -358,11 +358,11 @@ public class User implements Parcelable {
         //Add friendID to friend list of currentUID
         this.userFriends.put(friendID, friend); // add friend to current user local HashMap
         usersRef.child(currentUID).child("friends").push();
-        usersRef.child(currentUID).child("friends").child(friendID).setValue(true);
+        usersRef.child(currentUID).child("friends").child(friendID).child("deleted").setValue(false);
 
         //Add currentUID to friend list of friendID
         usersRef.child(friendID).child("friends").push();
-        usersRef.child(friendID).child("friends").child(currentUID).setValue(true);
+        usersRef.child(friendID).child("friends").child(currentUID).child("deleted").setValue(false);
 
         //Read groups currentUID belongs to
         Query query = databaseReference.child("users").child(currentUID).child("groups");

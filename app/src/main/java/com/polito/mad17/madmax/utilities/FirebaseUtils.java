@@ -23,6 +23,8 @@ import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.expenses.ExpenseCommentsViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
+import com.polito.mad17.madmax.activities.expenses.ParticipantsViewAdapter;
+import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.VotersViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsViewAdapter;
@@ -61,8 +63,8 @@ public class FirebaseUtils {
     // created only to defeat instantiation
     private FirebaseUtils() {
     }
-
-    public void setUp() {
+    public void setUp()
+    {
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         if(firstStart) {
@@ -115,9 +117,22 @@ public class FirebaseUtils {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
+                final Boolean deleted = dataSnapshot.child("deleted").getValue(Boolean.class);
+
+
                 Group g = new Group();
                 g.setName(dataSnapshot.child("name").getValue(String.class));
-                groups.put(id, g);
+
+                if (deleted!= null && !deleted &&
+                        dataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
+                        !dataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class))
+                {
+                    groups.put(id, g);
+                }
+                else
+                {
+                    groups.remove(id);
+                }
 
                 groupsViewAdapter.update(groups);
                 groupsViewAdapter.notifyDataSetChanged();
@@ -721,6 +736,27 @@ public class FirebaseUtils {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, databaseError.getMessage());
+            }
+        });
+    }
+
+    public void getParticipantName(final String id, final HashMap<String, User> participants, final ParticipantsViewAdapter participantsViewAdapter, final User u)
+    {
+        databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                u.setName(dataSnapshot.child("name").getValue(String.class));
+                u.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                participants.put(id, u);
+                participantsViewAdapter.update(participants);
+                participantsViewAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

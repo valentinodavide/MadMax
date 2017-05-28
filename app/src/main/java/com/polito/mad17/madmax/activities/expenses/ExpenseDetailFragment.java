@@ -22,6 +22,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
 
@@ -115,7 +116,7 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        participantsViewAdapter = new ParticipantsViewAdapter(this, participants);
+        participantsViewAdapter = new ParticipantsViewAdapter(this.getContext(), this, participants);
         recyclerView.setAdapter(participantsViewAdapter);
 
         //Ascolto i participants alla spesa
@@ -128,9 +129,13 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
                 for (DataSnapshot participantSnap : dataSnapshot.child("participants").getChildren())
                 {
                     Double alreadyPaid = participantSnap.child("alreadyPaid").getValue(Double.class);
-                    Double dueImport = participantSnap.child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
+                    Double dueImport = alreadyPaid - participantSnap.child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
                     User u = new User();
-                    //todo arrivato qui...continuare
+                    u.setAlreadyPaid(alreadyPaid);
+                    u.setDueImport(dueImport);
+                    String participantID = participantSnap.getKey();
+                    FirebaseUtils.getInstance().getParticipantName(participantID, participants, participantsViewAdapter, u);
+
 
 
                 }
@@ -146,7 +151,7 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
 
 
 
-        return inflater.inflate(R.layout.fragment_expense_detail, container, false);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

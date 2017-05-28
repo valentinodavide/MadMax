@@ -61,11 +61,13 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private MenuItem one, two, three;
     private ViewPager viewPager;
     private TabLayout tabLayout;
+    private Integer currentFragment;
 
  //   private ActionBarDrawerToggle drawerToggle;
 
     public static final int REQUEST_INVITE = 0;
     public static final int REQUEST_INVITE_GROUP = 0;
+
 
     private static User currentUser;
     private String currentUID, inviterUID, groupToBeAddedID;
@@ -140,6 +142,9 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         {
             groupToBeAddedID = null;
         }
+
+            currentFragment = intent.getIntExtra("currentFragment", 1);
+
 
         // insert tabs and current fragment in the main layout
         mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
@@ -282,7 +287,9 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     public void onClick(View v) {
                         Intent myIntent = new Intent(MainActivity.this, ChooseGroupActivity.class);
                         myIntent.putExtra("userAdded", currentUser);//("UID", currentUID);
+                        Log.d (TAG, "Sto per aprire ChooseGroupActivity");
                         MainActivity.this.startActivity(myIntent);
+
                     }
                 });
                 //fab.setClickable(false);
@@ -320,6 +327,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 intent = new Intent(this, PendingExpenseDetailActivity.class);
                 intent.putExtra("expenseID", itemID);
                 intent.putExtra("userID", currentUser.getID());
+                Log.d (TAG, "Sto per aprire il dettaglio");
                 startActivity(intent);
                 break;
         }
@@ -463,6 +471,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
+
     }
     */
 
@@ -510,6 +519,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
             } else {
                 groupToBeAddedID = null;
+            }
+
+            if (extras.containsKey("currentFragment")) {
+                currentFragment = extras.getInt("currentFragment");
+            }
+            else
+            {
+                currentFragment = null;
             }
         }
 
@@ -594,8 +611,17 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 MainActivityPagerAdapter adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
                 viewPager.setAdapter(adapter);
-                viewPager.setCurrentItem(1);
-                updateFab(1);
+                if (currentFragment != null)
+                {
+                    viewPager.setCurrentItem(currentFragment);
+                    updateFab(currentFragment);
+                }
+
+                else
+                {
+                    viewPager.setCurrentItem(1);
+                    updateFab(1);
+                }
 
                 if(progressDialog.isShowing())
                     progressDialog.dismiss();

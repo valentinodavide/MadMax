@@ -59,6 +59,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        Log.d (TAG, "OnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_expense_detail);
         //setInterface((OnItemClickInterface) this);
@@ -167,6 +168,14 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
                 return true;
+            case android.R.id.home:
+                Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
+                finish();
+                Intent myIntent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
+                myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                myIntent.putExtra("currentFragment", 2);
+                startActivity(myIntent);
+                return(true);
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -177,6 +186,16 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     public void onListItemClick(String groupID) {
         Log.d(TAG, "clickedItemIndex " + groupID);
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        finish();
+        Intent myIntent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
+        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("currentFragment", 2);
+        startActivity(myIntent);
     }
 
 }

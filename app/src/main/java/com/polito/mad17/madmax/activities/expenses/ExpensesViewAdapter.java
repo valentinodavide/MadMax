@@ -53,6 +53,8 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         itemLongClickListener = longListener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
+        expenses.add("");
+
     }
 
     class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -111,6 +113,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     @Override
     public void onBindViewHolder(final ExpensesViewAdapter.ItemExpensesViewHolder expensesViewHolder, int position) {
 
+        //todo capire perchè c'è...non fa visualizzare il penultimo elemento delle spese..es. coca
         if(position == (expenses.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
@@ -186,6 +189,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     public void update(Map<String, Expense> map) {
         expenses.clear();
         expenses.addAll(map.entrySet());
+        expenses.add("");
     }
 
 }

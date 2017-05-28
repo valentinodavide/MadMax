@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
+import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsFragment;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
@@ -114,7 +115,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                     for (DataSnapshot sharedGroupSnapshot: dataSnapshot.getChildren())
                     {
-                        getGroup(sharedGroupSnapshot.getKey());
+                        FirebaseUtils.getInstance().getGroup(sharedGroupSnapshot.getKey(), groups, groupsViewAdapter);
                     }
 
                 }
@@ -190,6 +191,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), itemID);
     }
 
+    /*
     //todo metodo ripetuto in diverse activity, correggere
     public void getGroup(final String id)
     {
@@ -214,6 +216,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             }
         });
     }
+    */
 
 
     private void updateFab(int position){
