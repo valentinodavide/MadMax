@@ -12,13 +12,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".activities.login.LoginSignUpActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan"
-            android:theme="@style/AppTheme.Login">
-
+        <activity
+            android:name=".activities.login.LoginSignUpActivity"
+            android:theme="@style/AppTheme.Login"
+            android:windowSoftInputMode="stateHidden|adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter android:label="MadMaxInvitiationFilter">
@@ -75,11 +75,14 @@
         <activity
             android:name=".activities.expenses.PendingExpenseDetailActivity"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.expenses.ExpenseDetailActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".activities.groups.PayGroupActivity"
+            android:parentActivityName=".activities.groups.GroupDetailActivity"
+            >
         </activity>
     </application>
 

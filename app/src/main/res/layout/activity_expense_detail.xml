@@ -33,16 +33,16 @@
 
     <RelativeLayout
         android:id="@+id/nameline"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="20dp"
         >
 
         <TextView
             android:id="@+id/tv_pending_name"
-            android:layout_width="wrap_content"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:textSize="25sp"
@@ -102,6 +102,52 @@
 
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/nameline"
+        android:layout_marginTop="60dp"
+        >
+
+        <TextView
+            android:id="@+id/tv_balance_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="For this expense you should receive: "
+            android:textSize="16dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryLight"
+            />
+
+        <TextView
+            android:id="@+id/tv_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_balance_text"
+            android:text="100"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryLight"
+            android:layout_centerHorizontal="true"
+
+            />
+
+        <TextView
+            android:id="@+id/tv_currency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_balance_text"
+            android:layout_toRightOf="@+id/tv_balance"
+            android:text=" €"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textColor="@color/colorPrimaryLight"
+            />
+
+    </RelativeLayout>
+
+
 
     <android.support.design.widget.TabLayout
         android:id="@+id/tab_layout"

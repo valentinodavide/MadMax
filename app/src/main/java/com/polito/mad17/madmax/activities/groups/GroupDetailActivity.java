@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.widget.PopupMenu;
@@ -51,8 +52,10 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
     private PopupMenu popup;
     private MenuItem one;
     private Bundle bundle = new Bundle();
+    private Button payButton;
 
     static final int EXPENSE_DETAIL_REQUEST = 1;  // The request code
+
 
 
     @Override
@@ -68,6 +71,8 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         userID = intent.getStringExtra("userID");
 
         Log.d(TAG, "onCreate di GroupDetailActivity. Group: " + groupID);
+
+
 
         Bundle bundle = new Bundle();
         bundle.putString("groupID", groupID);
@@ -94,6 +99,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                     .replace(R.id.main, detailFragment)
                     .commit();
         }
+
     }
 
     @Override

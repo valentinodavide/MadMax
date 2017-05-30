@@ -28,7 +28,12 @@ import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 
+import org.w3c.dom.Text;
+
 import java.text.DecimalFormat;
+
+import static java.lang.Math.abs;
+import static java.lang.Math.exp;
 
 public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface, NewCommentDialogFragment.NewCommentDialogListener {
 
@@ -43,6 +48,9 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private TextView amountTextView;
     private TextView expenseNameTextView;
     private TextView creatorNameTextView;
+    private TextView balanceTextTextView;
+    private TextView balanceTextView;
+    private TextView currencyTextView;
     private Toolbar toolbar;
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -105,6 +113,10 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         amountTextView = (TextView) findViewById(R.id.tv_amount);
         creatorNameTextView = (TextView) findViewById(R.id.tv_creator_name);
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
+        balanceTextTextView = (TextView) findViewById(R.id.tv_balance_text);
+        balanceTextView = (TextView) findViewById(R.id.tv_balance);
+        currencyTextView = (TextView) findViewById(R.id.tv_currency);
+
 
         //Retrieve data of this expense
         databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -117,6 +129,37 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
                 DecimalFormat df = new DecimalFormat("#.##");
                 amountTextView.setText(df.format(amount) + " €");
+
+                //Retrieve my balance for this expense
+                Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+                Double expenseBalance = alreadyPaid - dueImport;
+                expenseBalance = Math.floor(expenseBalance * 100) / 100;
+
+                String currency = dataSnapshot.child("currency").getValue(String.class);
+
+
+
+                if (expenseBalance > 0)
+                {
+                    balanceTextTextView.setText("For this expense you should receive");
+                    balanceTextView.setText(expenseBalance.toString());
+                    currencyTextView.setText(currency);
+                }
+                else if (expenseBalance < 0)
+                {
+                    balanceTextTextView.setText("For this expense you should pay");
+                    expenseBalance = abs (expenseBalance);
+                    balanceTextView.setText(expenseBalance.toString());
+                    currencyTextView.setText(currency);
+                }
+                else if (expenseBalance == 0)
+                {
+                    balanceTextTextView.setText("For this expense you have no debts");
+                    balanceTextView.setText("0");
+                    currencyTextView.setText(currency);
+                }
+
 
                 //Retrieve name and surname of creator
                 String creatorID = dataSnapshot.child("creatorID").getValue(String.class);

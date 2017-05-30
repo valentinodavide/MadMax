@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -9,9 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -21,7 +24,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.entities.User;
+
+import static android.app.Activity.RESULT_OK;
 
 public class BarDetailFragment extends Fragment {
 
@@ -40,12 +46,18 @@ public class BarDetailFragment extends Fragment {
     private String friendID;
     private String groupID;
     private String userID;
+    private String groupName;
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Double totBalance;
     private ValueEventListener groupListener;
     Boolean listenedGroup = false;
+    private Button payButton;
+
+    static final int PAY_GROUP_REQUEST = 1;  // The request code
+
+
 
 
 
@@ -76,6 +88,8 @@ public class BarDetailFragment extends Fragment {
         balanceLayout = (LinearLayout) mainView.findViewById(R.id.lv_balance_layout);
         balanceTextView = (TextView)mainView.findViewById(R.id.tv_balance_text);
         balanceView = (TextView)mainView.findViewById(R.id.tv_balance);
+        payButton = (Button) mainView.findViewById(R.id.btn_pay_debt);
+
 
         initCollapsingToolbar();
 
@@ -84,6 +98,8 @@ public class BarDetailFragment extends Fragment {
 
         if(activityName.equals("FriendDetailActivity")){
             if(bundle != null){
+
+                payButton.setVisibility(View.GONE);
                 //Extract data from bundle
                 friendID = bundle.getString("friendID");
                 //Show data of friend
@@ -116,6 +132,29 @@ public class BarDetailFragment extends Fragment {
                 groupID = bundle.getString("groupID");
                 userID = bundle.getString("userID");
 
+                payButton.setOnClickListener( new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        Log.d (TAG, "Clicked payButton");
+                        if (totBalance >= 0)
+                        {
+                            Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+                            Intent intent = new Intent(getActivity(), PayGroupActivity.class);
+                            intent.putExtra("groupID", groupID);
+                            intent.putExtra("userID", userID);
+                            intent.putExtra("debt", totBalance);
+                            intent.putExtra("groupName", groupName);
+                            startActivity(intent);
+                        }
+
+
+                    }
+                });
+
                 //retrieve data of group
                 groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -125,9 +164,9 @@ public class BarDetailFragment extends Fragment {
                             listenedGroup = true;
 
                         totBalance = 0d;
-                        String name = dataSnapshot.child("name").getValue(String.class);
-                        if (name != null)
-                            nameTextView.setText(name);
+                        groupName = dataSnapshot.child("name").getValue(String.class);
+                        if (groupName != null)
+                            nameTextView.setText(groupName);
 
                         String image = dataSnapshot.child("image").getValue(String.class);
 
@@ -146,53 +185,58 @@ public class BarDetailFragment extends Fragment {
                         // retrieve group balance
                         for (DataSnapshot groupExpenseSnapshot: dataSnapshot.child("expenses").getChildren())
                         {
-                            //Ascolto ogni singola spesa del gruppo
-                            final String expenseID = groupExpenseSnapshot.getKey();
-                            Log.d(TAG, "considero la spesa "+expenseID);
-                            databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Se la spesa non è stata eliminata
+                            if (groupExpenseSnapshot.getValue(Boolean.class) == true)
+                            {
+                                //Ascolto ogni singola spesa del gruppo
+                                final String expenseID = groupExpenseSnapshot.getKey();
+                                Log.d(TAG, "considero la spesa "+expenseID);
+                                databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    Boolean involved = false; //dice se user contribuisce o no a quella spesa
+                                        Boolean involved = false; //dice se user contribuisce o no a quella spesa
 
-                                    for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
-                                    {
-                                        if (participantSnapshot.getKey().equals(userID))
-                                            involved = true;
+                                        for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
+                                        {
+                                            if (participantSnapshot.getKey().equals(userID))
+                                                involved = true;
+                                        }
+
+                                        //se user ha partecipato alla spesa
+
+                                        if (involved)
+                                        {
+                                            //alreadyPaid = soldi già messi dallo user per quella spesa
+                                            //dueImport = quota che user deve mettere per quella spesa
+                                            //balance = credito/debito dello user per quella spesa
+                                            Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+                                            Double dueImport = dataSnapshot.child("participants").child(userID).child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
+                                            Double balance = alreadyPaid - dueImport;
+                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                            totBalance += balance;
+
+                                            if(totBalance<0)
+                                                balanceTextView.setText(getString(R.string.negative_balance));
+                                            else
+                                                balanceTextView.setText(getString(R.string.positive_balance));
+
+                                            String balanceString = String.valueOf(totBalance.doubleValue())+ " €";
+                                            balanceView.setText(balanceString);
+                                            balanceLayout.setVisibility(View.VISIBLE);
+
+                                            Log.d(TAG, "sono coinvolto nella spesa "+expenseID+", dovevo "+dueImport+", ho dato "+alreadyPaid+" -> totBalance: "+totBalance);
+                                        }
                                     }
 
-                                    //se user ha partecipato alla spesa
-
-                                    if (involved)
-                                    {
-                                        //alreadyPaid = soldi già messi dallo user per quella spesa
-                                        //dueImport = quota che user deve mettere per quella spesa
-                                        //balance = credito/debito dello user per quella spesa
-                                        Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
-                                        Double dueImport = dataSnapshot.child("participants").child(userID).child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
-                                        Double balance = alreadyPaid - dueImport;
-                                        //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-                                        totBalance += balance;
-
-                                        if(totBalance<0)
-                                            balanceTextView.setText(getString(R.string.negative_balance));
-                                        else
-                                            balanceTextView.setText(getString(R.string.positive_balance));
-
-                                        String balanceString = String.valueOf(totBalance.doubleValue())+ " €";
-                                        balanceView.setText(balanceString);
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        balanceTextView.setText("Balance not available");
                                         balanceLayout.setVisibility(View.VISIBLE);
-
-                                        Log.d(TAG, "sono coinvolto nella spesa "+expenseID+", dovevo "+dueImport+", ho dato "+alreadyPaid+" -> totBalance: "+totBalance);
                                     }
-                                }
+                                });
+                            }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    balanceTextView.setText("Balance not available");
-                                    balanceLayout.setVisibility(View.VISIBLE);
-                                }
-                            });
                         }
                     }
 
@@ -270,6 +314,18 @@ public class BarDetailFragment extends Fragment {
                 }
             }
         });
+    }
+
+    //When i return from PayGroupActivity
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PAY_GROUP_REQUEST) {
+            if(resultCode == RESULT_OK) {
+                userID = data.getStringExtra("userID");
+                groupID = data.getStringExtra("groupID");
+
+            }
+        }
     }
 
     @Override

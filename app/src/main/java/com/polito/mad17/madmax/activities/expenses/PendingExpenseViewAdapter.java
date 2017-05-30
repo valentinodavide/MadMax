@@ -255,7 +255,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             holder.participantsCountTextView.setText("");
             holder.amountTextView.setText("");
             holder.partecipantsImageView.setVisibility(View.GONE);
-
             holder.thumbUpButton.setVisibility(View.GONE);
             holder.thumbDownButton.setVisibility(View.GONE);
         }
@@ -273,6 +272,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             holder.yesTextView.setText(expense.getYes().toString());
             holder.noTextView.setText(expense.getNo().toString());
             holder.participantsCountTextView.setText(expense.getParticipantsCount().toString());
+
+            holder.imageView.setVisibility(View.VISIBLE);
+            holder.partecipantsImageView.setVisibility(View.VISIBLE);
+            holder.thumbUpButton.setVisibility(View.VISIBLE);
+            holder.thumbDownButton.setVisibility(View.VISIBLE);
 
             DecimalFormat df = new DecimalFormat("#.##");
             Double amount = expense.getAmount();

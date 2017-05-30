@@ -26,6 +26,7 @@ public class Expense {
     private Integer yes;
     private Integer no;
     private String myVote;
+    private Double balance;     //my balance for this expense
 
 
     public Expense() { this.participants = new HashMap<>(); }
@@ -149,6 +150,10 @@ public class Expense {
     public String getMyVote() {return myVote;}
 
     public void setMyVote(String myVote) {this.myVote = myVote;}
+
+    public Double getBalance() {return balance;}
+
+    public void setBalance(Double balance) {this.balance = balance;}
 
 
 

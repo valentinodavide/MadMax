@@ -180,6 +180,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
             else
             {
                 holder.balanceTextTextView.setText(R.string.no_debts);
+                holder.toPayTextView.setText("0 €");
                 holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
             }
         }

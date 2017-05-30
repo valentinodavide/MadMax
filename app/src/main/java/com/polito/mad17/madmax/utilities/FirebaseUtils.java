@@ -434,10 +434,18 @@ public class FirebaseUtils {
                         dataSnapshot.hasChild("deleted") &&
                         !dataSnapshot.child("deleted").getValue(Boolean.class))
                 {
+                    //Retrieve my balance for this expense
+                    Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                    Double alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("alreadyPaid").getValue(Double.class);
+                    Double expenseBalance = alreadyPaid - dueImport;
+                    expenseBalance = Math.floor(expenseBalance * 100) / 100;
+
                     Expense expense = new Expense();
                     expense.setDescription(dataSnapshot.child("description").getValue(String.class));
                     expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
                     expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
+                    expense.setBalance(expenseBalance);
+
                     expensesMap.put(id, expense);
                     expensesViewAdapter.update(expensesMap);
                     expensesViewAdapter.notifyDataSetChanged();

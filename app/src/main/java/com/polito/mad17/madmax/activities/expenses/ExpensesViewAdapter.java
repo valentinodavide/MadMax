@@ -111,9 +111,8 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(final ExpensesViewAdapter.ItemExpensesViewHolder expensesViewHolder, int position) {
+    public void onBindViewHolder(final ItemExpensesViewHolder expensesViewHolder, int position) {
 
-        //todo capire perchè c'è...non fa visualizzare il penultimo elemento delle spese..es. coca
         if(position == (expenses.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
@@ -133,16 +132,35 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
             expensesViewHolder.nameTextView.setText(expense.getDescription());
 
-            DecimalFormat df = new DecimalFormat("#.##");
 
-            expensesViewHolder.balanceTextTextView.setText(R.string.expense_amount);
-            expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
-            String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
-            Log.d(TAG, "balance " + balance);
+            Double expenseBalance = expense.getBalance();
+            String balance = Math.abs(expenseBalance) + " €";
 
-            expensesViewHolder.balanceTextView.setText(balance);
-            expensesViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+            if (expenseBalance > 0) {
+                expensesViewHolder.balanceTextTextView.setText(R.string.credit_of);
+                expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                expensesViewHolder.balanceTextView.setText(balance);
+                expensesViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+            }
+            else
+            {
+                if (expenseBalance < 0)
+                {
+                    expensesViewHolder.balanceTextTextView.setText(R.string.debt_of);
+                    expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                    expensesViewHolder.balanceTextView.setText(balance);
+                    expensesViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+                }
+                else
+                {
+                    expensesViewHolder.balanceTextTextView.setText(R.string.no_debts);
+                    expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    expensesViewHolder.balanceTextView.setText("0 €");
+                }
+            }
 
 //        if (expense.getAmount() > 0)
 //        {
