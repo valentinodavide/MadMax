@@ -150,7 +150,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                             Event event = new Event(
                                     dataSnapshot.child("groupID").getValue(String.class),
                                     Event.EventType.PENDING_EXPENSE_REMOVE,
-                                    currentUser.getUsername(),
+                                    currentUser.getName() + " " + currentUser.getSurname(),
                                     dataSnapshot.child("description").getValue(String.class)
                             );
                             event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));

@@ -222,7 +222,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                                     Event event = new Event(
                                             groupID,
                                             Event.EventType.EXPENSE_REMOVE,
-                                            currentUser.getUsername(),
+                                            currentUser.getName() + " " + currentUser.getSurname(),
                                             dataSnapshot.child("description").getValue(String.class)
                                     );
                                     event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));

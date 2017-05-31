@@ -19,7 +19,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
-import com.polito.mad17.madmax.entities.Group;
 
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
@@ -117,9 +116,14 @@ public class PayGroupActivity extends AppCompatActivity {
                         Toast.makeText(PayGroupActivity.this,"You cannot pay more than what you due",Toast.LENGTH_SHORT).show();
                         return  true;
                     }
+                    else if (money <= 0) {
+                        Toast.makeText(PayGroupActivity.this,"Nessun pagamento effettuato",Toast.LENGTH_SHORT).show();
+                        return  true;
+                    }
                     else
                     {
                         payDebtForExpenses(userID, groupID, money);
+                        // todo add event for USER_PAY
                         intent = new Intent(this, GroupDetailActivity.class);
                         intent.putExtra("groupID", groupID);
                         intent.putExtra("userID", userID);

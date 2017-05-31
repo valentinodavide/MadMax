@@ -155,6 +155,7 @@ public class BarDetailFragment extends Fragment {
                     }
                 });
 
+                // todo qui currency
                 //retrieve data of group
                 groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
                     @Override
