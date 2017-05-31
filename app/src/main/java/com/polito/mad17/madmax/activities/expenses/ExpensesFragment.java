@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
@@ -72,23 +73,18 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         Bundle bundle = getArguments();
         groupID = bundle.getString("groupID");
 
+        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
+                .orientation(InsetDivider.VERTICAL_LIST)
+                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
+                .color(getResources().getColor(R.color.colorDivider))
+                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
+                .overlay(true)
+                .build();
+
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
-        recyclerView.setHasFixedSize(true);
-
-        DividerItemDecoration verticalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.HORIZONTAL);
-        Drawable verticalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.vertical_divider);
-        verticalDecoration.setDrawable(verticalDivider);
-        recyclerView.addItemDecoration(verticalDecoration);
-
-        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
-        horizontalDecoration.setDrawable(horizontalDivider);
-        recyclerView.addItemDecoration(horizontalDecoration);
-
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(divider);
 
         expensesViewAdapter = new ExpensesViewAdapter(this.getContext(), this, this, expensesMap);
         recyclerView.setAdapter(expensesViewAdapter);

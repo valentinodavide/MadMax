@@ -255,6 +255,8 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             holder.participantsCountTextView.setText("");
             holder.amountTextView.setText("");
             holder.partecipantsImageView.setVisibility(View.GONE);
+            holder.itemView.setOnClickListener(null);
+
             holder.thumbUpButton.setVisibility(View.GONE);
             holder.thumbDownButton.setVisibility(View.GONE);
         }

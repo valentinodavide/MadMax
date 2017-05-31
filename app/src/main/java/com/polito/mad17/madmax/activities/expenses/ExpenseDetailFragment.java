@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
@@ -106,13 +107,17 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
         Bundle b = this.getArguments();
         expenseID = b.getString("expenseID");
 
-
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
+        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
+                .orientation(InsetDivider.VERTICAL_LIST)
+                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
+                .color(getResources().getColor(R.color.colorDivider))
+                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
+                .overlay(true)
+                .build();
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
-        recyclerView.setHasFixedSize(true);
-
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
 

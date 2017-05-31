@@ -268,7 +268,7 @@ public class ProfileEdit extends AppCompatActivity {
             surnameView.setError(null);
         }
 
-        String username = usernameView.getText().toString();
+        /*String username = usernameView.getText().toString();
         if (TextUtils.isEmpty(username)) {
             usernameView.setError(getString(R.string.notnull));
             valid = false;
@@ -276,13 +276,13 @@ public class ProfileEdit extends AppCompatActivity {
             usernameView.setError(null);
         }
 
-        /*String email = emailView.getText().toString();
+        String email = emailView.getText().toString();
         if (TextUtils.isEmpty(email)) {
             emailView.setError(getString(R.string.required));
             valid = false;
         } else if(!(android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
             emailView.setError("You should insert a valid mail");
-            valid = false;
+            va lid = false;
         } else {
             emailView.setError(null);
         }*/

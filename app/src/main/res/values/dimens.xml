@@ -8,4 +8,6 @@
     <dimen name="profile_height">76dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="detail_backdrop_height">250dp</dimen>
+    <dimen name="divider_height">0.3dp</dimen>
+    <dimen name="divider_inset">0dp</dimen>
 </resources>

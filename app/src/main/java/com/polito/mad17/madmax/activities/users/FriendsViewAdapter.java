@@ -77,9 +77,9 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
             balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
-            balanceTextTextView.setVisibility(View.INVISIBLE);
+            balanceTextTextView.setVisibility(View.GONE);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
-            balanceTextView.setVisibility(View.INVISIBLE);
+            balanceTextView.setVisibility(View.GONE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -121,27 +121,34 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     @Override
     public void onBindViewHolder(final FriendsViewAdapter.ItemFriendsViewHolder holder, int position) {
 
-
         if(position == (mData.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
-//            groupViewHolder.imageView.
             holder.nameTextView.setText("");
-            holder.balanceTextView.setText("");
+            holder.itemView.setOnClickListener(null);
         }
         else
         {
             Map.Entry<String, User> item = getItem(position);
 
+            Log.d(TAG, item.getKey() + " " + item.getValue().getName() + " " + item.getValue().getProfileImage());
+
             String photo = item.getValue().getProfileImage();
-            if (photo != null) {
+            if (photo != null && !photo.equals(""))
+            {
                 Glide.with(layoutInflater.getContext()).load(photo)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
-               /* int photoUserId = Integer.parseInt(photo);
-                holder.imageView.setImageResource(photoUserId);*/
+            }
+            else if(photo == null || photo.equals(""))
+            {
+                Glide.with(layoutInflater.getContext()).load(R.drawable.ic_face)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
             }
 
             holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());

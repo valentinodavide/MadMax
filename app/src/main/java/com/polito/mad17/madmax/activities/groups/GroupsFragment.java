@@ -19,10 +19,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
+import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,23 +76,18 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
+        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
+                .orientation(InsetDivider.VERTICAL_LIST)
+                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
+                .color(ContextCompat.getColor(getContext(), R.color.colorDivider))
+                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
+                .overlay(true)
+                .build();
+
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
-        recyclerView.setHasFixedSize(true);
-
-        DividerItemDecoration verticalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.HORIZONTAL);
-        Drawable verticalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.vertical_divider);
-        verticalDecoration.setDrawable(verticalDivider);
-        recyclerView.addItemDecoration(verticalDecoration);
-
-        DividerItemDecoration horizontalDecoration = new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.VERTICAL);
-        Drawable horizontalDivider = ContextCompat.getDrawable(getActivity(), R.drawable.horizontal_divider);
-        horizontalDecoration.setDrawable(horizontalDivider);
-        recyclerView.addItemDecoration(horizontalDecoration);
-
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(divider);
 
         groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
@@ -171,6 +169,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     {
 
         final HashMap <String, Double> totalBalance = new HashMap<>();
+        final HashMap <String, Expense> groupExpenses = new HashMap<>();
         totalBalance.put(userID,0d);
         totBalance = 0d;
 
@@ -185,7 +184,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                 final String groupName = groupDataSnapshot.child("name").getValue(String.class);
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
-
 
                 if (deleted != null)
                 {
@@ -231,11 +229,21 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                         totalBalance.put(userID, currentBalance+balance);
                                         totBalance += balance;
 
+                                        Expense expense = new Expense();
+                                        expense.setID(dataSnapshot.getKey());
+                                        expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
+                                        expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+
+                                        groupExpenses.put(dataSnapshot.getKey(), expense);
+
+                                        Log.d(TAG, "added expense " + dataSnapshot.getKey());
+
                                     }
 
                                     Group g = new Group();
                                     g.setName(groupName);
                                     g.setBalance(totalBalance.get(userID));
+                                    g.setExpenses(groupExpenses);
                                     g.setDeleted(deleted);
                                     //g.setBalance(totBalance);
                                     //se il gruppo non è deleted e io faccio ancora parte del gruppo

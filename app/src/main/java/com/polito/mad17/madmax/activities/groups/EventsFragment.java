@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
@@ -52,8 +53,18 @@ public class EventsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         recyclerView.setHasFixedSize(true);
 
+        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
+                .orientation(InsetDivider.VERTICAL_LIST)
+                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
+                .color(getResources().getColor(R.color.colorDivider))
+                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
+                .overlay(true)
+                .build();
+
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv_skeleton);
         layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(divider);
 
         eventsViewAdapter = new EventsViewAdapter(this.getContext(), eventMap);
         recyclerView.setAdapter(eventsViewAdapter);

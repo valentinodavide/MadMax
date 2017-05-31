@@ -71,6 +71,7 @@ public class FirebaseUtils {
             firstStart = false;
         }
 
+        Log.d("FIrebaseUtils", "prima di getReference()");
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
 
