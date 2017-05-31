@@ -239,6 +239,8 @@ public class BarDetailFragment extends Fragment {
                             }
 
                         }
+
+
                     }
 
                     @Override

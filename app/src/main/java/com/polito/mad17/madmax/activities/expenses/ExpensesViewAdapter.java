@@ -185,36 +185,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
                 }
             }
 
-//        if (expense.getAmount() > 0)
-//        {
-//            expensesViewHolder.balanceTextTextView.setText(R.string.credit_of);
-//            expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
-//
-//            String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
-//            Log.d(TAG, "balance "  + balance);
-//
-//            expensesViewHolder.balanceTextView.setText(balance);
-//            expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
-//
-//        }
-//        else
-//        {
-//            if (expense.getAmount() < 0)
-//            {
-//                expensesViewHolder.balanceTextTextView.setText(R.string.debt_of);
-//                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
-//
-//                String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
-//                Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
-//                expensesViewHolder.balanceTextView.setText(balance);
-//                expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
-//            }
-//            else
-//            {
-//                expensesViewHolder.balanceTextTextView.setText(R.string.no_debts);
-//                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
-//            }
-//        }
         }
     }
 

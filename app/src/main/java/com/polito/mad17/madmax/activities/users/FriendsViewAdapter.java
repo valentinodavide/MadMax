@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +32,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     private final ArrayList mData;
 
     private LayoutInflater layoutInflater;
+    private Context context;
 
 
     // The interface that receives the onClick messages
@@ -43,14 +46,16 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     }
 
 
-    public FriendsViewAdapter(ListItemClickListener listener, Map<String, User> map) {
+    public FriendsViewAdapter(Context context, ListItemClickListener listener, Map<String, User> map) {
+        this.context = context;
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add("");
     }
 
-    public FriendsViewAdapter(ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
+    public FriendsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
+        this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
         mData = new ArrayList();
@@ -77,9 +82,9 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
             balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
-            balanceTextTextView.setVisibility(View.GONE);
+            //balanceTextTextView.setVisibility(View.INVISIBLE);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
-            balanceTextView.setVisibility(View.GONE);
+            //balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -119,16 +124,18 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     }
 
     @Override
-    public void onBindViewHolder(final FriendsViewAdapter.ItemFriendsViewHolder holder, int position) {
+    public void onBindViewHolder(final ItemFriendsViewHolder holder, int position) {
 
-        if(position == (mData.size() - 1))
-        {
+
+        if (position == (mData.size() - 1)) {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
             holder.nameTextView.setText("");
+            holder.balanceTextView.setText("");
+            holder.balanceTextTextView.setText("");
             holder.itemView.setOnClickListener(null);
+
         }
-        else
-        {
+        else {
             Map.Entry<String, User> item = getItem(position);
 
             Log.d(TAG, item.getKey() + " " + item.getValue().getName() + " " + item.getValue().getProfileImage());
@@ -152,7 +159,49 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             }
 
             holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
-            holder.balanceTextView.setVisibility(View.GONE);
+
+
+            Double balance = item.getValue().getBalanceWithGroup();
+
+            if (balance != null)
+            {
+                DecimalFormat df = new DecimalFormat("#.##");
+                if (balance > 0) {
+                    holder.balanceTextTextView.setText(R.string.should_receive_from_the_group);
+                    holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                    //todo mettere valuta
+                    String balanceText = df.format(Math.abs(balance)) + " €";
+                    holder.balanceTextView.setText(balanceText);
+                    holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                }
+                else
+                {
+                    if (balance < 0) {
+                        holder.balanceTextTextView.setText(R.string.owes_to_the_group);
+                        holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                        //todo mettere valuta
+                        String balanceText = df.format(Math.abs(balance)) + " €";
+                        holder.balanceTextView.setText(balanceText);
+                        holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+                    } else {
+                        holder.balanceTextTextView.setText(R.string.no_debts);
+                        holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                        //todo mettere valuta
+                        holder.balanceTextView.setText("0 €");
+                    }
+                    //holder.balanceTextView.setVisibility(View.GONE);
+                }
+            }
+
+            else if (balance == null)
+            {
+                holder.balanceTextView.setVisibility(View.GONE);
+                holder.balanceTextTextView.setVisibility(View.GONE);
+
+            }
+
         }
     }
 

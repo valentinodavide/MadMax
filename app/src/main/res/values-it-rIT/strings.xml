@@ -10,6 +10,8 @@
     <string name="expense_detail">DETTAGLIO SPESA</string>
     <string name="comments">COMMENTI</string>
     <string name="owes_you">TI DEVE</string>
+    <string name="owes_to_the_group">DEVE AL GRUPPO</string>
+    <string name="should_receive_from_the_group">DEVE RICEVERE DAL GRUPPO</string>
     <string name="name">Nome</string>
     <string name="amount">Importo</string>
     <string name="category">Categoria</string>

@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,10 +24,12 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.OverlayDivider;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.TreeMap;
 
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener, FriendsViewAdapter.ListItemLongClickListener {
@@ -53,6 +57,12 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private ValueEventListener groupMembersListener;
     private ArrayList<String> listenedGroups = new ArrayList<>();
     private Boolean listenedFriends = false;
+    private ValueEventListener groupListener;
+    Boolean listenedGroup = false;
+    private Double totBalance;
+
+
+
 
     public FriendsFragment() {}
 
@@ -87,7 +97,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(divider);
 
-        friendsViewAdapter = new FriendsViewAdapter(this, this, friends);
+        friendsViewAdapter = new FriendsViewAdapter(this.getContext(), this, this, friends);
         recyclerView.setAdapter(friendsViewAdapter);
 
         final String activityName = getActivity().getClass().getSimpleName();
@@ -144,17 +154,32 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            User u = new User();
-                            u.setName(dataSnapshot.child("name").getValue(String.class));
-                            u.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                            u.setProfileImage(dataSnapshot.child("image").getValue(String.class));
-                            if (!finalDeleted)
-                                friends.put(id, u);
-                            else
-                                friends.remove(id);
+                            String name = dataSnapshot.child("name").getValue(String.class);
+                            String surname = dataSnapshot.child("surname").getValue(String.class);
+                            String profileImage = dataSnapshot.child("image").getValue(String.class);
 
-                            friendsViewAdapter.update(friends);
-                            friendsViewAdapter.notifyDataSetChanged();
+                            if(activityName.equals("MainActivity"))
+                            {
+                                User u = new User();
+                                u.setID(friendSnapshot.getKey());
+                                u.setName(name);
+                                u.setSurname(surname);
+                                u.setProfileImage(profileImage);
+                                if (!finalDeleted)
+                                    friends.put(id, u);
+                                else
+                                    friends.remove(id);
+
+                                friendsViewAdapter.update(friends);
+                                friendsViewAdapter.notifyDataSetChanged();
+                            }
+                            else if (activityName.equals("GroupDetailActivity"))
+                            {
+                                getUserAndGroupBalance(id, name, surname, profileImage, groupID);
+                            }
+
+
+
 
                         }
 
@@ -234,6 +259,143 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             Log.d(TAG, "Detached friends listener");
 
         }
+    }
+
+    //Retrieve balance of userID toward groupID
+    void getUserAndGroupBalance (final String userID, final String name, final String surname, final String profileImage, final String groupID)
+    {
+        //retrieve data of group
+        final HashMap<String, Double> totalBalance = new HashMap<>();
+        totalBalance.put(userID,0d);
+        totBalance = 0d;
+
+        groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(final DataSnapshot groupDataSnapshot) {
+
+                totalBalance.put(userID,0d);
+                if (!listenedGroups.contains(groupID))
+                    listenedGroups.add(groupID);
+
+                final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
+
+                if (deleted != null)
+                {
+                    for (DataSnapshot groupExpenseSnapshot: groupDataSnapshot.child("expenses").getChildren())
+                    {
+                        //Contribuiscono al bilancio solo le spese non eliminate dal gruppo
+                        if (groupExpenseSnapshot.getValue(Boolean.class) == true)
+                        {
+                            //Adesso sono sicuro che la spesa non è stata eliminata
+                            //Ascolto la singola spesa del gruppo
+                            String expenseID = groupExpenseSnapshot.getKey();
+                            databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    Boolean involved = false; //dice se user contribuisce o no a quella spesa
+
+                                    for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
+                                    {
+                                        //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
+                                        if (participantSnapshot.getKey().equals(userID))
+                                            involved = true;
+                                    }
+
+                                    //se user ha partecipato alla spesa
+                                    if (involved)
+                                    {
+                                        //alreadyPaid = soldi già messi dallo user per quella spesa
+                                        //dueImport = quota che user deve mettere per quella spesa
+                                        //balance = credito/debito dello user per quella spesa
+                                        for (DataSnapshot d : dataSnapshot.child("participants").getChildren())
+                                        {
+                                            Log.d (TAG, "PartCampo " + d.getKey() + ": " + d.getValue() );
+                                        }
+                                        Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+
+                                        Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
+
+                                        Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                                        Double balance = alreadyPaid - dueImport;
+                                        //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                        Double currentBalance = totalBalance.get(userID);
+                                        totalBalance.put(userID, currentBalance+balance);
+
+                                    }
+
+                                    User u = new User();
+                                    u.setBalanceWithGroup(totalBalance.get(userID));
+                                    u.setName(name);
+                                    u.setSurname(surname);
+                                    u.setProfileImage(profileImage);
+
+                                    //u.setDeleted(deleted);
+                                    //g.setBalance(totBalance);
+                                    //se il gruppo non è deleted e io faccio ancora parte del gruppo
+                                    if (!deleted &&
+                                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
+                                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                                            )
+                                    {
+                                        friends.put(userID, u);
+
+                                    }
+                                    else
+                                    {
+                                        friends.remove(userID);
+                                    }
+
+                                    friendsViewAdapter.update(friends);
+                                    friendsViewAdapter.notifyDataSetChanged();
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    /*
+                    //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
+                    //if (dataSnapshot.child("members").hasChild(userID))
+                    //{
+                    Group g = new Group();
+                    g.setName(groupName);
+                    g.setBalance(0d);
+                    g.setDeleted(deleted);
+                    if (!deleted &&
+                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)) {
+                        groups.put(groupID, g);
+                    }
+                    else
+                    {
+                        groups.remove(groupID);
+                    }
+
+//                    Group nullGroup = new Group();
+//                    nullGroup.setID(groupID + 1);
+//                    groups.put(nullGroup.getID(), nullGroup);
+
+                    groupsViewAdapter.update(groups);
+                    groupsViewAdapter.notifyDataSetChanged();
+                    totBalance = 0d;
+                    */
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+
+            }
+        });
     }
 
 
