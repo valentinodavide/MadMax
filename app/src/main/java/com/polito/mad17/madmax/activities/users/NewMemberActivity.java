@@ -162,7 +162,7 @@ public class NewMemberActivity extends AppCompatActivity {
                 Event event = new Event(
                         groupID,
                         Event.EventType.FRIEND_GROUP_INVITE,
-                        currentUser.getUsername()
+                        currentUser.getName() + " " + currentUser.getSurname()
                 );
                 event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
                 event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
@@ -201,8 +201,8 @@ public class NewMemberActivity extends AppCompatActivity {
                 Event event = new Event(
                         groupID,
                         Event.EventType.GROUP_MEMBER_ADD,
-                        currentUser.getUsername(),
-                        newMemeber.getUsername()
+                        currentUser.getName() + " " + currentUser.getSurname(),
+                        newMemeber.getName() + " " + newMemeber.getSurname()
                 );
                 event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
                 event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));

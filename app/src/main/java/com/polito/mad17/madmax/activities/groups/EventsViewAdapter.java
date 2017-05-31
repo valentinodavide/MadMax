@@ -81,7 +81,7 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
         switch(event.getEventType()) {
             case GROUP_ADD:
                 eventViewHolder.imageView.setImageResource(R.drawable.group_add);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.GROUP_ADD) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_ADD) + " \"" + event.getObject() + "\"");
                 break;
             /*case GROUP_REMOVE:
                 eventViewHolder.imageView.setImageResource(R.drawable.group_remove);
@@ -89,47 +89,47 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 break;*/
             case GROUP_EDIT:
                 eventViewHolder.imageView.setImageResource(R.drawable.group_edit);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.GROUP_EDIT) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_EDIT) + " \"" + event.getObject() + "\"");
                 break;
             case GROUP_MEMBER_ADD:
                 eventViewHolder.imageView.setImageResource(R.drawable.member_add);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.GROUP_MEMBER_ADD) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_MEMBER_ADD) + " " + event.getObject());
                 break;
             case GROUP_MEMBER_REMOVE:
                 eventViewHolder.imageView.setImageResource(R.drawable.member_remove);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.GROUP_MEMBER_REMOVE) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_MEMBER_REMOVE) + " " + event.getObject());
                 break;
             case EXPENSE_ADD:
                 eventViewHolder.imageView.setImageResource(R.drawable.expense_add);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.EXPENSE_ADD) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.EXPENSE_ADD) + " \"" + event.getObject() + "\"");
                 break;
             case EXPENSE_REMOVE:
                 eventViewHolder.imageView.setImageResource(R.drawable.expense_remove);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.EXPENSE_REMOVE) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.EXPENSE_REMOVE) + " \"" + event.getObject() + "\"");
                 break;
             case EXPENSE_EDIT:
                 eventViewHolder.imageView.setImageResource(R.drawable.expense_edit);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.EXPENSE_EDIT) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.EXPENSE_EDIT) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_ADD:
                 eventViewHolder.imageView.setImageResource(R.drawable.expense_add);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.PENDING_EXPENSE_ADD) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_ADD) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_REMOVE:
                 eventViewHolder.imageView.setImageResource(R.drawable.expense_remove);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.PENDING_EXPENSE_REMOVE) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_REMOVE) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_EDIT:
                 eventViewHolder.imageView.setImageResource(R.drawable.expense_edit);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.PENDING_EXPENSE_EDIT) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_EDIT) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_VOTE_UP:
                 eventViewHolder.imageView.setImageResource(R.drawable.vote_up);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.PENDING_EXPENSE_VOTE) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_VOTE) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_VOTE_DOWN:
                 eventViewHolder.imageView.setImageResource(R.drawable.vote_down);
-                event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.PENDING_EXPENSE_VOTE) + " \"" + event.getObject() + "\"");
+                event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_VOTE) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_APPROVED:
                 eventViewHolder.imageView.setImageResource(R.drawable.pending_expense_approved);
@@ -145,19 +145,20 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 break;*/
             case FRIEND_GROUP_INVITE:
                 eventViewHolder.imageView.setImageResource(R.drawable.member_add);
-                event.setDescription(context.getString(R.string.FRIEND_GROUP_INVITE) + " \"" + event.getObject() + "\"");
+                event.setDescription(context.getString(R.string.FRIEND_GROUP_INVITE) + " " + event.getObject());
                 break;
             case USER_PAY: // instead of the username the subject must be the ID of the user
+                // todo da mettere currency
                 eventViewHolder.imageView.setImageResource(R.drawable.user_pay);
                 if (currentUser.getID().equals(event.getSubject())) {
                     event.setDescription(context.getString(R.string.ME_PAY) + " " + event.getAmount());
                 }
                 else {
-                    databaseReference.child("users").child(event.getSubject()).child("username")
+                    databaseReference.child("users").child(event.getSubject())
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                event.setDescription("\"" + dataSnapshot.getValue(String.class) + "\" " + context.getString(R.string.FRIEND_PAY) + " " + event.getAmount());
+                                event.setDescription(dataSnapshot.child("name").getValue(String.class) + " " + dataSnapshot.child("surname").getValue(String.class) + " " + context.getString(R.string.FRIEND_PAY) + " " + event.getAmount());
                             }
 
                             @Override
@@ -170,14 +171,14 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
             case USER_COMMENT_ADD: // instead of the username the subject must be the ID of the user
                 eventViewHolder.imageView.setImageResource(R.drawable.user_comment);
                 if (currentUser.getID().equals(event.getSubject())) {
-                    event.setDescription(context.getString(R.string.ME_COMMENT_ADD) + " " + "\"" + event.getObject() + "\"");
+                    event.setDescription(context.getString(R.string.ME_COMMENT_ADD) + " \"" + event.getObject() + "\"");
                 }
                 else {
-                    databaseReference.child("users").child(event.getSubject()).child("username")
+                    databaseReference.child("users").child(event.getSubject())
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    event.setDescription("\"" + dataSnapshot.getValue(String.class) + "\" " + context.getString(R.string.FRIEND_COMMENT_ADD) + " " + "\"" + event.getObject() + "\"");
+                                    event.setDescription(dataSnapshot.child("name").getValue(String.class) + " " + dataSnapshot.child("surname").getValue(String.class) + " " + context.getString(R.string.FRIEND_COMMENT_ADD) + " \"" + event.getObject() + "\"");
                                 }
 
                                 @Override

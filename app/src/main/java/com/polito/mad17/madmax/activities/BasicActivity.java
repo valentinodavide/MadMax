@@ -149,7 +149,7 @@ public class BasicActivity extends AppCompatActivity {
                 Event event = new Event(
                         groupID,
                         Event.EventType.GROUP_MEMBER_ADD,
-                        currentUser.getUsername(),
+                        currentUser.getName() + " " + currentUser.getSurname(),
                         newMemeber.getUsername()
                 );
                 event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));

@@ -167,7 +167,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                         Log.d(TAG, "group img url: " + newGroup.getImage());
                     }
                     databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-                    String timeStamp = SimpleDateFormat.getDateTimeInstance().toString();
+                    String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
                     databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
                     FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
@@ -179,7 +179,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                     Event event = new Event(
                             newgroup_id,
                             Event.EventType.GROUP_ADD,
-                            currentUser.getUsername(),
+                            currentUser.getName() + " " + currentUser.getSurname(),
                             newGroup.getName()
                     );
                     event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));

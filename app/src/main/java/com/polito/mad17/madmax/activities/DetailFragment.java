@@ -363,7 +363,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 Event event = new Event(
                         groupID,
                         Event.EventType.FRIEND_GROUP_INVITE,
-                        currentUser.getUsername()
+                        currentUser.getName() + " " + currentUser.getSurname()
                 );
                 event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
                 event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));

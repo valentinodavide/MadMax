@@ -149,7 +149,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                                     Event event = new Event(
                                             dataSnapshot.child("groupID").getValue(String.class),
                                             eventType,
-                                            currentUser.getUsername(),
+                                            currentUser.getName() + " " + currentUser.getSurname(),
                                             dataSnapshot.child("description").getValue(String.class)
                                     );
                                     event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));

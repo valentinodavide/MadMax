@@ -248,7 +248,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         Event event = new Event(
                                 groupID,
                                 Event.EventType.PENDING_EXPENSE_ADD,
-                                currentUser.getUsername(),
+                                currentUser.getName() + " " + currentUser.getSurname(),
                                 newExpense.getDescription(),
                                 newExpense.getAmount()
                         );
@@ -267,7 +267,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         Event event = new Event(
                                 newExpense.getGroupID(),
                                 Event.EventType.EXPENSE_ADD,
-                                currentUser.getUsername(),
+                                currentUser.getName() + " " + currentUser.getSurname(),
                                 newExpense.getDescription(),
                                 newExpense.getAmount()
                         );
