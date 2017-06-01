@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +22,7 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.User;
@@ -45,6 +48,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Context mContext;
     private Activity activity;
+    private LayoutInflater layoutInflater;
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -230,7 +234,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     public PendingExpenseViewAdapter.ItemExpensesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(context);
 
         View view = layoutInflater.inflate(R.layout.pending_item, parent, false);
 
@@ -263,10 +267,26 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         else {
             Expense expense = getItem(position).getValue();
 
-            if (expense.getExpensePhoto() != null) {
-                String photo = expense.getExpensePhoto();
-                int photoUserId = Integer.parseInt(photo);
-                holder.imageView.setImageResource(photoUserId);
+            String p = expense.getGroupImage();
+
+            if (p != null) {
+                //int photoUserId = Integer.parseInt(p);
+                //holder.imageView.setImageResource(photoUserId);
+
+                Glide.with(layoutInflater.getContext()).load(p)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
+            }
+            else
+            {
+                Glide.with(layoutInflater.getContext()).load(R.drawable.avatar_group)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
+
             }
 
             holder.nameTextView.setText(expense.getDescription());

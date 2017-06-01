@@ -64,6 +64,7 @@ public class NewExpenseActivity extends AppCompatActivity {
     private String userID = null;
     private String callingActivity;
     private String groupName;
+    private String groupImage;
     //private Integer numberMembers = null;
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
@@ -83,6 +84,7 @@ public class NewExpenseActivity extends AppCompatActivity {
         userID = intent.getStringExtra("userID");
         callingActivity = intent.getStringExtra("callingActivity");
         groupName = intent.getStringExtra("groupName");
+        groupImage = intent.getStringExtra("groupImage");
 
         description = (EditText) findViewById(R.id.edit_description);
         amount = (EditText) findViewById(R.id.edit_amount);
@@ -236,6 +238,10 @@ public class NewExpenseActivity extends AppCompatActivity {
                     if (callingActivity.equals("ChooseGroupActivity"))
                     {
                         newExpense.setGroupName(groupName);
+                        if (groupImage != null)
+                            newExpense.setGroupImage(groupImage);
+
+
                         FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, billPhoto);
                         //todo qui
                         Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);

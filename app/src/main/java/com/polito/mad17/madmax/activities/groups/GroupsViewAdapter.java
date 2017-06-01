@@ -158,8 +158,12 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(groupViewHolder.imageView);
             } else {
-                groupViewHolder.imageView.setImageResource(R.drawable.group);
-            }
+
+                Glide.with(layoutInflater.getContext()).load(R.drawable.avatar_group)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(groupViewHolder.imageView);            }
 
             groupViewHolder.nameTextView.setText(item.getValue().getName());
 

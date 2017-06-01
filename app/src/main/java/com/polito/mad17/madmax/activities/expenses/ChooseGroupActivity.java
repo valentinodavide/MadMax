@@ -107,6 +107,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         myIntent.putExtra("groupID", groupID);
         myIntent.putExtra("callingActivity", "ChooseGroupActivity");
         myIntent.putExtra("groupName", groups.get(groupID).getName());
+        myIntent.putExtra("groupImage", groups.get(groupID).getImage());
         startActivity(myIntent);
     }
 
