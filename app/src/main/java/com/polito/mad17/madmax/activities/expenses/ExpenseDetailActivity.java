@@ -131,7 +131,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 }
                 else
                 {
-                    Intent intent = new Intent(ExpenseDetailActivity.this, PayGroupActivity.class);
+                    Intent intent = new Intent(ExpenseDetailActivity.this, PayExpenseActivity.class);
                     intent.putExtra("groupID", groupID);
                     intent.putExtra("userID", userID);
                     intent.putExtra("debt", expenseBalance);

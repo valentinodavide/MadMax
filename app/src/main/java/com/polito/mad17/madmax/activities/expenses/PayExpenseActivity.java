@@ -127,7 +127,7 @@ public class PayExpenseActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        payDebtForExpense(userID, groupID, money);
+                        //payDebtForExpense(userID, groupID, money);
                         // todo add event for USER_PAY
                         intent = new Intent(this, ExpenseDetailActivity.class);
                         intent.putExtra("groupID", groupID);

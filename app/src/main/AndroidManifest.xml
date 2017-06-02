@@ -83,6 +83,10 @@
             android:parentActivityName=".activities.groups.GroupDetailActivity"
             >
         </activity>
+        <activity android:name=".activities.expenses.PayExpenseActivity"
+            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"
+            >
+        </activity>
 
         <service
             android:name=".service.FirebaseServiceMessage">
