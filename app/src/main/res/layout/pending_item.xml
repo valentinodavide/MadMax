@@ -69,7 +69,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_centerVertical="true"
                 android:layout_marginTop="5dp"
-                android:src="@drawable/group"
+                android:src="@drawable/group_default"
                 />
 
             <TextView
@@ -168,7 +168,7 @@
                 android:layout_height="27dp"
                 android:layout_marginTop="7dp"
                 android:layout_marginLeft="10dp"
-                android:background="@drawable/people_black"
+                android:background="@drawable/group"
                 />
 
             <TextView

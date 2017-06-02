@@ -281,7 +281,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             }
             else
             {
-                Glide.with(layoutInflater.getContext()).load(R.drawable.avatar_group)
+                Glide.with(layoutInflater.getContext()).load(R.drawable.group_default)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

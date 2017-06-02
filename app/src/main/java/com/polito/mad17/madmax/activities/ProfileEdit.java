@@ -77,7 +77,7 @@ public class ProfileEdit extends AppCompatActivity {
 
         profileImageView = (ImageView) this.findViewById(R.id.profile_image);
         if (!currentUser.loadImage(this, profileImageView)) {
-            profileImageView.setImageResource(R.drawable.anonymous);
+            profileImageView.setImageResource(R.drawable.user_default);
         }
 
         profileImageView.setOnClickListener(new View.OnClickListener() {

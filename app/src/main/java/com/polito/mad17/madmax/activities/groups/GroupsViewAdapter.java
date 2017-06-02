@@ -154,7 +154,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         .into(groupViewHolder.imageView);
             } else {
 
-                Glide.with(layoutInflater.getContext()).load(R.drawable.avatar_group)
+                Glide.with(layoutInflater.getContext()).load(R.drawable.group_default)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

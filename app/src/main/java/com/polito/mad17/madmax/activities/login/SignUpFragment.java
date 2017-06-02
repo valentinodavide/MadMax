@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import static android.R.attr.data;
 import static android.app.Activity.RESULT_OK;
 
 public class SignUpFragment extends Fragment {
@@ -110,6 +111,12 @@ public class SignUpFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
 
         profileImageView = (ImageView) view.findViewById(R.id.profile_image);
+        Glide.with(this).load(R.drawable.user_default)
+                .centerCrop()
+                .bitmapTransform(new CropCircleTransformation(this.getContext()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(profileImageView);
+
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

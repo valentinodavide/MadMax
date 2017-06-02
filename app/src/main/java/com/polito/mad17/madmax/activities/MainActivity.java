@@ -238,7 +238,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             case 0:
                 // friends fragment
                 Log.d(TAG, "fab 0");
-                fab.setImageResource(R.drawable.person_add);
+                fab.setImageResource(R.drawable.user_add);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -280,7 +280,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             case 2:
                 // pending fragment
                 Log.d(TAG, "fab 2");
-                fab.setImageResource(R.drawable.edit);
+                fab.setImageResource(android.R.drawable.ic_input_add);
 
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -292,7 +292,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                     }
                 });
-                //fab.setClickable(false);
                 break;
         }
     }

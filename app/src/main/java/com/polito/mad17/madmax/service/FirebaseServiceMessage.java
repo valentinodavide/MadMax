@@ -29,7 +29,7 @@ public class FirebaseServiceMessage extends FirebaseMessagingService {
     private void showNotification(String title, String body, Map<String, String> data)
     {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.chiara)
+                        .setSmallIcon(R.drawable.user_default)
                         .setContentTitle(title)
                         .setContentText("Hello World!");
     }

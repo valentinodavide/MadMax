@@ -14,7 +14,7 @@
         android:layout_width="62dp"
         android:layout_height="62dp"
         android:layout_marginRight="5dp"
-        android:src="@drawable/anonymous"
+        android:src="@drawable/user_default"
         /-->
 
     <LinearLayout

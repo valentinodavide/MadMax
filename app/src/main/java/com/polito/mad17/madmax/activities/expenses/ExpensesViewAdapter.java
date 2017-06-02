@@ -143,7 +143,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             }
             else
             {
-                Glide.with(layoutInflater.getContext()).load(R.drawable.ic_face)
+                Glide.with(layoutInflater.getContext()).load(R.drawable.expense_default)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

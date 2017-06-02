@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
-        <ImageView android:src="@drawable/anonymous"
+        <ImageView android:src="@drawable/user_default"
             android:id="@+id/profile_image"
             android:layout_width="150dp"
             android:layout_height="150dp"

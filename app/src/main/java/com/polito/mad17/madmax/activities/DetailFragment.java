@@ -248,7 +248,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             case 1:
                 // members fragment
                 Log.d(TAG, "fab 1");
-                fab.setImageResource(R.drawable.person_add);
+                fab.setImageResource(R.drawable.user_add);
                 fab.setVisibility(View.VISIBLE);
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override

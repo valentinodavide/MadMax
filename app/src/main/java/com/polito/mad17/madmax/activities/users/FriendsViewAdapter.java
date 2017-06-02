@@ -150,7 +150,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             }
             else if(photo == null || photo.equals(""))
             {
-                Glide.with(layoutInflater.getContext()).load(R.drawable.ic_face)
+                Glide.with(layoutInflater.getContext()).load(R.drawable.user_default)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)

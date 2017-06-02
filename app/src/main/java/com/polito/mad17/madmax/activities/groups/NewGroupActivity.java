@@ -231,7 +231,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
             /*// Log.d(TAG, String.valueOf(bitmap));
             Glide.with(this).load(ImageUri)
-                    .placeholder(R.drawable.group)
+                    .placeholder(R.drawable.group_default)
                     .centerCrop()
                     .into(imageGroup);*/
             return;

@@ -92,11 +92,11 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_EDIT) + " \"" + event.getObject() + "\"");
                 break;
             case GROUP_MEMBER_ADD:
-                eventViewHolder.imageView.setImageResource(R.drawable.member_add);
+                eventViewHolder.imageView.setImageResource(R.drawable.user_add);
                 event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_MEMBER_ADD) + " " + event.getObject());
                 break;
             case GROUP_MEMBER_REMOVE:
-                eventViewHolder.imageView.setImageResource(R.drawable.member_remove);
+                eventViewHolder.imageView.setImageResource(R.drawable.user_remove);
                 event.setDescription(event.getSubject() + " " + context.getString(R.string.GROUP_MEMBER_REMOVE) + " " + event.getObject());
                 break;
             case EXPENSE_ADD:
@@ -124,15 +124,15 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_EDIT) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_VOTE_UP:
-                eventViewHolder.imageView.setImageResource(R.drawable.vote_up);
+                eventViewHolder.imageView.setImageResource(R.drawable.thumb_up_black);
                 event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_VOTE) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_VOTE_DOWN:
-                eventViewHolder.imageView.setImageResource(R.drawable.vote_down);
+                eventViewHolder.imageView.setImageResource(R.drawable.thumb_down_black);
                 event.setDescription(event.getSubject() + " " + context.getString(R.string.PENDING_EXPENSE_VOTE) + " \"" + event.getObject() + "\"");
                 break;
             case PENDING_EXPENSE_APPROVED:
-                eventViewHolder.imageView.setImageResource(R.drawable.pending_expense_approved);
+                eventViewHolder.imageView.setImageResource(R.drawable.expense_add);
                 event.setDescription(context.getString(R.string.PENDING_EXPENSE) + " \"" + event.getObject() + "\" " + context.getString(R.string.PENDING_EXPENSE_APPROVED));
                 break;
             case PENDING_EXPENSE_NEGLECTED:
@@ -140,11 +140,11 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 event.setDescription(context.getString(R.string.PENDING_EXPENSE) + " \"" + event.getObject() + "\" " + context.getString(R.string.PENDING_EXPENSE_NEGLECTED));
                 break;
             /*case FRIEND_INVITE:
-                eventViewHolder.imageView.setImageResource(R.drawable.member_add);
+                eventViewHolder.imageView.setImageResource(R.drawable.user_add);
                 event.setDescription(context.getString(R.string.FRIEND_INVITE) + " \"" + event.getObject() + "\"");
                 break;*/
             case FRIEND_GROUP_INVITE:
-                eventViewHolder.imageView.setImageResource(R.drawable.member_add);
+                eventViewHolder.imageView.setImageResource(R.drawable.user_add);
                 event.setDescription(context.getString(R.string.FRIEND_GROUP_INVITE) + " " + event.getObject());
                 break;
             case USER_PAY: // instead of the username the subject must be the ID of the user
@@ -189,7 +189,7 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 }
                 break;
             default:
-                eventViewHolder.imageView.setImageResource(R.drawable.default_event);
+                eventViewHolder.imageView.setImageResource(R.drawable.event_default);
                 event.setDescription("\"" + event.getSubject() + "\" " + context.getString(R.string.did) + " \"" + event.getObject() + "\"");
         }
 

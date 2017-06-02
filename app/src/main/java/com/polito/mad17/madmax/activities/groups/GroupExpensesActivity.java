@@ -43,10 +43,10 @@ public class GroupExpensesActivity extends AppCompatActivity {
             expenses = group.getExpenses();
 
             //todo a cosa serve questa expense?? quale utente la fa?
-            Expense e = new Expense(
+            /*Expense e = new Expense(
                     String.valueOf(expenses.size()), description, null, Double.valueOf(amount),
                     currency, String.valueOf(R.drawable.expense6), "urlBill", false, group.getID(), null, false
-            );
+            );*/
 
             // save the new expense
             //expenses.put(String.valueOf(expenses.size()), e);

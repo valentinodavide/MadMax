@@ -8,7 +8,7 @@
             android:title="@string/home" />
         <item
             android:id="@+id/invite_friend"
-            android:icon="@drawable/person_add"
+            android:icon="@drawable/user_add"
             android:title="@string/invite_member" />
         <item
             android:id="@+id/settings"
@@ -16,7 +16,7 @@
             android:title="@string/settings" />
         <item
             android:id="@+id/logout"
-            android:icon="@drawable/exit"
+            android:icon="@drawable/logout"
             android:title="@string/logout" />
     </group>
 </menu>

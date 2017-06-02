@@ -47,8 +47,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/group_add"
-        android:tint="@color/colorWhite"
-        app:rippleColor="@color/colorPrimaryLight" />
+        android:tint="@color/colorWhite" />
 
     <FrameLayout
         android:id="@+id/main"

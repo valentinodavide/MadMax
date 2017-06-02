@@ -136,7 +136,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
 
         if(photo == null || photo.equals(""))
         {
-            Glide.with(layoutInflater.getContext()).load(R.drawable.default_profile)
+            Glide.with(layoutInflater.getContext()).load(R.drawable.user_default)
                     .centerCrop()
                     .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
