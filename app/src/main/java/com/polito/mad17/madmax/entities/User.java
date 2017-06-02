@@ -44,6 +44,9 @@ public class User implements Parcelable {
     private Double alreadyPaid;
     private Double dueImport;
 
+    //Bilancio dello user verso un certo gruppo
+    private Double balanceWithGroup;
+
     private TreeMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
     private TreeMap<String, User> userFriends;  //String = UID, User = friend of this user
 
@@ -251,6 +254,10 @@ public class User implements Parcelable {
     public Double getDueImport() {return dueImport;}
 
     public void setDueImport(Double dueImport) {this.dueImport = dueImport;}
+
+    public Double getBalanceWithGroup() {return balanceWithGroup;}
+
+    public void setBalanceWithGroup(Double balanceWithGroup) {this.balanceWithGroup = balanceWithGroup;}
     /*
         END GETTERS & SETTERS
      */

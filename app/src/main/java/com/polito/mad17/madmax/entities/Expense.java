@@ -29,6 +29,12 @@ public class Expense {
     private Double balance;     //my balance for this expense
 
 
+
+    private String groupImage;      //immagine del gruppo associato alla spesa
+
+
+
+
     public Expense() { this.participants = new HashMap<>(); }
 
     public Expense (String ID, String description, String category, Double amount, String currency, String billPhoto, String expensePhoto, Boolean equallyDivided, String groupID, String creatorID, Boolean deleted) {
@@ -154,6 +160,10 @@ public class Expense {
     public Double getBalance() {return balance;}
 
     public void setBalance(Double balance) {this.balance = balance;}
+
+    public String getGroupImage() {return groupImage;}
+
+    public void setGroupImage(String groupImage) {this.groupImage = groupImage;}
 
 
 

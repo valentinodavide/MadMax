@@ -71,6 +71,7 @@ public class FirebaseUtils {
             firstStart = false;
         }
 
+        Log.d("FIrebaseUtils", "prima di getReference()");
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
 
@@ -602,6 +603,7 @@ public class FirebaseUtils {
                     pendingExpense.setDescription(dataSnapshot.child("description").getValue(String.class));
                     pendingExpense.setGroupName(dataSnapshot.child("groupName").getValue(String.class));
                     pendingExpense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+                    pendingExpense.setGroupImage(dataSnapshot.child("groupImage").getValue(String.class));
                     pendingExpense.setParticipantsCount(participantsCount);
                     pendingExpense.setYes(yes);
                     pendingExpense.setNo(no);

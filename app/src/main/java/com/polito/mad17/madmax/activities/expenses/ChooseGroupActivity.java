@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
@@ -53,11 +54,18 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
 
         setContentView(R.layout.activity_choose_group);
 
-        recyclerView = (RecyclerView) findViewById(R.id.rv_skeleton);
-        recyclerView.setHasFixedSize(true);
+        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(this)
+                .orientation(InsetDivider.VERTICAL_LIST)
+                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
+                .color(getResources().getColor(R.color.colorDivider))
+                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
+                .overlay(true)
+                .build();
 
+        recyclerView = (RecyclerView) findViewById(R.id.rv_skeleton);
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(divider);
 
         groupsViewAdapter = new GroupsViewAdapter(getBaseContext(), this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
@@ -99,6 +107,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         myIntent.putExtra("groupID", groupID);
         myIntent.putExtra("callingActivity", "ChooseGroupActivity");
         myIntent.putExtra("groupName", groups.get(groupID).getName());
+        myIntent.putExtra("groupImage", groups.get(groupID).getImage());
         startActivity(myIntent);
     }
 

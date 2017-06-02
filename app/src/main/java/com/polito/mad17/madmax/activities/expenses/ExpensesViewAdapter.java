@@ -1,6 +1,8 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,12 +12,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Expense;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static com.polito.mad17.madmax.R.string.photo;
 
 public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemExpensesViewHolder> {
 
@@ -28,6 +36,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     private ListItemLongClickListener itemLongClickListener = null;
     private Context context;
 
+    private LayoutInflater layoutInflater;
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -100,7 +109,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     public ExpensesViewAdapter.ItemExpensesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(context);
 
         View view = layoutInflater.inflate(R.layout.list_item, parent, false);
 
@@ -116,27 +125,41 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         if(position == (expenses.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
-//            groupViewHolder.imageView.
             expensesViewHolder.nameTextView.setText("");
             expensesViewHolder.balanceTextTextView.setText("");
             expensesViewHolder.balanceTextView.setText("");
+            expensesViewHolder.itemView.setOnClickListener(null);
         }
         else {
             Expense expense = getItem(position).getValue();
-
-            if (expense.getExpensePhoto() != null) {
+            if (expense.getExpensePhoto() != null)
+            {
                 String photo = expense.getExpensePhoto();
                 int photoUserId = Integer.parseInt(photo);
                 expensesViewHolder.imageView.setImageResource(photoUserId);
+
+                Glide.with(layoutInflater.getContext()).load(photo)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(expensesViewHolder.imageView);
+            }
+            else
+            {
+                Glide.with(layoutInflater.getContext()).load(R.drawable.ic_face)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(expensesViewHolder.imageView);
             }
 
             expensesViewHolder.nameTextView.setText(expense.getDescription());
 
-
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+            String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
 
             Double expenseBalance = expense.getBalance();
-            String balance = Math.abs(expenseBalance) + " €";
-
+            String balance = Math.abs(expenseBalance) + " " + expense.getCurrency();
 
             if (expenseBalance > 0) {
                 expensesViewHolder.balanceTextTextView.setText(R.string.credit_of);
@@ -158,40 +181,10 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
                 {
                     expensesViewHolder.balanceTextTextView.setText(R.string.no_debts);
                     expensesViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
-                    expensesViewHolder.balanceTextView.setText("0 €");
+                    expensesViewHolder.balanceTextView.setText("0 " + defaultCurrency);
                 }
             }
 
-//        if (expense.getAmount() > 0)
-//        {
-//            expensesViewHolder.balanceTextTextView.setText(R.string.credit_of);
-//            expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
-//
-//            String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
-//            Log.d(TAG, "balance "  + balance);
-//
-//            expensesViewHolder.balanceTextView.setText(balance);
-//            expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorPrimaryDark));
-//
-//        }
-//        else
-//        {
-//            if (expense.getAmount() < 0)
-//            {
-//                expensesViewHolder.balanceTextTextView.setText(R.string.debt_of);
-//                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorAccent));
-//
-//                String balance = df.format(Math.abs(expense.getAmount())) + " " + expense.getCurrency();
-//                Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
-//                expensesViewHolder.balanceTextView.setText(balance);
-//                expensesViewHolder.balanceTextView.setTextColor(context.getColor(R.color.colorAccent));
-//            }
-//            else
-//            {
-//                expensesViewHolder.balanceTextTextView.setText(R.string.no_debts);
-//                expensesViewHolder.balanceTextTextView.setTextColor(context.getColor(R.color.colorSecondaryText));
-//            }
-//        }
         }
     }
 

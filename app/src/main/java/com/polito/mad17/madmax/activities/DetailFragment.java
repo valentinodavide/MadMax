@@ -98,12 +98,20 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             // Inflate the layout for this fragment
             mainView = inflater.inflate(R.layout.shared_groups_list, container, false);
 
-            recyclerView = (RecyclerView) mainView.findViewById(R.id.rv_skeleton);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setAdapter(groupsViewAdapter);
+            RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
+                    .orientation(InsetDivider.VERTICAL_LIST)
+                    .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
+                    .color(getResources().getColor(R.color.colorDivider))
+                    .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
+                    .overlay(true)
+                    .build();
 
+            recyclerView = (RecyclerView) mainView.findViewById(R.id.rv_skeleton);
             layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             recyclerView.setLayoutManager(layoutManager);
+            recyclerView.addItemDecoration(divider);
+
+            recyclerView.setAdapter(groupsViewAdapter);
 
             //Extract data from bundle
             friendID = bundle.getString("friendID");

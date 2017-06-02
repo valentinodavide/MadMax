@@ -533,6 +533,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
         // getting reference to the user from db
         DatabaseReference currentUserRef = usersRef.child(currentUID);
+        currentUserRef.child("token").setValue(FirebaseInstanceId.getInstance().getToken());
 
         if (currentUserRef == null) {
             Log.e(TAG, "unable to retrieve logged user from db");
