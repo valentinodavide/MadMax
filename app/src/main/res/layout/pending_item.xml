@@ -73,7 +73,7 @@
                 />
 
             <TextView
-                android:id="@+id/tv_group"
+                android:id="@+id/tv_receiver"
                 android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"

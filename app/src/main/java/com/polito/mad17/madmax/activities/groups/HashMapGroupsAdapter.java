@@ -66,7 +66,7 @@ public class HashMapGroupsAdapter extends BaseAdapter {
             result = convertView;
         }
 
-        TextView name = (TextView) result.findViewById(R.id.tv_name);
+        TextView name = (TextView) result.findViewById(R.id.tv_sender);
 
         if(position == (mData.size() - 1))
         {

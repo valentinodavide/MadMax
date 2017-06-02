@@ -14,17 +14,17 @@
         android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/tv_name"
+        android:id="@+id/tv_sender"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:layout_marginTop="30dp"
         android:text="Me"/>
 
     <ImageView
-        android:id="@+id/username"
+        android:id="@+id/sender_photo"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_below="@+id/tv_name"
+        android:layout_below="@+id/tv_sender"
         android:background="@color/colorAccent"
         />
 
@@ -67,16 +67,17 @@
         >
 
         <TextView
-            android:id="@+id/tv_group"
+            android:id="@+id/tv_receiver"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_marginTop="30dp"
             android:text="Group"/>
 
         <ImageView
+            android:id="@+id/receiver_photo"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_below="@+id/tv_group"
+            android:layout_below="@+id/tv_receiver"
             android:background="@color/colorAccent"
             />
 

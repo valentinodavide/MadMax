@@ -1,6 +1,5 @@
 package com.polito.mad17.madmax.activities.users;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,6 @@ import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
-import static com.polito.mad17.madmax.R.string.balance;
 
 public class HashMapFriendsAdapter extends BaseAdapter {
     private final ArrayList mData;
@@ -69,7 +65,7 @@ public class HashMapFriendsAdapter extends BaseAdapter {
 
         Map.Entry<String, User> item = getItem(position);
 
-        TextView name = (TextView) result.findViewById(R.id.tv_name);
+        TextView name = (TextView) result.findViewById(R.id.tv_sender);
         TextView balanceText = (TextView) result.findViewById(R.id.tv_balance_text);
         balanceText.setVisibility(View.INVISIBLE);
         TextView balance = (TextView) result.findViewById(R.id.tv_balance);

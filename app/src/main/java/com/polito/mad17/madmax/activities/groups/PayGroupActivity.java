@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.DecimalDigitsInputFilter;
 import com.polito.mad17.madmax.activities.MainActivity;
 
 import java.text.DecimalFormat;
@@ -62,7 +63,7 @@ public class PayGroupActivity extends AppCompatActivity {
         amountEditText = (EditText) findViewById(R.id.amount);
         amountEditText.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(7,2)});
 
-        groupNameTextView = (TextView) findViewById(R.id.tv_group);
+        groupNameTextView = (TextView) findViewById(R.id.tv_receiver);
         groupNameTextView.setText(groupName);
 
 
@@ -251,22 +252,7 @@ public class PayGroupActivity extends AppCompatActivity {
     }
 
 
-    public class DecimalDigitsInputFilter implements InputFilter {
 
-        Pattern mPattern;
 
-        public DecimalDigitsInputFilter(int digitsBeforeZero,int digitsAfterZero) {
-            mPattern=Pattern.compile("[0-9]{0," + (digitsBeforeZero-1) + "}+((\\.[0-9]{0," + (digitsAfterZero-1) + "})?)||(\\.)?");
-        }
 
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
-
-            Matcher matcher=mPattern.matcher(dest);
-            if(!matcher.matches())
-                return "";
-            return null;
-        }
-
-    }
 }

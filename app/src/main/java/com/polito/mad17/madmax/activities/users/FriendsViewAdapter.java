@@ -18,7 +18,6 @@ import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.ItemFriendsViewHolder> {
@@ -80,7 +79,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         public ItemFriendsViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
-            nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
+            nameTextView = (TextView) itemView.findViewById(R.id.tv_sender);
             balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
             //balanceTextTextView.setVisibility(View.INVISIBLE);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);

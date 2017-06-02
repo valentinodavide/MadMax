@@ -823,6 +823,7 @@ public class FirebaseUtils {
 
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                u.setProfileImage(dataSnapshot.child("image").getValue(String.class));
                 participants.put(id, u);
                 participantsViewAdapter.update(participants);
                 participantsViewAdapter.notifyDataSetChanged();

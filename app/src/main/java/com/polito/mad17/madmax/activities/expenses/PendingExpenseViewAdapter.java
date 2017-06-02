@@ -96,7 +96,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_pending);
-            groupTextView = (TextView) itemView.findViewById(R.id.tv_group);
+            groupTextView = (TextView) itemView.findViewById(R.id.tv_receiver);
             amountTextView = (TextView) itemView.findViewById(R.id.tv_pricetext);
             yesTextView = (TextView) itemView.findViewById(R.id.tv_up_count);
             noTextView = (TextView) itemView.findViewById(R.id.tv_down_count);

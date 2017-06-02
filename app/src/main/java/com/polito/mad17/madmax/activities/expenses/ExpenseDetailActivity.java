@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 
 import org.w3c.dom.Text;
 
@@ -50,11 +52,12 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private TextView creatorNameTextView;
     private TextView balanceTextTextView;
     private TextView balanceTextView;
-    private TextView currencyTextView;
+    private Button payExpenseButton;
     private Toolbar toolbar;
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FloatingActionButton fab;
+    private Double expenseBalance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +118,31 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
         balanceTextTextView = (TextView) findViewById(R.id.tv_balance_text);
         balanceTextView = (TextView) findViewById(R.id.tv_balance);
-        currencyTextView = (TextView) findViewById(R.id.tv_currency);
+        payExpenseButton = (Button) findViewById(R.id.btn_pay_debt);
+
+        payExpenseButton.setOnClickListener( new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d (TAG, "Clicked payButton");
+                if (expenseBalance >= 0)
+                {
+                    Toast.makeText(ExpenseDetailActivity.this,"You have no debts to pay for this expense",Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Intent intent = new Intent(ExpenseDetailActivity.this, PayGroupActivity.class);
+                    intent.putExtra("groupID", groupID);
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("debt", expenseBalance);
+                    intent.putExtra("expenseID", expenseID);
+                    intent.putExtra("expenseName", expenseName);
+                    startActivity(intent);
+                }
+
+
+            }
+        });
 
 
         //Retrieve data of this expense
@@ -133,7 +160,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 //Retrieve my balance for this expense
                 Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                 Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
-                Double expenseBalance = alreadyPaid - dueImport;
+                expenseBalance = alreadyPaid - dueImport;
                 expenseBalance = Math.floor(expenseBalance * 100) / 100;
 
                 String currency = dataSnapshot.child("currency").getValue(String.class);
@@ -143,21 +170,18 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 if (expenseBalance > 0)
                 {
                     balanceTextTextView.setText("For this expense you should receive");
-                    balanceTextView.setText(expenseBalance.toString());
-                    currencyTextView.setText(currency);
+                    balanceTextView.setText(expenseBalance.toString() + " " + currency);
                 }
                 else if (expenseBalance < 0)
                 {
                     balanceTextTextView.setText("For this expense you should pay");
-                    expenseBalance = abs (expenseBalance);
-                    balanceTextView.setText(expenseBalance.toString());
-                    currencyTextView.setText(currency);
+                    Double absBalance = abs (expenseBalance);
+                    balanceTextView.setText(absBalance.toString() + " " + currency);
                 }
                 else if (expenseBalance == 0)
                 {
                     balanceTextTextView.setText("For this expense you have no debts");
-                    balanceTextView.setText("0");
-                    currencyTextView.setText(currency);
+                    balanceTextView.setText("0" + " " + currency);
                 }
 
 

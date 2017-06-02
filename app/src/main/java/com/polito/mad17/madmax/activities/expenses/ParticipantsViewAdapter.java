@@ -133,7 +133,16 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
 
 
         String photo = item.getValue().getProfileImage();
-        if (photo != null)
+
+        if(photo == null || photo.equals(""))
+        {
+            Glide.with(layoutInflater.getContext()).load(R.drawable.default_profile)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.imageView);
+        }
+        else if (photo != null)
         {
             Glide.with(layoutInflater.getContext()).load(photo)
                     .centerCrop()

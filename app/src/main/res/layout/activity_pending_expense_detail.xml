@@ -82,7 +82,7 @@
             android:textColor="@color/colorPrimaryLight"
             />
         <TextView
-            android:id="@+id/tv_group"
+            android:id="@+id/tv_receiver"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"

@@ -19,11 +19,8 @@ import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Expense;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.polito.mad17.madmax.R.string.photo;
 
 public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapter.ItemExpensesViewHolder> {
 
@@ -77,7 +74,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         ItemExpensesViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
-            nameTextView = (TextView) itemView.findViewById(R.id.tv_name);
+            nameTextView = (TextView) itemView.findViewById(R.id.tv_sender);
             balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
@@ -128,7 +125,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             expensesViewHolder.nameTextView.setText("");
             expensesViewHolder.balanceTextTextView.setText("");
             expensesViewHolder.balanceTextView.setText("");
-            expensesViewHolder.itemView.setOnClickListener(null);
+            //expensesViewHolder.itemView.setOnClickListener(null);
         }
         else {
             Expense expense = getItem(position).getValue();

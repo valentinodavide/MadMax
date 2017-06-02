@@ -102,7 +102,7 @@ public class SignUpFragment extends Fragment {
 
         nameView = (EditText) view.findViewById(R.id.name);
         surnameView = (EditText) view.findViewById(R.id.surname);
-        usernameView = (EditText) view.findViewById(R.id.username);
+        usernameView = (EditText) view.findViewById(R.id.sender_photo);
         emailView = (EditText) view.findViewById(R.id.email);
         passwordView = (EditText) view.findViewById(R.id.password);
         loginView = (TextView) view.findViewById(R.id.link_login);

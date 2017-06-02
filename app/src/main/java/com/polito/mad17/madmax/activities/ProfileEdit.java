@@ -1,7 +1,6 @@
 package com.polito.mad17.madmax.activities;
 
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -66,7 +65,7 @@ public class ProfileEdit extends AppCompatActivity {
         surnameView = (EditText) this.findViewById(R.id.surname);
         surnameView.setText(currentUser.getSurname());
 
-        usernameView = (EditText) this.findViewById(R.id.username);
+        usernameView = (EditText) this.findViewById(R.id.sender_photo);
         usernameView.setText(currentUser.getUsername());
 
         //emailView = (EditText) this.findViewById(R.id.email);
