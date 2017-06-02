@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.login;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,7 +20,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
@@ -54,7 +59,20 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
 
         // insert tabs and current fragment in the main layout
         setContentView(R.layout.activity_log_in_signup);
-      //  findViewById(R.id.activity_log_in_signup_layout).setOnClickListener(this);
+
+        // for adding custom font to the title of the app
+        TextView titleTextView = (TextView) findViewById(R.id.title);
+        Typeface mycustomfont = Typeface.createFromAsset(getAssets(), "fonts/Lobster-Regular.ttf");
+        titleTextView.setTypeface(mycustomfont);
+
+        // for adding custom background image
+        ImageView background = (ImageView) findViewById(R.id.background);
+        Glide.with(this).load(R.drawable.background)
+                .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(background);
+
+        //  findViewById(R.id.activity_log_in_signup_layout).setOnClickListener(this);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText(R.string.login));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.signup));

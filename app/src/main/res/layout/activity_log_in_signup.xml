@@ -11,38 +11,51 @@
     android:orientation="vertical"
     android:focusableInTouchMode="true">
 
-    <ImageView
+    <ImageView android:id="@+id/background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/pounds_darker_photoshop"
-        android:scaleX="2" />
+        android:scaleType="centerInside"
+        />
 
-    <TextView
+    <ImageView android:id="@+id/icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        android:scaleType="centerInside"
+        android:src="@mipmap/icon"
+        android:layout_marginTop="72dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="15dp"
+        android:rotation="45"
+        />
+
+    <TextView android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="75dp"
         android:textSize="36sp"
         android:textColor="@color/colorPrimaryText"
         android:text="@string/app_name"
-        android:layout_centerHorizontal="true"/>
+        android:layout_toRightOf="@id/icon"
+        />
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabTextColor="@color/colorPrimaryText"
-            app:tabSelectedTextColor="@color/colorAccent"
-            app:tabIndicatorColor="@color/colorAccent"
-            android:minHeight="?attr/actionBarSize"
-            android:layout_marginTop="150dp"
-            />
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabTextColor="@color/colorPrimaryText"
+        app:tabSelectedTextColor="@color/colorAccent"
+        app:tabIndicatorColor="@color/colorAccent"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_marginTop="150dp"
+        />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/main_view_pager"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@+id/tab_layout"/>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/tab_layout"/>
 
 
 </RelativeLayout>
