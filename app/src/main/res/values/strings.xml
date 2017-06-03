@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">BeeShare</string>
+    <string name="prompt_email" translatable="false">Email</string>
+    <string name="prompt_password" translatable="false">Password</string>
+    <string name="action_sign_in" translatable="false">Signin</string>
+    <string name="login" translatable="false">Login</string>
+    <string name="signup" translatable="false">Signup</string>
+    <string name="prompt_username" translatable="false">Username</string>
+    <string name="ok" translatable="false"> OK </string>
+    <string name="invitation_deep_link" translatable="false">http://www.madmax.com/beeshare</string>
+    <string name="logout" translatable="false">Logout</string>
+    <string name="home" translatable="false">Home</string>
 
-    <string name="title_activity_group_expenses">Group Expenses</string>
-    <string name="title_image_expenses">Image Expenses</string>
-    <string name="title_activity_group_expenses_add">GroupExpensesAdd</string>
+    <string name="title_activity_group_expenses">Group expenses</string>
+    <string name="title_image_expenses">Image expenses</string>
+    <string name="title_activity_group_expenses_add">Add expense to group</string>
     <string name="groups">GROUPS</string>
     <string name="friends">FRIENDS</string>
     <string name="pending">PENDING</string>
@@ -19,32 +29,26 @@
     <string name="photo">Photo</string>
     <string name="save">Save</string>
     <string name="owes_you">OWES YOU</string>
-    <string name="you_should_receive">"YOU SHOULD RECEIVE"</string>
+    <string name="you_should_receive">YOU SHOULD RECEIVE</string>
     <string name="no_debts">NO DEBTS</string>
     <string name="credit_of">CREDIT OF</string>
     <string name="owes_to_the_group">OWES TO GROUP</string>
     <string name="should_receive_from_the_group">SHOULD RECEIVE FROM GROUP</string>
     <string name="debt_of">DEBT OF</string>
     <string name="expense_amount">TOTAL AMOUNT</string>
-    <string name="edit_description_hint">Expense Name</string>
+    <string name="edit_description_hint">Expense description</string>
     <string name="edit_amount_hint">Amount</string>
     <string name="expense_saved">Expense saved</string>
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
     <string name="prompt_create_account">No account yet? Create one</string>
     <string name="prompt_name">Name</string>
     <string name="prompt_surname">Surname</string>
-    <string name="prompt_username">Username</string>
     <string name="prompt_registered_user">Already a member? Login</string>
     <string name="auth_failed">Authentication failed</string>
     <string name="required">This field is required</string>
     <string name="notnull">Field cannot be null</string>
-    <string name="emailVerification_text">A verification email has been sent to your email address.\n\nPlease, look for the verification email in your inbox and click the link in the email</string>
+    <string name="emailVerification_text">A verification email has been sent to you.\n\nPlease, click on the link in the email to confirm your registration.</string>
     <string name="shared_groups">Shared Groups</string>
-    <string name="verify_email">Verify Email</string>
-    <string name="login">Login</string>
-    <string name="signup">Sign Up</string>
+    <string name="verify_email">Verify email</string>
     <string name="expenses">Expenses</string>
     <string name="balance">Balance</string>
     <string name="positive_balance">To receive</string>
@@ -52,33 +56,17 @@
     <string name="activities">Activities</string>
     <string name="members">Members</string>
     <string name="weak_password">At least 6 characters!</string>
-
-    <string-array name="currencies">
-        <item>€</item>
-        <item>$</item>
-        <item>£</item>
-        <item>¥</item>
-    </string-array>
-
     <string name="invitation_message">Join BeeShare!</string>
-    <string name="invitationToGroup_message">You are been invited to join the group</string>
-    <string name="invitation_title">Invitation from BeeShare</string>
-    <string name="invitation_cta">Install!</string>
+    <string name="invitationToGroup_message">A friend want to share expenses with you</string>
+    <string name="invitation_title">Invite on BeeShare!</string>
+    <string name="invitation_cta">Install BeeShare!</string>
     <string name="invitationToGroup_cta">Join to the group!</string>
-    <string name="invitation_deep_link">http://www.madmax.com/beeshare</string>
     <string name="title_activity_group_info">GroupInfoActivity</string>
     <string name="title_activity_new_member">NewMemberActivity</string>
     <string name="invite_member">Invite a friend</string>
     <string name="settings">Settings</string>
-    <string name="logout">Logout</string>
     <string name="openDrawer">open_drawer</string>
     <string name="closeDrawer">close_drawer</string>
-    <string name="home">Home</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
     <string name="GROUP_ADD"> create new group </string>
     <!--string name="GROUP_REMOVE"> remove group </string-->
     <string name="GROUP_EDIT"> edit group </string>
@@ -100,16 +88,13 @@
     <string name="ME_PAY">You have paid </string>
     <string name="FRIEND_COMMENT_ADD"> commented on </string>
     <string name="ME_COMMENT_ADD">You left a comment on </string>
-
     <string name="to"> to </string>
     <string name="did"> did </string>
     <string name="day"> The </string>
     <string name="at"> at </string>
     <string name="datetime"> Date and time </string>
     <string name="cancel"> Cancel </string>
-    <string name="ok"> OK </string>
     <string name="saved"> Saved </string>
-
     <string name="prompt_comment"> Add comment </string>
 
 </resources>

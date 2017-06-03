@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -76,8 +77,24 @@ public class ProfileEdit extends AppCompatActivity {
         //progressDialog = new ProgressDialog(ProfileEdit.this);
 
         profileImageView = (ImageView) this.findViewById(R.id.profile_image);
-        if (!currentUser.loadImage(this, profileImageView)) {
-            profileImageView.setImageResource(R.drawable.user_default);
+        String profileImage = currentUser.getProfileImage();
+        if (profileImage != null && !profileImage.equals("")) {
+            // Loading image
+            Glide.with(this).load(profileImage)
+                    .centerCrop()
+                    //.bitmapTransform(new CropCircleTransformation(this))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(profileImageView);
+
+            Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
+        }
+        else {
+            // Loading image
+            Glide.with(this).load(R.drawable.user_default)
+                    .centerCrop()
+                    //.bitmapTransform(new CropCircleTransformation(this))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(profileImageView);
         }
 
         profileImageView.setOnClickListener(new View.OnClickListener() {
@@ -124,9 +141,8 @@ public class ProfileEdit extends AppCompatActivity {
 
         // first of all control if is the requested result and if it return something
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
             Glide.with(this).load(data.getData()).centerCrop()
-                    .bitmapTransform(new CropCircleTransformation(this))
+                    //.bitmapTransform(new CropCircleTransformation(this))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(profileImageView);
 

@@ -15,6 +15,7 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 
 import java.security.MessageDigest;
@@ -476,21 +477,31 @@ public class User implements Parcelable {
         });
     }
 
-    // static method to loading an image from firebase
+    /*// static method to loading an image from firebase
     public boolean loadImage (Activity activity, ImageView imageView) {
         String profileImage = getProfileImage();
-        if (profileImage.isEmpty()) {
-            return false;
+
+        if (profileImage != null && !profileImage.equals("")) {
+            // Loading image
+            Glide.with(activity).load(profileImage)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(activity))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(imageView);
+
+            Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
+        }
+        else {
+            // Loading image
+            Glide.with(activity).load(R.drawable.user_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(activity))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(imageView);
         }
 
-        // Loading image
-        Glide.with(activity).load(profileImage).centerCrop()
-                .bitmapTransform(new CropCircleTransformation(activity))
-                .diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
-        Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
-
         return true;
-    }
+    }*/
 
     public String toString() {
         return name + " " + surname + " ";

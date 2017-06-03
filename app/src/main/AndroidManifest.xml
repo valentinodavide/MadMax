@@ -78,16 +78,11 @@
         <activity
             android:name=".activities.expenses.ExpenseDetailActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activities.groups.PayGroupActivity"
-            android:parentActivityName=".activities.groups.GroupDetailActivity"
-            >
-        </activity>
+            android:parentActivityName=".activities.groups.GroupDetailActivity"/>
         <activity android:name=".activities.expenses.PayExpenseActivity"
-            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"
-            >
-        </activity>
-
+            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"/>
         <service
             android:name=".service.FirebaseServiceMessage">
             <intent-filter>

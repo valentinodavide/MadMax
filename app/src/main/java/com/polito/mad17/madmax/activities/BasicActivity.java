@@ -19,9 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 
 import static com.polito.mad17.madmax.activities.MainActivity.auth;
 import static com.polito.mad17.madmax.activities.MainActivity.getCurrentUser;
@@ -173,6 +176,24 @@ public class BasicActivity extends AppCompatActivity {
         Log.d(TAG, "email: "+ getCurrentUser().getEmail());
 
         // profile image
-        getCurrentUser().loadImage(this, imgProfile);
+        String profileImage = getCurrentUser().getProfileImage();
+        if (profileImage != null && !profileImage.equals("")) {
+            // Loading image
+            Glide.with(this).load(profileImage)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(this))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(imgProfile);
+
+            Log.d(TAG, "image url: "+MainActivity.getCurrentUser().getProfileImage());
+        }
+        else {
+            // Loading image
+            Glide.with(this).load(R.drawable.user_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(this))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(imgProfile);
+        }
     }
 }

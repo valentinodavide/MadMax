@@ -142,7 +142,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.imageView);
         }
-        else if (photo != null)
+        else if (photo != null && !photo.equals(""))
         {
             Glide.with(layoutInflater.getContext()).load(photo)
                     .centerCrop()

@@ -77,6 +77,7 @@ public class SignUpFragment extends Fragment {
     private ImageView profileImageView;
     private ProgressDialog progressDialog;
     private Button signupButton;
+    private Boolean imageSetted = false;
 
     private String inviterID;
 
@@ -113,7 +114,7 @@ public class SignUpFragment extends Fragment {
         profileImageView = (ImageView) view.findViewById(R.id.profile_image);
         Glide.with(this).load(R.drawable.user_default)
                 .centerCrop()
-                .bitmapTransform(new CropCircleTransformation(this.getContext()))
+                //.bitmapTransform(new CropCircleTransformation(this.getContext()))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(profileImageView);
 
@@ -175,9 +176,10 @@ public class SignUpFragment extends Fragment {
                 // Log.d(TAG, String.valueOf(bitmap));
                 Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
                         .centerCrop()
-                        .bitmapTransform(new CropCircleTransformation(this.getContext()))
+                        //.bitmapTransform(new CropCircleTransformation(this.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(profileImageView);
+                imageSetted = true;
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -262,19 +264,20 @@ public class SignUpFragment extends Fragment {
         }
 
         // for saving image
-        StorageReference uProfileImageFilenameRef = storageReference.child("users").child(UID).child(UID+"_profileImage.jpg");
+        if (imageSetted) {
+            StorageReference uProfileImageFilenameRef = storageReference.child("users").child(UID).child(UID + "_profileImage.jpg");
 
-        // Get the data from an ImageView as bytes
-        profileImageView.setDrawingCacheEnabled(true);
-        profileImageView.buildDrawingCache();
-        Bitmap bitmap = profileImageView.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
+            // Get the data from an ImageView as bytes
+            profileImageView.setDrawingCacheEnabled(true);
+            profileImageView.buildDrawingCache();
+            Bitmap bitmap = profileImageView.getDrawingCache();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
 
-        UploadTask uploadTask = uProfileImageFilenameRef.putBytes(data);
+            UploadTask uploadTask = uProfileImageFilenameRef.putBytes(data);
 
-        uploadTask
+            uploadTask
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
@@ -288,40 +291,39 @@ public class SignUpFragment extends Fragment {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
 
                         u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
-
-                        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                progressDialog.dismiss();
-                                if(task.isSuccessful()){
-                                    Log.i(TAG, "verification email successful sent");
-
-                                    Log.i(TAG, "insert new user into db");
-
-                                    HashMap<String,String> newUserEntry = new HashMap<>();
-
-                                    newUserEntry.put("email",       u.getEmail());
-                                    newUserEntry.put("password",    u.getPassword());
-                                    newUserEntry.put("friends",     u.getUserFriends().toString());
-                                    newUserEntry.put("groups",      u.getUserGroups().toString());
-                                    newUserEntry.put("image",       u.getProfileImage());
-                                    newUserEntry.put("name",        u.getName());
-                                    newUserEntry.put("surname",     u.getSurname());
-                                    newUserEntry.put("username",     u.getUsername());
-
-                                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
-                                }
-                                else {
-                                    // todo delete the account and restart the activity
-                                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
-                                }
-
-                                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), user.getUid());
-                            }
-                        });
-
                     }
                 });
+        }
+
+        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                progressDialog.dismiss();
+                if (task.isSuccessful()) {
+                    Log.i(TAG, "verification email successful sent");
+
+                    Log.i(TAG, "insert new user into db");
+
+                    HashMap<String, String> newUserEntry = new HashMap<>();
+
+                    newUserEntry.put("email", u.getEmail());
+                    newUserEntry.put("password", u.getPassword());
+                    newUserEntry.put("friends", u.getUserFriends().toString());
+                    newUserEntry.put("groups", u.getUserGroups().toString());
+                    newUserEntry.put("image", u.getProfileImage());
+                    newUserEntry.put("name", u.getName());
+                    newUserEntry.put("surname", u.getSurname());
+                    newUserEntry.put("username", u.getUsername());
+
+                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                } else {
+                    // todo delete the account and restart the activity
+                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                }
+
+                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), user.getUid());
+            }
+        });
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
