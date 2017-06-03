@@ -1,4 +1,4 @@
-package com.polito.mad17.madmax.service;
+package com.polito.mad17.madmax.services;
 
 import android.util.Log;
 
@@ -15,7 +15,7 @@ public class FirebaseServiceFCM extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "token: "+refreshedToken);
+        Log.d(TAG, "refreshedToken: "+refreshedToken);
         sendRegistrationToServer(refreshedToken);
     }
 

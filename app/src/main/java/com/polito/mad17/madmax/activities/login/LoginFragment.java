@@ -1,21 +1,20 @@
 package com.polito.mad17.madmax.activities.login;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -77,59 +76,6 @@ public class LoginFragment extends Fragment {
         loginButton = (Button) view.findViewById(R.id.btn_login);
         progressDialog = new ProgressDialog(getContext());
 
-        auth = FirebaseAuth.getInstance();
-        authListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                if(progressDialog.isShowing())
-                    progressDialog.dismiss();
-
-                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-
-                // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
-                if(currentUser != null && currentUser.isEmailVerified())  {
-                    Log.i(TAG," user is logged, go to MainActivity");
-
-                    onClickLoginInterface.itemClicked(LoginFragment.class.getSimpleName(), currentUser.getUid());
-                }
-                else {
-                    // if the user is already logged but has not verified the mail redirect him to the email verification
-                    if(currentUser != null && !currentUser.isEmailVerified()) {
-                        Log.i(TAG, " user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
-/*
-                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        if (user == null) {
-                            Log.e(TAG, "Error while retriving current user from db");
-
-                            Toast.makeText(getContext(), "Error while retriving current user from db",Toast.LENGTH_LONG).show();
-                            return;
-                        }*/
-
-                        currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                progressDialog.dismiss();
-                                if(task.isSuccessful()){
-
-                                    Toast.makeText(getContext(), "Sent a new verification email",Toast.LENGTH_LONG).show();
-                                    Log.i(TAG, "verification email successful sent");
-                                }
-                                else {
-                                    Log.d(TAG, "verification email not sent, exception: "+task.getException());
-                                }
-                            }
-                        });
-                    }
-                    else{
-                        // if the user has done the logout
-                        Log.i(TAG, " user has done the logout");
-                    }
-                }
-            }
-        };
-
-        auth.addAuthStateListener(authListener); // attach the listener to the FirebaseAuth instance
-
         // allow to proceed in login using keyboard, without press Login button
         passwordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -164,6 +110,41 @@ public class LoginFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        auth = FirebaseAuth.getInstance();
+        authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(progressDialog.isShowing())
+                    progressDialog.dismiss();
+
+                FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
+                // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
+                if(currentUser != null && currentUser.isEmailVerified())  {
+                    Log.i(TAG," user is logged, go to MainActivity");
+
+                    onClickLoginInterface.itemClicked(LoginFragment.class.getSimpleName(), currentUser.getUid());
+                }
+                else {
+                    // if the user is already logged but has not verified the mail redirect him to the email verification
+                    if(currentUser != null && !currentUser.isEmailVerified()) {
+                        Log.i(TAG, " user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
+
+                        AlertDialog alertDialog = createVerificationDialog();
+                        // Showing Alert Message
+                        alertDialog.show();
+                    }
+                    else{
+                        // if the user has done the logout
+                        Log.i(TAG, " user has done the logout");
+                    }
+                }
+            }
+        };
+
+        // attach the listener to the FirebaseAuth instance
+        auth.addAuthStateListener(authListener);
     }
 
     @Override
@@ -225,5 +206,37 @@ public class LoginFragment extends Fragment {
             passwordView.setError(null);
         }
         return valid;
+    }
+
+    private AlertDialog createVerificationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.dialog_verification_message)
+                .setTitle(R.string.dialog_verification_title);
+        // Add the buttons
+        builder.setPositiveButton(R.string.send_again, new DialogInterface.OnClickListener() {
+            public void onClick(final DialogInterface dialog, int id) {
+                auth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        progressDialog.dismiss();
+                        if(task.isSuccessful()){
+                            Log.i(TAG, "verification email successful sent");
+                        }
+                        else {
+                            // todo delete the account and restart the activity
+                            Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                        }
+                        dialog.cancel();
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                dialog.cancel();
+            }
+        });
+        return builder.create();
     }
 }

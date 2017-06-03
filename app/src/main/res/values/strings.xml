@@ -60,7 +60,7 @@
     <string name="invitationToGroup_message">A friend want to share expenses with you</string>
     <string name="invitation_title">Invite on BeeShare!</string>
     <string name="invitation_cta">Install BeeShare!</string>
-    <string name="invitationToGroup_cta">Join to the group!</string>
+    <string name="invitationToGroup">Join to the group!</string>
     <string name="title_activity_group_info">GroupInfoActivity</string>
     <string name="title_activity_new_member">NewMemberActivity</string>
     <string name="invite_member">Invite a friend</string>
@@ -96,5 +96,8 @@
     <string name="cancel"> Cancel </string>
     <string name="saved"> Saved </string>
     <string name="prompt_comment"> Add comment </string>
+    <string name="dialog_verification_message">You have not checked your account. Click on \"Send again\" to receive another verification email or \"Cancel\" to close this message</string>
+    <string name="dialog_verification_title">Email verification</string>
+    <string name="send_again">Send again</string>
 
 </resources>

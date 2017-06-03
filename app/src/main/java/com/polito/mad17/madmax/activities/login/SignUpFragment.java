@@ -320,10 +320,20 @@ public class SignUpFragment extends Fragment {
                     // todo delete the account and restart the activity
                     Log.e(TAG, "verification email not sent, exception: " + task.getException());
                 }
+                                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                                    Toast.makeText(getContext(), R.string.emailVerification_text, Toast.LENGTH_LONG).show();
+                                }
+                                else {
+                                    // todo delete the account and restart the activity
+                                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                                }
 
                 onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), user.getUid());
             }
         });
+                                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
+                            }
+                        });
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();

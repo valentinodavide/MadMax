@@ -1,11 +1,9 @@
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,12 +23,10 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener {
@@ -89,6 +85,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(divider);
 
+        groups.clear();
         groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups);
         recyclerView.setAdapter(groupsViewAdapter);
 
@@ -124,7 +121,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                 Log.w(TAG, databaseError.toException());
             }
         });
-
         return view;
     }
 
@@ -167,7 +163,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     //oltre al nome gruppo, prende anche il bilancio dello user col gruppo
     void getGroupAndBalance (final String userID, final String groupID)
     {
-
         final HashMap <String, Double> totalBalance = new HashMap<>();
         final HashMap <String, Expense> groupExpenses = new HashMap<>();
         totalBalance.put(userID,0d);
@@ -262,8 +257,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                                     groupsViewAdapter.update(groups);
                                     groupsViewAdapter.notifyDataSetChanged();
-
-
                                 }
 
                                 @Override
@@ -303,8 +296,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
-
             }
         });
 

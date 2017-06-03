@@ -46,7 +46,7 @@ public class NewMemberActivity extends AppCompatActivity {
     private HashMapFriendsAdapter addedAdapter;
 
     private Button buttonInvite;
-    private String groupID;
+    private String groupID, groupName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +62,7 @@ public class NewMemberActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
+        groupName = intent.getStringExtra("groupName");
 
         Log.d(TAG, groupID);
 
@@ -134,7 +135,7 @@ public class NewMemberActivity extends AppCompatActivity {
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(builder.build())
                         .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                        .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
+                        .setCallToActionText(getString(R.string.invitationToGroup)) //todo vedere perchè non mostra questo link
                         .build();
 
                 startActivityForResult(intent, MainActivity.REQUEST_INVITE_GROUP);

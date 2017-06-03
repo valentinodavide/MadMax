@@ -1,12 +1,16 @@
 package com.polito.mad17.madmax.activities.login;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +27,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +37,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
-import static com.polito.mad17.madmax.activities.groups.GroupsFragment.groups;
+import java.util.HashMap;
 
 public class LoginSignUpActivity extends AppCompatActivity implements OnItemClickInterface {
 
@@ -46,6 +52,9 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
     private String inviterUID;
     private String groupToBeAddedID;
 
+    Bundle bundle = null;
+    private ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +64,31 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
 
         Log.i(TAG, "onCreate");
 
-        FirebaseUtils.getInstance().setUp();
+        // getting Intent from invitation
+        Intent startingIntent = getIntent();
+
+        String action = startingIntent.getAction();
+        Log.d(TAG, "action " + action);
+
+        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
+        Uri data = startingIntent.getData();
+        if(data != null) {
+            // to be used to set the current user as friend of the inviter
+            Log.d(TAG, "there is an invite");
+            bundle = new Bundle();
+            inviterUID = data.getQueryParameter("inviterUID");
+            bundle.putString("inviterUID", inviterUID);
+            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
+            bundle.putString("groupToBeAddedID", groupToBeAddedID);
+                startActivity(new Intent(getApplicationContext(), MainActivity.class).putExtras(bundle));
+                finish();
+        }
+        else {
+            bundle = null;
+            inviterUID = null;
+            groupToBeAddedID = null;
+            Log.d(TAG, "there is not an invite");
+        }
 
         // insert tabs and current fragment in the main layout
         setContentView(R.layout.activity_log_in_signup);
@@ -96,28 +129,6 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
             @Override
             public void onTabReselected(TabLayout.Tab tab) { }
         });
-
-        // getting Intent from invitation
-        Intent intent = getIntent();
-
-        String action = intent.getAction();
-        Log.d(TAG, "action " + action);
-
-        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
-        Uri data = intent.getData();
-        if(data != null) {
-            // to be used to set the current user as friend of the inviter
-            Log.d(TAG, "there is an invite");
-            inviterUID = data.getQueryParameter("inviterUID");
-            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
-        }
-        else {
-            inviterUID = null;
-            groupToBeAddedID = null;
-            Log.d(TAG, "there is not an invite");
-        }
-
-
     }
 
     @Override
@@ -188,8 +199,7 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Bundle bundle = new Bundle();
-        Intent intent = null;
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 
         switch(fragmentName) {
             case "LoginFragment":
@@ -199,25 +209,16 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
                     viewPager.setCurrentItem(1);
                 }
                 else {
-                    intent = new Intent(this, MainActivity.class);
-                    Bundle extras = new Bundle();
-
-                    extras.putString("UID", itemID);
-
-                    if (inviterUID != null) {
-                        Log.i(TAG, "present inviterUID: " + inviterUID);
-                        extras.putString("inviterUID", inviterUID);
+                    if (bundle != null) {
+                        // you arrive from a click of an invitate, so this avoid glitch
+                        intent.putExtras(bundle);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                        overridePendingTransition(0,0); //0 for no animation
                     }
-
-
-                    if (groupToBeAddedID != null) {
-                        Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
-                        extras.putString("groupToBeAddedID", groupToBeAddedID);
+                    else{
+                        startActivity(intent);
                     }
-
-                    intent.putExtras(extras);
-                    groups.clear();// di prova
-                    startActivity(intent);
                     finish();
                 }
 
@@ -229,24 +230,6 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
                 {
                     viewPager.setCurrentItem(0);
                 }
-                else {
-                    intent = new Intent(this, MainActivity.class);
-                    intent.putExtra("UID", itemID);
-
-                    if (inviterUID != null) {
-                        Log.i(TAG, "present inviterUID: " + inviterUID);
-                        intent.putExtra("inviterUID", inviterUID);
-                    }
-
-
-                    if (groupToBeAddedID != null) {
-                        Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
-                        intent.putExtra("groupToBeAddedID", groupToBeAddedID);
-                    }
-
-                    startActivity(intent);
-                }
-
                 break;
         }
     }
