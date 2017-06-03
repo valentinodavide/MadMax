@@ -57,7 +57,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="255dp"
-        android:background="#000000"
+        android:background="@color/colorBlack"
         android:alpha="0.3">
     </FrameLayout>
 

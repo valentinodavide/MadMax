@@ -17,7 +17,7 @@
         android:layout_below="@id/toolbar"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        tools:src="@drawable/riki"
+        tools:src="@drawable/expense_default"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -26,7 +26,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="#000000"
+        android:background="@color/colorBlack"
         android:alpha="0.3">
     </FrameLayout>
 
@@ -129,8 +129,6 @@
             android:layout_alignRight="@+id/tv_balance_text"
             android:layout_alignEnd="@+id/tv_balance_text" />
 
-
-
         <Button
             android:id="@+id/btn_pay_debt"
             android:layout_width="100dp"
@@ -142,28 +140,16 @@
             android:layout_alignRight="@+id/tv_balance"
             android:layout_alignEnd="@+id/tv_balance" />
 
-
-
-
-
-
-
-
-
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/nameline"
-        android:layout_marginTop="60dp"
-        >
-
-
+        android:layout_marginTop="60dp">
 
 
     </RelativeLayout>
-
 
 
     <android.support.design.widget.TabLayout

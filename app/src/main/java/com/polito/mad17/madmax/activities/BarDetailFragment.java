@@ -205,10 +205,20 @@ public class BarDetailFragment extends Fragment {
                         //Retrieve group image
                         String image = dataSnapshot.child("image").getValue(String.class);
                         if (image != null && image != "noImage")
+
+                        if (image != null && !image.equals("noImage"))
                         {
                             Log.d (TAG, "Nome gruppo: " + dataSnapshot.child("name").getValue(String.class) + "  Immagine: " + image);
                             // Loading group image into bar
                             Glide.with(getActivity()).load(dataSnapshot.child("image").getValue(String.class))
+                                    .centerCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(imageView);
+                        }
+                        else {
+                            Log.d (TAG, "Nome gruppo: " + dataSnapshot.child("name").getValue(String.class) + "  Immagine di default");
+                            // Loading group image into bar
+                            Glide.with(getActivity()).load(R.drawable.group_default)
                                     .centerCrop()
                                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                                     .into(imageView);

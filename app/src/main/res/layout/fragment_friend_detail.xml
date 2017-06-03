@@ -12,7 +12,7 @@
         android:layout_height="255dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        tools:src="@drawable/riki"
+        tools:src="@drawable/user_default"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -22,7 +22,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="255dp"
-        android:background="#000000"
+        android:background="@color/colorBlack"
         android:alpha="0.3">
     </FrameLayout>
 

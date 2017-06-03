@@ -95,6 +95,11 @@
             android:name=".activities.expenses.ExpenseDetailActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".activities.groups.PayGroupActivity"
+            android:parentActivityName=".activities.groups.GroupDetailActivity"/>
+        <activity android:name=".activities.expenses.PayExpenseActivity"
+            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.groups.PayGroupActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"></activity>

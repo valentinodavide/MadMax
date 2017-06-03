@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_activity_group_expenses">Group Expenses</string>
-    <string name="title_image_expenses">Image Expenses</string>
-    <string name="title_activity_group_expenses_add">GroupExpensesAdd</string>
+
+    <string name="title_activity_group_expenses">Spese del gruppo</string>
+    <string name="title_image_expenses">Immagine della spesa</string>
+    <string name="title_activity_group_expenses_add">Aggiunta spesa</string>
     <string name="groups">GRUPPI</string>
     <string name="friends">AMICI</string>
     <string name="pending">IN ATTESA</string>
     <string name="paydebt">SALDA DEBITO</string>
     <string name="expense_detail">DETTAGLIO SPESA</string>
     <string name="comments">COMMENTI</string>
-    <string name="owes_you">TI DEVE</string>
-    <string name="owes_to_the_group">DEVE AL GRUPPO</string>
-    <string name="should_receive_from_the_group">DEVE RICEVERE DAL GRUPPO</string>
     <string name="name">Nome</string>
     <string name="amount">Importo</string>
     <string name="category">Categoria</string>
@@ -19,16 +17,45 @@
     <string name="description">Descrizione</string>
     <string name="photo">Foto</string>
     <string name="save">Salva</string>
+    <string name="owes_you">TI DEVE</string>
+    <string name="you_should_receive">DEVI RICEVERE</string>
+    <string name="no_debts">NESSUN DEBITO</string>
+    <string name="credit_of">CREDITO</string>
+    <string name="owes_to_the_group">DEVE AL GRUPPO</string>
+    <string name="should_receive_from_the_group">DEVE RICEVERE DAL GRUPPO</string>
+    <string name="debt_of">DEBITO</string>
+    <string name="expense_amount">TOTALE</string>
+    <string name="edit_description_hint">Descrizione spesa</string>
+    <string name="edit_amount_hint">Costo</string>
+    <string name="expense_saved">Spesa salvata</string>
+    <string name="prompt_create_account">Non hai un account? Creane uno</string>
+    <string name="prompt_name">Nome</string>
+    <string name="prompt_surname">Cognome</string>
+    <string name="prompt_registered_user">Già iscritto? Login</string>
+    <string name="auth_failed">Autenticazione fallita</string>
+    <string name="required">Questo campo è obbligatorio</string>
+    <string name="notnull">Il campo non può essere vuoto</string>
+    <string name="emailVerification_text">Ti abbiamo inviato un email di verifica.\n\nClicca sul link ricevuto nella email per confermare la tua registrazione.</string>
     <string name="shared_groups">Gruppi Condivisi</string>
     <string name="verify_email">Verifica email</string>
-    <string name="login">Login</string>
     <string name="expenses">Spese</string>
     <string name="balance">Bilancio</string>
+    <string name="positive_balance">Devi ricevere</string>
+    <string name="negative_balance">Devi dare</string>
     <string name="activities">Attività</string>
     <string name="members">Membri</string>
     <string name="weak_password">Almeno 6 caratteri!</string>
-
-
+    <string name="invitation_message">Iscriviti a BeeShare!</string>
+    <string name="invitationToGroup_message">Un amico vuole condividere le spese con te</string>
+    <string name="invitation_title">Invita su BeeShare!</string>
+    <string name="invitation_cta">Installa BeeShare!</string>
+    <string name="invitationToGroup">Entra nel gruppo!</string>
+    <string name="title_activity_group_info">Informazioni sul gruppo</string>
+    <string name="title_activity_new_member">Nuovo membro</string>
+    <string name="invite_member">Invita un amico</string>
+    <string name="settings">Impostazioni</string>
+    <string name="openDrawer">apri_drawer</string>
+    <string name="closeDrawer">chiudi_drawer</string>
     <string name="GROUP_ADD"> ha creato il gruppo </string>
     <!--string name="GROUP_REMOVE"> ha rimosso il gruppo </string-->
     <string name="GROUP_EDIT"> ha modificato il gruppo </string>
@@ -50,19 +77,18 @@
     <string name="ME_PAY">Hai pagato </string>
     <string name="FRIEND_COMMENT_ADD"> ha commentato la spesa </string>
     <string name="ME_COMMENT_ADD">Hai commentato la spesa </string>
-
     <string name="to"> a </string>
     <string name="did"> ha fatto </string>
     <string name="day"> Il giorno </string>
     <string name="at"> alle </string>
     <string name="datetime"> Data e ora </string>
     <string name="cancel"> Annulla </string>
-    <string name="ok"> OK </string>
     <string name="saved"> Salvato </string>
-
     <string name="prompt_comment"> Aggiungi commento </string>
+    <string name="dialog_verification_message">Il tuo account non è ancora stato confermato. Vuoi ricevere di nuovo l\'email di verifica?</string>
+    <string name="dialog_verification_title">Conferma email</string>
+    <string name="send_again">Invia di nuovo</string>
     <string name="you_owe">"DEVI RESTITUIRE"</string>
     <string name="you_should_receive">"DEVI RICEVERE"</string>
-
 
 </resources>

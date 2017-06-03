@@ -18,8 +18,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <ImageView android:src="@drawable/group_default"
-                android:id="@+id/group_image"
+            <ImageView android:id="@+id/group_image"
                 android:layout_width="140dp"
                 android:layout_height="140dp"
                 android:layout_marginBottom="24dp"
