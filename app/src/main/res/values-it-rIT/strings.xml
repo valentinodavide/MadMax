@@ -49,7 +49,7 @@
     <string name="invitationToGroup_message">Un amico vuole condividere le spese con te</string>
     <string name="invitation_title">Invita su BeeShare!</string>
     <string name="invitation_cta">Installa BeeShare!</string>
-    <string name="invitationToGroup_cta">Entra nel gruppo!</string>
+    <string name="invitationToGroup">Entra nel gruppo!</string>
     <string name="title_activity_group_info">Informazioni sul gruppo</string>
     <string name="title_activity_new_member">Nuovo membro</string>
     <string name="invite_member">Invita un amico</string>
@@ -85,5 +85,8 @@
     <string name="cancel"> Annulla </string>
     <string name="saved"> Salvato </string>
     <string name="prompt_comment"> Aggiungi commento </string>
+    <string name="dialog_verification_message">Il tuo account non è ancora stato confermato. Vuoi ricevere di nuovo l\'email di verifica?</string>
+    <string name="dialog_verification_title">Conferma email</string>
+    <string name="send_again">Invia di nuovo</string>
 
 </resources>

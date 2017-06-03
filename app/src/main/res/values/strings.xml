@@ -96,7 +96,7 @@
     <string name="cancel"> Cancel </string>
     <string name="saved"> Saved </string>
     <string name="prompt_comment"> Add comment </string>
-    <string name="dialog_verification_message">You have not checked your account. Click on \"Send again\" to receive another verification email or \"Cancel\" to close this message</string>
+    <string name="dialog_verification_message">Your account has not been confirmed yet. Do you need the verification email again?</string>
     <string name="dialog_verification_title">Email verification</string>
     <string name="send_again">Send again</string>
 
