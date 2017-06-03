@@ -1,11 +1,10 @@
 package com.polito.mad17.madmax.activities;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ChooseGroupActivity;
+import com.polito.mad17.madmax.activities.expenses.ExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
@@ -52,8 +53,10 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private static FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     public static FirebaseAuth auth;
-    private DatabaseReference usersRef;
+    private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
+    private DatabaseReference usersRef, currentUserRef;
     private DatabaseReference groupRef;
+    FirebaseUser currentFirebaseUser;
 
     private String[] drawerOptions;
     private DrawerLayout drawerLayout;
@@ -62,89 +65,45 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Integer currentFragment;
-
- //   private ActionBarDrawerToggle drawerToggle;
+    MainActivityPagerAdapter adapter;
 
     public static final int REQUEST_INVITE = 0;
-    public static final int REQUEST_INVITE_GROUP = 0;
+    public static final int REQUEST_INVITE_GROUP = 1;
+    public static final int REQUEST_NOTIFICATION = 2;
 
 
-    private static User currentUser;
+    private static User currentUser = null;
     private String currentUID, inviterUID, groupToBeAddedID;
 
     private HashMap<String, String> userFriends = new HashMap<>();
     private HashMap<String, String> userGroups = new HashMap<>();
 
-    private ProgressDialog progressDialog;
+    private Intent startingIntent;
+    private ValueEventListener currentUserListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Log.i(TAG, "onCreate");
-        Log.i(TAG, "token: "+FirebaseInstanceId.getInstance().getToken());
 
-        // waiting user data becomes available
-        progressDialog = new ProgressDialog(this);
-        progressDialog.show();
-
-//        getDatabase();
-        auth = FirebaseAuth.getInstance();
-
+        FirebaseUtils.getInstance().setUp();
+        firebaseDatabase = getDatabase();
         databaseReference = firebaseDatabase.getReference();
         usersRef = databaseReference.child("users");
         groupRef = databaseReference.child("groups");
+        auth = FirebaseAuth.getInstance();
 
-        DatabaseReference currentUserRef = null;
-
+        if((auth.getCurrentUser() == null) ||(!auth.getCurrentUser().isEmailVerified())){
+            startActivity(new Intent(getApplicationContext(), LoginSignUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            overridePendingTransition(0,0); //0 for no animation
+            finish();
+        }
         // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
-        Intent intent = getIntent();
-        if(intent.hasExtra("UID"))
-        {
-            currentUID = intent.getStringExtra("UID");
-            Log.i(TAG, "currentUID da LoginSignUpActivity : " +  currentUID);
+        startingIntent = getIntent();
 
-            // getting reference to the user from db
-            currentUserRef = usersRef.child(currentUID);
-        }
-        else
-        {
-            if ((currentUID == null) || (currentUserRef == null))
-            {
-                Log.e(TAG, "Unable to retrieve logged user from db or UID is null, going back to Login");
-                makeText(MainActivity.this, "Unable to retrieve user, please login again", Toast.LENGTH_LONG).show();
-
-                // if the current user is not in the database or UID is null do the logout and restart from login
-                auth.signOut();
-                Intent intentToExit = new Intent(getApplicationContext(), LoginSignUpActivity.class);
-                startActivity(intentToExit);
-                finish();
-            }
-        }
-
-        // getting invitation info if coming from LoginSignUpActivity after an Invitation
-        if (intent.hasExtra("inviterUID"))
-        {
-            inviterUID = intent.getStringExtra("inviterUID");
-            Log.i(TAG, "present inviterUID: " + inviterUID);
-        }
-        else
-        {
-            inviterUID = null;
-        }
-
-        if (intent.hasExtra("groupToBeAddedID"))
-        {
-            groupToBeAddedID = intent.getStringExtra("groupToBeAddedID");
-            Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
-        }
-        else
-        {
-            groupToBeAddedID = null;
-        }
-
-            currentFragment = intent.getIntExtra("currentFragment", 1);
-
+        //todo a cosa serve?
+        currentFragment = startingIntent.getIntExtra("currentFragment", 1);
 
         // insert tabs and current fragment in the main layout
         mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
@@ -176,14 +135,26 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         appBarLayout.setExpanded(false);
         //todo: capire come bloccare la barra nel main
+    }
 
-        // attach a listener on all the current user data
-        currentUserRef.addValueEventListener(new ValueEventListener() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart");
+
+        startingIntent = getIntent();
+        currentFragment = startingIntent.getIntExtra("currentFragment", 1);
+
+        // start declaration of a listener on all the current user data -> attached in onStart()
+        currentUserListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange");
-                currentUser = new User();
-                currentUser.setID(currentUID);
+                Log.d(TAG, "onDataChange currentUserref");
+                if(currentUser == null) {
+                    makeText(MainActivity.this, "Ricreato user", Toast.LENGTH_SHORT).show(); // todo: di debug, da rimuovere
+                    currentUser = new User();
+                    currentUser.setID(currentUID);
+                }
                 currentUser.setName(dataSnapshot.child("name").getValue(String.class));
                 currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
@@ -198,6 +169,47 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 }
                 //todo mettere altri dati in myself?
 
+                adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
+                viewPager.setAdapter(adapter);
+                if (currentFragment != null)
+                {
+                    viewPager.setCurrentItem(currentFragment);
+                    updateFab(currentFragment);
+                }
+
+                else
+                {
+                    viewPager.setCurrentItem(1);
+                    updateFab(1);
+                }
+
+                // load nav menu header data for the current user
+                loadNavHeader();
+                Log.d(TAG, "logged user name: "+currentUser.getName());
+                Log.d(TAG, "logged user surname: "+currentUser.getSurname());
+
+                // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
+                if(startingIntent.hasExtra("inviterUID")) {
+                    // to be used to set the current user as friend of the inviter
+                    Log.d(TAG, "there is an invite");
+                    inviterUID = startingIntent.getStringExtra("inviterUID");
+                    startingIntent.removeExtra("inviterUID");
+                    if(startingIntent.hasExtra("groupToBeAddedID")) {
+                        groupToBeAddedID = startingIntent.getStringExtra("groupToBeAddedID");
+                        startingIntent.removeExtra("groupToBeAddedID");
+                    }
+                    else {
+                        inviterUID = null;
+                        groupToBeAddedID = null;
+                        Log.d(TAG, "there is not an invite");
+                    }
+                }
+                else {
+                    inviterUID = null;
+                    groupToBeAddedID = null;
+                    Log.d(TAG, "there is not an invite");
+                }
                 // control if user that requires the friendship is already a friend
                 if (inviterUID != null) {
                     if(!currentUser.getUserFriends().containsKey(inviterUID)){
@@ -205,7 +217,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
                     }
                     else
-                        makeText(MainActivity.this, "You and "+currentUser.getUserFriends().get(inviterUID).getName()+" are already friends!", Toast.LENGTH_LONG).show();
+                        makeText(MainActivity.this, "You and inviter are already friends!", Toast.LENGTH_LONG).show();
                 }
 
                 // control if user is already part of requested group
@@ -213,16 +225,45 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     if(!currentUser.getUserGroups().containsKey(groupToBeAddedID))
                     {
 //                        currentUser.joinGroup(groupToBeAddedID); //todo usare questa? non aggiorna il numero dei membri
+                        currentUser.getUserGroups().put(groupToBeAddedID, null);
+                        FirebaseUtils.getInstance().joinGroupFirebase(currentUID, groupToBeAddedID);
                         makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
                     }
                     else
                         makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
                 }
 
-                // load nav menu header data for the current user
-                loadNavHeader();
-                Log.d(TAG, "logged user name: "+currentUser.getName());
-                Log.d(TAG, "logged user surname: "+currentUser.getSurname());
+                if(startingIntent.hasExtra("notificationTitle")){
+                    Intent notificationIntent = null;
+                    switch(startingIntent.getStringExtra("notificationTitle")){
+                        case "notification_invite":
+                            if(startingIntent.hasExtra("groupID")){
+                                notificationIntent = new Intent(getApplicationContext(), GroupDetailActivity.class);
+                                notificationIntent.putExtra("groupID", startingIntent.getStringExtra("groupID"));
+                            }
+                            break;
+                        case "notification_expense_added":
+                            if(startingIntent.hasExtra("groupID")){
+                                notificationIntent = new Intent(getApplicationContext(), ExpenseDetailActivity.class);
+                                notificationIntent.putExtra("groupID", startingIntent.getStringExtra("groupID"));
+                                if(startingIntent.hasExtra("expenseID")){
+                                    notificationIntent.putExtra("expenseID", startingIntent.getStringExtra("expenseID"));
+                                }
+                            }
+                            break;
+                        case "notification_expense_removed":
+                            if(startingIntent.hasExtra("groupID")){
+                                notificationIntent = new Intent(getApplicationContext(), GroupDetailActivity.class);
+                                notificationIntent.putExtra("groupID", startingIntent.getStringExtra("groupID"));
+                            }
+                            break;
+                    }
+                    if(notificationIntent != null){
+                        notificationIntent.putExtra("userID", currentUID);
+                        startingIntent.removeExtra("notificationTitle");
+                        startActivityForResult(notificationIntent, REQUEST_NOTIFICATION);
+                    }
+                }
             }
 
             @Override
@@ -230,7 +271,39 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 // TODO: come gestire?
                 Log.d(TAG, "getting current user failed");
             }
-        });
+        };
+        // end of listener declaration on all the current user data
+
+         authListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                Log.d(TAG, "onAuthStateChanged");
+
+                currentFirebaseUser = firebaseAuth.getCurrentUser();
+                if(currentFirebaseUser != null){
+                    // getting reference to the user from db
+                    currentUID = currentFirebaseUser.getUid();
+                    currentUserRef = usersRef.child(currentUID);
+
+                    //take refreshed toked and save it to use FCM
+                    currentUserRef.child("token").setValue(FirebaseInstanceId.getInstance().getToken());
+
+                    // attach a listener on all the current user data
+                    currentUserRef.addValueEventListener(currentUserListener);
+                }
+                else{
+                    Log.d(TAG, "current user is null, so go to login activity");
+                    Intent goToLogin = new Intent(getApplicationContext(), LoginSignUpActivity.class);
+                   // currentUser = null;
+                    startActivity(goToLogin);
+                    auth.removeAuthStateListener(authListener);
+                    finish();
+                }
+            }
+        };
+
+        // attach the listener to the FirebaseAuth instance
+        auth.addAuthStateListener(authListener);
     }
 
     private void updateFab(int position){
@@ -265,14 +338,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     @Override
                     public void onClick(View v) {
                         Intent myIntent = new Intent(MainActivity.this, NewGroupActivity.class);
-                        myIntent.putExtra("userAdded", currentUser);//("UID", currentUID);
-                        //String tempGroupID = mDatabase.child("temporarygroups").push().getKey();
-                        //inizialmente l'unico user è il creatore del gruppo stesso
-                  //      User myself = new User(myselfID, "mariux",         "Mario", "Rossi",           "email0@email.it", "password0", null, "€");
-                        //mDatabase.child("temporarygroups").child(tempGroupID).child("members").push();
-                        //mDatabase.child("temporarygroups").child(tempGroupID).child("members").child(myself.getID()).setValue(myself);
-                  //      NewGroupActivity.newmembers.put(currentUID, currentUser);  //inizialmente l'unico membro del nuovo gruppo sono io
-                        //myIntent.putExtra("groupID", tempGroupID);
+                        myIntent.putExtra("userAdded", currentUser);
                         MainActivity.this.startActivity(myIntent);
                     }
                 });
@@ -289,7 +355,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         myIntent.putExtra("userAdded", currentUser);//("UID", currentUID);
                         Log.d (TAG, "Sto per aprire ChooseGroupActivity");
                         MainActivity.this.startActivity(myIntent);
-
                     }
                 });
                 break;
@@ -470,7 +535,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
-
     }
     */
 
@@ -484,164 +548,14 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.i(TAG, "onStart");
-
-        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
-        Intent i = getIntent();
-        Bundle extras = i.getExtras();
-
-        if(extras != null) {
-            if (extras.containsKey("UID"))
-                currentUID = extras.getString("UID");
-            else if (currentUID == null) {
-                auth.signOut();
-                Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
-                startActivity(intent);
-                finish();
-            }
-
-            //       currentUID = "-KjTCeDmpYY7gEOlYuSo"; // mario rossi, tenuto solo per debug, sostituire a riga precedente per vedere profilo con qualcosa
-            Log.d(TAG, "currentID: " + currentUID);
-
-            // getting invitation info if coming from LoginSignUpActivity after an Invitation
-            if (extras.containsKey("inviterUID")) {
-                inviterUID = extras.getString("inviterUID");
-                Log.i(TAG, "present inviterUID: " + inviterUID);
-            } else {
-                inviterUID = null;
-            }
-
-            if (extras.containsKey("groupToBeAddedID")) {
-                groupToBeAddedID = extras.getString("groupToBeAddedID");
-                Log.i(TAG, "present groupToBeAddedID: " + groupToBeAddedID);
-            } else {
-                groupToBeAddedID = null;
-            }
-
-            if (extras.containsKey("currentFragment")) {
-                currentFragment = extras.getInt("currentFragment");
-            }
-            else
-            {
-                currentFragment = null;
-            }
-        }
-
-
-        // getting reference to the user from db
-        DatabaseReference currentUserRef = usersRef.child(currentUID);
-        currentUserRef.child("token").setValue(FirebaseInstanceId.getInstance().getToken());
-
-        if (currentUserRef == null) {
-            Log.e(TAG, "unable to retrieve logged user from db");
-
-            Toast.makeText(MainActivity.this, "unable to retrieve logged user from db", Toast.LENGTH_LONG).show();
-
-            // if the current user is not in the database do the logout and restart from login
-            auth.signOut();
-            currentUID = null;
-            Intent intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
-            if(progressDialog.isShowing())
-                progressDialog.dismiss();
-            startActivity(intent);
-            finish();
-        }
-
-
-        // control if there is a request to join a group
-        if (groupToBeAddedID != null) {
-            if (inviterUID != null) {
-                if (!currentUser.getUserGroups().containsKey(groupToBeAddedID)) {
-                    currentUser.joinGroup(groupToBeAddedID, inviterUID);
-                    Toast.makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
-                } else
-                    Log.i(TAG,"You are already part of the group " + groupToBeAddedID);
-            }
-        }
-        else
-            // control if ther is a friend request
-            if (inviterUID != null) {
-                if(!currentUser.getUserFriends().containsKey(inviterUID)){
-                    currentUser.addFriend(inviterUID);
-                    Toast.makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
-                }
-                else
-                    Log.i(TAG, "You and "+inviterUID+" are already friends!");
-            }
-
-        // attach a listener on all the current user data
-        currentUserRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onDataChange");
-
-                // in the main we don't want an expansible bar
-                AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-                appBarLayout.setExpanded(false);
-                //todo: capire come bloccare la barra nel main
-
-                /*if(!progressDialog.isShowing())
-                    progressDialog.show();*/
-
-                currentUser = new User();
-                currentUser.setID(currentUID);
-                currentUser.setName(dataSnapshot.child("name").getValue(String.class));
-                currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                currentUser.setProfileImage(dataSnapshot.child("image").getValue(String.class));
-                currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
-                currentUser.setPassword(dataSnapshot.child("password").getValue(String.class));
-                currentUser.setUsername(dataSnapshot.child("username").getValue(String.class));
-                // get user friends's IDs
-                for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
-                    currentUser.getUserFriends().put(friend.getKey(),null);
-                }
-                // get user groups's IDs
-                for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
-                    currentUser.getUserGroups().put(group.getKey(), null);
-                }
-                //todo mettere altri dati in myself?
-
-                // load nav menu header data for the current user
-                loadNavHeader();
-                Log.d(TAG, "logged user name: "+currentUser.getName());
-                Log.d(TAG, "logged user surname: "+currentUser.getSurname());
-
-                MainActivityPagerAdapter adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-
-                viewPager.setAdapter(adapter);
-                if (currentFragment != null)
-                {
-                    viewPager.setCurrentItem(currentFragment);
-                    updateFab(currentFragment);
-                }
-
-                else
-                {
-                    viewPager.setCurrentItem(1);
-                    updateFab(1);
-                }
-
-                if(progressDialog.isShowing())
-                    progressDialog.dismiss();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // TODO: come gestire?
-                Log.d(TAG, "getting current user failed");
-
-                if(progressDialog.isShowing())
-                    progressDialog.dismiss();
-            }
-        });
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         Log.i(TAG, "onStop");
+
+        if(authListener != null){
+            currentUserRef.removeEventListener(currentUserListener);
+            auth.removeAuthStateListener(authListener);
+        }
     }
 
     @Override

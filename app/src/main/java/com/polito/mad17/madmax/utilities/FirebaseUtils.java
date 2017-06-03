@@ -50,7 +50,7 @@ public class FirebaseUtils {
 
     private final static FirebaseUtils INSTANCE = new FirebaseUtils();
 
-    private static FirebaseDatabase firebaseDatabase;
+    public static FirebaseDatabase firebaseDatabase;
     private static DatabaseReference databaseReference;
     private static FirebaseAuth auth;
 
@@ -294,18 +294,18 @@ public class FirebaseUtils {
     public void joinGroupFirebase (final String userID, String groupID)
     {
         //Aggiungo gruppo alla lista gruppi dello user
-        databaseReference.child("users").child(userID).child("groups").push();
+    //    databaseReference.child("users").child(userID).child("groups").push(); tolto perchè non ci serve la chiave
         databaseReference.child("users").child(userID).child("groups").child(groupID).setValue(true);
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
-        databaseReference.child("groups").child(groupID).child("members").push();
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
+    //    databaseReference.child("groups").child(groupID).child("members").push(); tolto perchè non ci serve la chiave
+    //    databaseReference.child("groups").child(groupID).child("members").child(userID).push(); tolto perchè non ci serve la chiave
         if(userID.equals(MainActivity.getCurrentUser().getID())) {
             databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue(true);
         }
         else {
             databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue(false);
         }
-        databaseReference.child("groups").child(groupID).child("members").child(userID).push();
+  //      databaseReference.child("groups").child(groupID).child("members").child(userID).push();   tolto perchè non ci serve la chiave
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("deleted").setValue(false);
 
@@ -436,6 +436,7 @@ public class FirebaseUtils {
                         !dataSnapshot.child("deleted").getValue(Boolean.class))
                 {
                     //Retrieve my balance for this expense
+                    User provaCurrent = MainActivity.getCurrentUser();
                     Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                     Double alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("alreadyPaid").getValue(Double.class);
                     Double expenseBalance = alreadyPaid - dueImport;
@@ -475,6 +476,9 @@ public class FirebaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String groupID = dataSnapshot.child("groupID").getValue(String.class);
+
+                // aggiunto da riky per mandare la notifica a tutti tranne a chi ha eliminato la spesa
+                databaseReference.child("expenses").child(expenseID).child("deletedBy").setValue(MainActivity.getCurrentUser().getID());
 
                 //Elimino spesa dal gruppo
                 databaseReference.child("groups").child(groupID).child("expenses").child(expenseID).setValue(false);

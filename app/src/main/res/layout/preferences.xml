@@ -12,17 +12,21 @@
             android:key="notification_invite"
             android:title="Invitation to join a new group"
             android:defaultValue="true" />
-        <CheckBoxPreference
+        <!--<CheckBoxPreference
             android:key="notification_joinGroup"
             android:title="User join one of your groups"
-            android:defaultValue="true" />
-        <CheckBoxPreference
+            android:defaultValue="true" />-->
+        <!--<CheckBoxPreference
             android:key="notification_leaveGroup"
             android:title="User leave one of your groups"
+            android:defaultValue="true" />-->
+        <CheckBoxPreference
+            android:key="notification_expense_added"
+            android:title="New expense added"
             android:defaultValue="true" />
         <CheckBoxPreference
-            android:key="notification_expense"
-            android:title="New expense added"
+            android:key="notification_expense_removed"
+            android:title="Expense removed"
             android:defaultValue="true" />
         <CheckBoxPreference
             android:key="notification_proposalExpense"

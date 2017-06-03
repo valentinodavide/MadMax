@@ -135,7 +135,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                             //up diventa blu, down diventa nero
                             mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("yes");
                             eventType = Event.EventType.PENDING_EXPENSE_VOTE_UP;
-
                         }
                         else
                         {
@@ -193,10 +192,8 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                         {
                             //up diventa blu, down diventa nero
                             mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("no");
-
                         }
-                        else if (myVote.equals("no"))
-                        {
+                        else if (myVote.equals("no")) {
                             //up diventa nero
                             mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
                         }

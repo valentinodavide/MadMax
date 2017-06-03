@@ -190,6 +190,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
             Intent intent = new Intent(getApplicationContext(), NewMemberActivity.class);
             intent.putExtra("groupID", newgroup_id);
+            intent.putExtra("groupName", name);
             startActivity(intent);
 
             finish();

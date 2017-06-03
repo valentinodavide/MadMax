@@ -27,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
-import com.polito.mad17.madmax.activities.expenses.PendingExpensesFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsFragment;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
@@ -56,7 +55,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
     private GroupsViewAdapter groupsViewAdapter;
 
     private String friendID;
-    private String groupID;
+    private String groupID, groupName;
     private String userID;
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
@@ -210,7 +209,8 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 Group g = new Group();
-                g.setName(dataSnapshot.child("name").getValue(String.class));
+                groupName = dataSnapshot.child("name").getValue(String.class);
+                g.setName(groupName);
                 groups.put(id, g);
                 groupsViewAdapter.update(groups);
                 groupsViewAdapter.notifyDataSetChanged();
@@ -263,7 +263,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                         Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                                 .setDeepLink(builder.build())
                                 .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                                .setCallToActionText(getString(R.string.invitationToGroup_cta)) //todo vedere perchè non mostra questo link
+                                .setCallToActionText(getString(R.string.invitationToGroup)+" "+groupName) //todo vedere perchè non mostra questo link
                                 .build();
 
                         startActivityForResult(intent, MainActivity.REQUEST_INVITE_GROUP);

@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,8 +21,6 @@ import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
-import com.polito.mad17.madmax.activities.OverlayDivider;
-import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
@@ -81,6 +77,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
+        friends.clear();
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
