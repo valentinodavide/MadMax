@@ -13,20 +13,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tv_sender"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_marginTop="30dp"
-            android:text="Me"/>
+    <TextView
+        android:id="@+id/tv_sender"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="30dp"
+        android:text="Me"/>
 
-        <ImageView
-            android:id="@+id/sender_photo"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_below="@+id/tv_sender"
-            android:background="@color/colorAccent"
-            />
+    <ImageView
+        android:id="@+id/sender_photo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/tv_sender"
+        android:background="@color/colorAccent"
+        />
 
 
 
@@ -39,23 +39,23 @@
         android:layout_toRightOf="@+id/user_relative"
         android:gravity="center">
 
-        <ImageView
-            android:id="@+id/money"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="30dp"
+    <ImageView
+        android:id="@+id/money"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="30dp"
 
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/user_pay"/>
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/user_pay"/>
 
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:layout_below="@+id/money"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/ic_arrow_forward_black_24dp"
-            />
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/money"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_arrow_forward_black_24dp"
+        />
 
     </RelativeLayout>
 
@@ -94,20 +94,23 @@
 
 
 
-        <EditText
-            android:id="@+id/amount"
-            android:layout_width="90dp"
-            android:layout_height="wrap_content"
-            android:text="Prova"
-            android:inputType="numberDecimal"
-            />
+    <EditText
+        android:id="@+id/amount"
+        android:layout_width="90dp"
+        android:layout_height="wrap_content"
+        android:text="Prova"
+        android:inputType="numberDecimal"
+        />
 
-        <Spinner
-            android:id="@+id/currency"
-            android:layout_width="75dp"
-            android:layout_height="64dp"
-            android:layout_toRightOf="@+id/amount"
-            android:layout_weight="1" />
+    <TextView
+        android:id="@+id/currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/amount"
+        android:text="€"
+        android:textSize="22dp"
+
+        />
 
 
     </RelativeLayout>

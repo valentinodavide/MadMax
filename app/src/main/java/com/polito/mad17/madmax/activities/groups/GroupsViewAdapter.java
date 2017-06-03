@@ -42,6 +42,10 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Context context;
 
     private LayoutInflater layoutInflater;
+    DecimalFormat df = new DecimalFormat("#.##");
+    private HashMap<String, Double> totBalances = new HashMap<>();
+
+
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -169,12 +173,94 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             //todo mettere debito verso il gruppo
             //mydebt = mio debito con il gruppo
+            String groupname = item.getValue().getName();
+
+            totBalances = item.getValue().getCurrencyBalances();
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
             String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
 
+            Boolean multipleCurrencies = false;
+            Double shownBal;
+            String shownCurr;
+
+            if (groupname.equals("fff") || groupname.equals("Regalo"))
+            {
+                Log.d(TAG, "sii");
+            }
+
+            if (totBalances != null) {
+                for (Map.Entry<String, Double> entry : totBalances.entrySet()) {
+                    Log.d(TAG, "Bilancio in " + groupname + " : " + entry.getValue() + " " + entry.getKey());
+                }
+
+                if (!totBalances.isEmpty()) {
+                    //If there is more than one currency
+                    if (totBalances.size() > 1) {
+                        multipleCurrencies = true;
+
+                    }
+                    //If there is just one currency
+                    else {
+                        multipleCurrencies = false;
+                    }
+
+                    if (totBalances.containsKey(defaultCurrency)) {
+                        shownBal = totBalances.get(defaultCurrency);
+                        shownCurr = defaultCurrency;
+                    } else {
+                        shownCurr = (String) totBalances.keySet().toArray()[0];
+                        shownBal = totBalances.get(shownCurr);
+                    }
+
+                    //Print balance
+                    if (shownBal > 0) {
+                        groupViewHolder.balanceTextTextView.setText(R.string.you_should_receive);
+                        groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+
+                        if (multipleCurrencies)
+                            groupViewHolder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr + "*");
+                        else
+                            groupViewHolder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr);
+
+                        groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                    } else if (shownBal < 0) {
+                        groupViewHolder.balanceTextTextView.setText(R.string.you_owe);
+                        groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+
+
+                        if (multipleCurrencies)
+                            groupViewHolder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr + "*");
+                        else
+                            groupViewHolder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr);
+
+                        groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+                    } else if (shownBal == 0) {
+                        groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
+                        groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                        groupViewHolder.balanceTextView.setText("0 " + defaultCurrency);
+                        groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    }
+
+                }
+            }
+                //If there are no balances in the map
+                else
+                {
+                    groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
+                    groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    groupViewHolder.balanceTextView.setText("0 " + defaultCurrency);
+                    groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                }
+
+
+
             // check if there are expenses with other currencies than the default
-            Boolean defaultCurrencyExpense = false;
+            /*Boolean defaultCurrencyExpense = false;
             Boolean otherCurrenciesPresent = false;
             Double groupBalanceDefaultCurrency = 0.0d;
             HashMap<String, Double> otherCurrenciesBalance = new HashMap<>();
@@ -207,7 +293,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         return;
                     }
 
-                    DecimalFormat df = new DecimalFormat("#.##");
                     if (groupBalanceDefaultCurrency > 0) {
                         groupViewHolder.balanceTextTextView.setText(R.string.credit_of);
                         groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
@@ -266,7 +351,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
                 groupViewHolder.balanceTextView.setText("0.0 " + defaultCurrency);
                 groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
-            }
+            }*/
         }
     }
 

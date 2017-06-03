@@ -44,7 +44,6 @@ import java.util.HashMap;
 import static android.widget.Toast.makeText;
 import static com.polito.mad17.madmax.R.string.friends;
 
-//import static com.polito.mad17.madmax.activities.groups.GroupsViewAdapter.groups;
 
 public class MainActivity extends BasicActivity implements OnItemClickInterface, OnItemLongClickInterface {
 

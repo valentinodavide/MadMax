@@ -45,8 +45,16 @@ public class User implements Parcelable {
     private Double alreadyPaid;
     private Double dueImport;
 
+
+
+
+
+    private String expenseCurrency;
+
     //Bilancio dello user verso un certo gruppo
     private Double balanceWithGroup;
+
+    private HashMap<String, Double> balancesWithGroup;  //bilanci delle varie valute
 
     private TreeMap<String, Group> userGroups;  //String = groupID, Group = oggetto Group di cui user fa parte
     private TreeMap<String, User> userFriends;  //String = UID, User = friend of this user
@@ -259,6 +267,15 @@ public class User implements Parcelable {
     public Double getBalanceWithGroup() {return balanceWithGroup;}
 
     public void setBalanceWithGroup(Double balanceWithGroup) {this.balanceWithGroup = balanceWithGroup;}
+
+    public String getExpenseCurrency() {return expenseCurrency;}
+
+    public void setExpenseCurrency(String expenseCurrency) {this.expenseCurrency = expenseCurrency;}
+
+    public HashMap<String, Double> getBalancesWithGroup() {return balancesWithGroup;}
+
+    public void setBalancesWithGroup(HashMap<String, Double> balancesWithGroup) {this.balancesWithGroup = balancesWithGroup;}
+
     /*
         END GETTERS & SETTERS
      */

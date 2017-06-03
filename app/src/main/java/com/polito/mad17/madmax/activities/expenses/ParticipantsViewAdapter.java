@@ -167,7 +167,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
             holder.balanceTextTextView.setText(R.string.credit_of);
             holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
-            String balance = df.format(Math.abs(dueImport)) + " €";
+            String balance = df.format(Math.abs(dueImport)) + " " +  item.getValue().getExpenseCurrency();
             Log.d(TAG, "balance "  + balance);
 
             holder.toPayTextView.setText(balance);
@@ -181,7 +181,7 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
                 holder.balanceTextTextView.setText(R.string.debt_of);
                 holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
-                String balance = df.format(Math.abs(dueImport)) + " €";
+                String balance = df.format(Math.abs(dueImport)) + " " + item.getValue().getExpenseCurrency();
                 Log.d(TAG, "balance "  + balance + " " + R.color.colorAccent);
                 holder.toPayTextView.setText(balance);
                 holder.toPayTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
@@ -189,14 +189,13 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
             else
             {
                 holder.balanceTextTextView.setText(R.string.no_debts);
-                holder.toPayTextView.setText("0 €");
+                holder.toPayTextView.setText("0 " + item.getValue().getExpenseCurrency());
                 holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
             }
         }
 
-        //todo mettere getCurrency
-        String alreadyPaid = df.format(Math.abs(item.getValue().getAlreadyPaid())) + " " + "€";
-        holder.alreadyPaidTextView.setText(alreadyPaid);
+        String alreadyPaid = df.format(Math.abs(item.getValue().getAlreadyPaid()));
+        holder.alreadyPaidTextView.setText(alreadyPaid + " " + item.getValue().getExpenseCurrency());
 
     }
 

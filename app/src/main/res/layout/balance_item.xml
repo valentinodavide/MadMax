@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:padding="4dp"
+    android:weightSum="1"
+    >
+
+
+
+    <TextView
+        android:id="@+id/tv_balance_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="12dp"
+
+
+        android:clickable="false"
+
+        android:textSize="20sp"
+        android:text="You should receive"
+        android:textColor="@color/colorPrimaryText"
+        />
+
+
+
+
+
+        <TextView
+            android:id="@+id/tv_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_toRightOf="@+id/tv_balance_text"
+            android:layout_alignParentRight="true"
+
+            android:layout_marginRight="12dp"
+            android:layout_centerHorizontal="true"
+
+            android:text="111.45 €"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:textAlignment="textEnd"
+            />
+
+</RelativeLayout>
+

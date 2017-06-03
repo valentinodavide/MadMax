@@ -41,20 +41,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:textSize="25sp"
+                android:textSize="28sp"
                 android:textColor="@color/colorPrimaryLight"
                 android:paddingTop="5dp"
                 android:text="Name Surname" />
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/lv_balance_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/nameline"
             android:orientation="vertical"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp">
 
@@ -62,9 +62,7 @@
                 android:id="@+id/tv_balance_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:paddingLeft="5dp"
-                android:paddingTop="5dp"
+                android:textSize="18sp"
                 android:textColor="@color/colorPrimaryLight"
                 tools:text="@string/balance" />
 
@@ -72,26 +70,28 @@
                 android:id="@+id/tv_balance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="5dp"
-                android:textSize="18sp"
+                android:layout_below="@+id/tv_balance_text"
+                android:textSize="27sp"
                 android:textColor="@color/colorAccent"
                 android:textStyle="bold"
+                android:clickable="true"
+                tools:text="33333.33 €"
+                />
                 tools:text="130 €" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
-        <Button android:id="@+id/btn_pay_debt"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/btn_pay_debt"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryLight"
             android:text="@string/paydebt"
-            android:background="@drawable/pay_button_border"
-            android:padding="10dp"
-            android:layout_below="@id/nameline"
+            android:layout_marginRight="23dp"
+            android:layout_marginEnd="23dp"
+            android:layout_alignTop="@+id/lv_balance_layout"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="25dp"
-            android:layout_marginEnd="25dp" />
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 

@@ -38,7 +38,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private OnItemLongClickInterface onLongClickGroupInterface;
 
     public static TreeMap<String, Group> groups = new TreeMap<>(Collections.reverseOrder());
-    private Double totBalance;
+    //private Double totBalance;
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -163,17 +163,21 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     //oltre al nome gruppo, prende anche il bilancio dello user col gruppo
     void getGroupAndBalance (final String userID, final String groupID)
     {
-        final HashMap <String, Double> totalBalance = new HashMap<>();
+
+        //final HashMap <String, Double> totalBalance = new HashMap<>();
         final HashMap <String, Expense> groupExpenses = new HashMap<>();
-        totalBalance.put(userID,0d);
-        totBalance = 0d;
+        //totalBalance.put(userID,0d);
+        //totBalance = 0d;
+        final HashMap <String, Double> totBalances = new HashMap<>();
+        totBalances.clear();
 
         groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(final DataSnapshot groupDataSnapshot) {
 
-                totalBalance.put(userID,0d);
+                //totalBalance.put(userID,0d);
+                totBalances.clear();
                 if (!listenedGroups.contains(groupID))
                     listenedGroups.add(groupID);
 
@@ -219,10 +223,26 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                                         Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                                         Double balance = alreadyPaid - dueImport;
+                                        String currency = dataSnapshot.child("currency").getValue(String.class);
                                         //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-                                        Double currentBalance = totalBalance.get(userID);
-                                        totalBalance.put(userID, currentBalance+balance);
-                                        totBalance += balance;
+
+                                        //current balance for that currency
+                                        Double temp = totBalances.get(currency);
+                                        //update balance for that currency
+                                        if (temp != null)
+                                        {
+                                            totBalances.put(currency, temp + balance);
+                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                        }
+                                        else
+                                        {
+                                            totBalances.put(currency, balance);
+                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+
+                                        }
+                                        //Double currentBalance = totalBalance.get(userID);
+                                        //totalBalance.put(userID, currentBalance+balance);
+                                        //totBalance += balance;
 
                                         Expense expense = new Expense();
                                         expense.setID(dataSnapshot.getKey());
@@ -237,7 +257,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                                     Group g = new Group();
                                     g.setName(groupName);
-                                    g.setBalance(totalBalance.get(userID));
+                                    //g.setBalance(totalBalance.get(userID));
+                                    g.setCurrencyBalances(totBalances);
                                     g.setExpenses(groupExpenses);
                                     g.setDeleted(deleted);
                                     //g.setBalance(totBalance);
@@ -290,7 +311,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
                     groupsViewAdapter.update(groups);
                     groupsViewAdapter.notifyDataSetChanged();
-                    totBalance = 0d;
+                    //totBalance = 0d;
                 }
             }
 

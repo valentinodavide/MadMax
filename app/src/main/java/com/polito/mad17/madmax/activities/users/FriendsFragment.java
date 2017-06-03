@@ -261,9 +261,14 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     //Retrieve balance of userID toward groupID
     void getUserAndGroupBalance (final String userID, final String name, final String surname, final String profileImage, final String groupID)
     {
+        //key = currency
+        //value = balance for that currency
+        final HashMap<String, Double> totBalances = new HashMap<>();
+        totBalances.clear();
+
         //retrieve data of group
-        final HashMap<String, Double> totalBalance = new HashMap<>();
-        totalBalance.put(userID,0d);
+        //final HashMap<String, Double> totalBalance = new HashMap<>();
+        //totalBalance.put(userID,0d);
         totBalance = 0d;
 
         groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
@@ -271,9 +276,12 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             @Override
             public void onDataChange(final DataSnapshot groupDataSnapshot) {
 
-                totalBalance.put(userID,0d);
+                totBalances.clear();
+                //totalBalance.put(userID,0d);
                 if (!listenedGroups.contains(groupID))
                     listenedGroups.add(groupID);
+
+                final String groupName = groupDataSnapshot.child("name").getValue(String.class);
 
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
 
@@ -316,14 +324,32 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
                                         Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                                         Double balance = alreadyPaid - dueImport;
+                                        String currency = dataSnapshot.child("currency").getValue(String.class);
                                         //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-                                        Double currentBalance = totalBalance.get(userID);
-                                        totalBalance.put(userID, currentBalance+balance);
+
+                                        //current balance for that currency
+                                        Double temp = totBalances.get(currency);
+                                        //update balance for that currency
+                                        if (temp != null)
+                                        {
+                                            totBalances.put(currency, temp + balance);
+                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                        }
+                                        else
+                                        {
+                                            totBalances.put(currency, balance);
+                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+
+                                        }
+                                        //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                        //Double currentBalance = totBalances.get(userID);
+                                        //totBalances.put(userID, currentBalance+balance);
 
                                     }
 
                                     User u = new User();
-                                    u.setBalanceWithGroup(totalBalance.get(userID));
+                                    //u.setBalanceWithGroup(totalBalance.get(userID));
+                                    u.setBalancesWithGroup(totBalances);
                                     u.setName(name);
                                     u.setSurname(surname);
                                     u.setProfileImage(profileImage);

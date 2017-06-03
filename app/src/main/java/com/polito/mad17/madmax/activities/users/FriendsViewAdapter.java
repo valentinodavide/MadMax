@@ -1,6 +1,9 @@
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,11 +16,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.activities.groups.BalancesActivity;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.ItemFriendsViewHolder> {
@@ -32,6 +38,10 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
     private LayoutInflater layoutInflater;
     private Context context;
+    DecimalFormat df = new DecimalFormat("#.##");
+    private HashMap<String, Double> totBalances = new HashMap<>();
+
+
 
 
     // The interface that receives the onClick messages
@@ -86,6 +96,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             //balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+            balanceTextView.setOnClickListener(this);
         }
 
         @Override
@@ -94,9 +105,20 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             //Log.d(TAG, "clickedFriend " + friends.get(String.valueOf(clickedPosition+1)).getID());
             Map.Entry<String, User> itemClicked = getItem(clickedPosition);
 
-            Log.d(TAG, "clickedFriend " + itemClicked.getKey());
+            if (v.getId() == balanceTextView.getId())
+            {
+                Log.d(TAG, "Clicked balance of friend " + itemClicked.getKey());
+                //itemClickListener.onListItemClick(itemClicked.getKey());
 
-            itemClickListener.onListItemClick(itemClicked.getKey());
+            }
+            else
+            {
+                Log.d(TAG, "clickedFriend " + itemClicked.getKey());
+
+                itemClickListener.onListItemClick(itemClicked.getKey());
+            }
+
+
         }
 
         @Override
@@ -160,9 +182,87 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
 
 
-            Double balance = item.getValue().getBalanceWithGroup();
+            //Double balance = item.getValue().getBalanceWithGroup();
 
-            if (balance != null)
+            totBalances = item.getValue().getBalancesWithGroup();
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+            String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
+            Boolean multipleCurrencies = false;
+            Double shownBal;
+            String shownCurr;
+
+
+            if (totBalances != null) {
+
+                if (!totBalances.isEmpty()) {
+                    //If there is more than one currency
+                    if (totBalances.size() > 1) {
+                        multipleCurrencies = true;
+
+                    }
+                    //If there is just one currency
+                    else {
+                        multipleCurrencies = false;
+                    }
+
+                    if (totBalances.containsKey(defaultCurrency)) {
+                        shownBal = totBalances.get(defaultCurrency);
+                        shownCurr = defaultCurrency;
+                    } else {
+                        shownCurr = (String) totBalances.keySet().toArray()[0];
+                        shownBal = totBalances.get(shownCurr);
+                    }
+
+                    //Print balance
+                    if (shownBal > 0) {
+                        holder.balanceTextTextView.setText(R.string.you_should_receive);
+                        holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+
+                        if (multipleCurrencies)
+                            holder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr + "*");
+                        else
+                            holder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr);
+
+                        holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                    } else if (shownBal < 0) {
+                        holder.balanceTextTextView.setText(R.string.you_owe);
+                        holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+
+
+                        if (multipleCurrencies)
+                            holder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr + "*");
+                        else
+                            holder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr);
+
+                        holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+                    } else if (shownBal == 0) {
+                        holder.balanceTextTextView.setText(R.string.no_debts);
+                        holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                        holder.balanceTextView.setText("0 " + defaultCurrency);
+                        holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    }
+
+                }
+            }
+            //If there are no balances in the map
+            else
+            {
+                holder.balanceTextTextView.setText(R.string.no_debts);
+                holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                holder.balanceTextView.setText("0 " + defaultCurrency);
+                holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+            }
+
+
+            //todo fin qui
+
+            /*if (balance != null)
             {
                 DecimalFormat df = new DecimalFormat("#.##");
                 if (balance > 0) {
@@ -199,7 +299,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
                 holder.balanceTextView.setVisibility(View.GONE);
                 holder.balanceTextTextView.setVisibility(View.GONE);
 
-            }
+            }*/
 
         }
     }

@@ -88,5 +88,6 @@
     <string name="dialog_verification_message">L\'indirizzo email associato a questo account non è ancora stato verificato.\nVuoi ricevere di nuovo l\'email di verifica?</string>
     <string name="dialog_verification_title">Email non verificata</string>
     <string name="send_again">Invia di nuovo</string>
+    <string name="you_owe">"DEVI RESTITUIRE"</string>
 
 </resources>

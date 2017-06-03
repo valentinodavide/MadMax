@@ -2,7 +2,9 @@ package com.polito.mad17.madmax.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +27,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.groups.BalancesActivity;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.entities.User;
+
+import java.text.DecimalFormat;
+import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -39,7 +46,7 @@ public class BarDetailFragment extends Fragment {
     private TextView nameTextView;
     private String activityName;
     private User friendDetail;
-    private LinearLayout balanceLayout;
+    private RelativeLayout balanceLayout;
     private TextView balanceView;
     private TextView balanceTextView;
 
@@ -47,13 +54,20 @@ public class BarDetailFragment extends Fragment {
     private String groupID;
     private String userID;
     private String groupName;
+    private String defaultCurrency;
 
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-    private Double totBalance;
+    //private Double totBalance;
     private ValueEventListener groupListener;
     Boolean listenedGroup = false;
     private Button payButton;
+    DecimalFormat df = new DecimalFormat("#.##");
+
+
+    //key = currency
+    //value = balance for that currency
+    private HashMap<String, Double> totBalances = new HashMap<>();
 
     static final int PAY_GROUP_REQUEST = 1;  // The request code
 
@@ -85,7 +99,7 @@ public class BarDetailFragment extends Fragment {
 
         imageView = (ImageView) mainView.findViewById(R.id.img_photo);
         nameTextView = (TextView) mainView.findViewById(R.id.tv_bar_name);
-        balanceLayout = (LinearLayout) mainView.findViewById(R.id.lv_balance_layout);
+        balanceLayout = (RelativeLayout) mainView.findViewById(R.id.lv_balance_layout);
         balanceTextView = (TextView)mainView.findViewById(R.id.tv_balance_text);
         balanceView = (TextView)mainView.findViewById(R.id.tv_balance);
         payButton = (Button) mainView.findViewById(R.id.btn_pay_debt);
@@ -93,6 +107,8 @@ public class BarDetailFragment extends Fragment {
 
         initCollapsingToolbar();
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
         //Extract data from bundle
         Bundle bundle = this.getArguments();
 
@@ -137,7 +153,7 @@ public class BarDetailFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Log.d (TAG, "Clicked payButton");
-                        if (totBalance >= 0)
+                        if (totBalances.get(defaultCurrency) >= 0)
                         {
                             Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
                         }
@@ -146,7 +162,7 @@ public class BarDetailFragment extends Fragment {
                             Intent intent = new Intent(getActivity(), PayGroupActivity.class);
                             intent.putExtra("groupID", groupID);
                             intent.putExtra("userID", userID);
-                            intent.putExtra("debt", totBalance);
+                            intent.putExtra("debt", totBalances.get(defaultCurrency));
                             intent.putExtra("groupName", groupName);
                             startActivity(intent);
                         }
@@ -154,6 +170,19 @@ public class BarDetailFragment extends Fragment {
 
                     }
                 });
+
+                balanceView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d (TAG, "Clicked balance");
+                        Intent intent = new Intent(getActivity(), BalancesActivity.class);
+                        intent.putExtra("balances", totBalances);
+                        startActivity(intent);
+
+                    }
+                });
+
+
 
                 // todo qui currency
                 //retrieve data of group
@@ -164,12 +193,18 @@ public class BarDetailFragment extends Fragment {
                         if (!listenedGroup)
                             listenedGroup = true;
 
-                        totBalance = 0d;
+                        //totBalance = 0d;
+
+                        totBalances.clear();
+
+                        //Retrieve group name
                         groupName = dataSnapshot.child("name").getValue(String.class);
                         if (groupName != null)
                             nameTextView.setText(groupName);
 
+                        //Retrieve group image
                         String image = dataSnapshot.child("image").getValue(String.class);
+                        if (image != null && image != "noImage")
 
                         if (image != null && !image.equals("noImage"))
                         {
@@ -191,13 +226,13 @@ public class BarDetailFragment extends Fragment {
 
 
 
-                        // retrieve group balance
+                        //Retrieve group balances in all currencies
                         for (DataSnapshot groupExpenseSnapshot: dataSnapshot.child("expenses").getChildren())
                         {
                             //Se la spesa non è stata eliminata
                             if (groupExpenseSnapshot.getValue(Boolean.class) == true)
                             {
-                                //Ascolto ogni singola spesa del gruppo
+                                //Ascolto la singola spesa del gruppo
                                 final String expenseID = groupExpenseSnapshot.getKey();
                                 Log.d(TAG, "considero la spesa "+expenseID);
                                 databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -222,19 +257,91 @@ public class BarDetailFragment extends Fragment {
                                             Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
                                             Double dueImport = dataSnapshot.child("participants").child(userID).child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
                                             Double balance = alreadyPaid - dueImport;
-                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-                                            totBalance += balance;
+                                            String currency = dataSnapshot.child("currency").getValue(String.class);
 
-                                            if(totBalance<0)
-                                                balanceTextView.setText(getString(R.string.negative_balance));
+                                            //current balance for that currency
+                                            Double temp = totBalances.get(currency);
+                                            //update balance for that currency
+                                            if (temp != null)
+                                            {
+                                                totBalances.put(currency, temp + balance);
+                                            }
                                             else
-                                                balanceTextView.setText(getString(R.string.positive_balance));
+                                            {
+                                                totBalances.put(currency, balance);
+                                            }
 
-                                            String balanceString = String.valueOf(totBalance.doubleValue())+ " €";
-                                            balanceView.setText(balanceString);
+                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                            //totBalance += balance;
+
+                                            Boolean multipleCurrencies = false;
+                                            Double shownBal;
+                                            String shownCurr;
+
                                             balanceLayout.setVisibility(View.VISIBLE);
 
-                                            Log.d(TAG, "sono coinvolto nella spesa "+expenseID+", dovevo "+dueImport+", ho dato "+alreadyPaid+" -> totBalance: "+totBalance);
+
+
+                                            if (!totBalances.isEmpty())
+                                            {
+                                                //If there is more than one currency
+                                                if (totBalances.size() > 1)
+                                                {
+                                                    multipleCurrencies = true;
+
+                                                }
+                                                //If there is just one currency
+                                                else
+                                                {
+                                                    multipleCurrencies = false;
+                                                }
+
+                                                if (totBalances.containsKey(defaultCurrency))
+                                                {
+                                                    shownBal = totBalances.get(defaultCurrency);
+                                                    shownCurr = defaultCurrency;
+                                                }
+                                                else
+                                                {
+                                                    shownCurr = (String) totBalances.keySet().toArray()[0];
+                                                    shownBal = totBalances.get(shownCurr);
+                                                }
+
+                                                //Print balance
+                                                if (shownBal > 0)
+                                                {
+                                                    balanceTextView.setText(R.string.you_should_receive);
+
+                                                    if (multipleCurrencies)
+                                                        balanceView.setText(df.format(shownBal) + " " + shownCurr + "*");
+                                                    else
+                                                        balanceView.setText(df.format(shownBal) + " " + shownCurr);
+                                                }
+                                                else if (shownBal < 0)
+                                                {
+                                                    balanceTextView.setText(R.string.you_owe);
+
+                                                    if (multipleCurrencies)
+                                                        balanceView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr + "*");
+                                                    else
+                                                        balanceView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr);
+                                                }
+                                                else if (shownBal == 0)
+                                                {
+                                                    balanceTextView.setText(R.string.no_debts);
+                                                    balanceView.setText("0 " + defaultCurrency);
+                                                }
+
+                                            }
+                                            //If there are no balances in the map
+                                            else
+                                            {
+                                                balanceTextView.setText(R.string.no_debts);
+                                                balanceView.setText("0 " + defaultCurrency);
+                                            }
+
+
+                                            Log.d(TAG, "sono coinvolto nella spesa "+expenseID+", dovevo "+dueImport+", ho dato "+alreadyPaid);
                                         }
                                     }
 
@@ -247,6 +354,14 @@ public class BarDetailFragment extends Fragment {
                             }
 
                         }
+                        //Ora ho finito di calcolare i bilanci
+                        /*
+                        if(totBalance<0)
+                            balanceTextView.setText(getString(R.string.negative_balance));
+                        else
+                            balanceTextView.setText(getString(R.string.positive_balance));
+                            */
+
 
 
                     }
