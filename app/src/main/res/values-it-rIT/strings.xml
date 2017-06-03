@@ -85,8 +85,8 @@
     <string name="cancel"> Annulla </string>
     <string name="saved"> Salvato </string>
     <string name="prompt_comment"> Aggiungi commento </string>
-    <string name="dialog_verification_message">Il tuo account non è ancora stato confermato. Vuoi ricevere di nuovo l\'email di verifica?</string>
-    <string name="dialog_verification_title">Conferma email</string>
+    <string name="dialog_verification_message">L\'indirizzo email associato a questo account non è ancora stato verificato.\nVuoi ricevere di nuovo l\'email di verifica?</string>
+    <string name="dialog_verification_title">Email non verificata</string>
     <string name="send_again">Invia di nuovo</string>
 
 </resources>

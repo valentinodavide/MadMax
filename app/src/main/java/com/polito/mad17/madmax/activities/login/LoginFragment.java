@@ -129,11 +129,13 @@ public class LoginFragment extends Fragment {
                 else {
                     // if the user is already logged but has not verified the mail redirect him to the email verification
                     if(currentUser != null && !currentUser.isEmailVerified()) {
-                        Log.i(TAG, " user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
+                        if (!SignUpFragment.CREATING_ACCOUNT) {
+                            Log.i(TAG, " user " + firebaseAuth.getCurrentUser().getEmail() + " is logged but should complete the registration");
 
-                        AlertDialog alertDialog = createVerificationDialog();
-                        // Showing Alert Message
-                        alertDialog.show();
+                            AlertDialog alertDialog = createVerificationDialog();
+                            // Showing Alert Message
+                            alertDialog.show();
+                        }
                     }
                     else{
                         // if the user has done the logout

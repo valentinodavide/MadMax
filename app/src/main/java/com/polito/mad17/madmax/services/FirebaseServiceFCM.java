@@ -15,12 +15,14 @@ public class FirebaseServiceFCM extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "refreshedToken: "+refreshedToken);
-        sendRegistrationToServer(refreshedToken);
+        if (MainActivity.getCurrentUser() != null) {
+            Log.d(TAG, "refreshedToken: "+refreshedToken);
+            sendRegistrationToServer(refreshedToken);
+        }
     }
 
     private void sendRegistrationToServer(String refreshedToken) {
-        MainActivity.getDatabase();
+        firebaseDatabase = MainActivity.getDatabase();
         databaseReference = firebaseDatabase.getReference();
         databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("token").setValue(refreshedToken);
     }

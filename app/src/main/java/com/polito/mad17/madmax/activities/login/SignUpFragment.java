@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static android.R.attr.data;
+import static android.R.attr.notificationTimeout;
 import static android.app.Activity.RESULT_OK;
 
 public class SignUpFragment extends Fragment {
@@ -80,6 +81,8 @@ public class SignUpFragment extends Fragment {
     private Boolean imageSetted = false;
 
     private String inviterID;
+
+    public static Boolean CREATING_ACCOUNT = false;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickSignUpInterface = onItemClickInterface;
@@ -197,6 +200,8 @@ public class SignUpFragment extends Fragment {
             return;
         }
 
+        CREATING_ACCOUNT = true;
+
         progressDialog.setMessage("Account creation, please wait...");
         progressDialog.show();
 
@@ -237,7 +242,7 @@ public class SignUpFragment extends Fragment {
     private void sendVerificationEmail() {
         Log.i(TAG, "sendVerificationEmail");
 
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        final FirebaseUser user = auth.getCurrentUser();
         if (user == null) {
             Log.e(TAG, "Error while retriving current user from db");
 
@@ -296,35 +301,35 @@ public class SignUpFragment extends Fragment {
         }
 
         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                progressDialog.dismiss();
-                if (task.isSuccessful()) {
-                    Log.i(TAG, "verification email successful sent");
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    progressDialog.dismiss();
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "verification email successful sent");
 
-                    Log.i(TAG, "insert new user into db");
+                        Log.i(TAG, "insert new user into db");
 
-                    HashMap<String, String> newUserEntry = new HashMap<>();
+                        HashMap<String, String> newUserEntry = new HashMap<>();
 
-                    newUserEntry.put("email", u.getEmail());
-                    newUserEntry.put("password", u.getPassword());
-                    newUserEntry.put("friends", u.getUserFriends().toString());
-                    newUserEntry.put("groups", u.getUserGroups().toString());
-                    newUserEntry.put("image", u.getProfileImage());
-                    newUserEntry.put("name", u.getName());
-                    newUserEntry.put("surname", u.getSurname());
-                    newUserEntry.put("username", u.getUsername());
+                        newUserEntry.put("email", u.getEmail());
+                        newUserEntry.put("password", u.getPassword());
+                        newUserEntry.put("friends", u.getUserFriends().toString());
+                        newUserEntry.put("groups", u.getUserGroups().toString());
+                        newUserEntry.put("image", u.getProfileImage());
+                        newUserEntry.put("name", u.getName());
+                        newUserEntry.put("surname", u.getSurname());
+                        newUserEntry.put("username", u.getUsername());
 
-                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
-                    Toast.makeText(getContext(), R.string.emailVerification_text, Toast.LENGTH_LONG).show();
+                        databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                        Toast.makeText(getContext(), R.string.emailVerification_text, Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        // todo delete the account and restart the activity
+                        Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                    }
+                    onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
                 }
-                else {
-                    // todo delete the account and restart the activity
-                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
-                }
-                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
-            }
-        });
+            });
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();

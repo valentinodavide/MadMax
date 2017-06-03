@@ -95,6 +95,10 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         auth = FirebaseAuth.getInstance();
 
         if((auth.getCurrentUser() == null) ||(!auth.getCurrentUser().isEmailVerified())){
+            if (auth.getCurrentUser() != null) {
+                auth.signOut();
+            }
+
             startActivity(new Intent(getApplicationContext(), LoginSignUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
             overridePendingTransition(0,0); //0 for no animation
             finish();
@@ -151,7 +155,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange currentUserref");
                 if(currentUser == null) {
-                    makeText(MainActivity.this, "Ricreato user", Toast.LENGTH_SHORT).show(); // todo: di debug, da rimuovere
+                    //makeText(MainActivity.this, "Ricreato user", Toast.LENGTH_SHORT).show(); // todo: di debug, da rimuovere
                     currentUser = new User();
                     currentUser.setID(currentUID);
                 }
