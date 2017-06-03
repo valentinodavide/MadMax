@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,8 +24,6 @@ import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 
 import java.text.DecimalFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 
@@ -43,8 +41,11 @@ public class PayExpenseActivity extends AppCompatActivity {
     String expenseID;
     String expenseName;
     Double debt;
+    String currency;
     EditText amountEditText;
     TextView expenseNameTextView;
+    TextView currencyTextView;
+
     DecimalFormat df = new DecimalFormat("#.##");
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
@@ -54,7 +55,7 @@ public class PayExpenseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pay_group);
+        setContentView(R.layout.activity_pay_expense);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -67,6 +68,8 @@ public class PayExpenseActivity extends AppCompatActivity {
         debt = intent.getDoubleExtra("debt", 0);
         debt = abs(Math.floor(debt * 100) / 100);
 
+        currency = intent.getStringExtra("expenseCurrency");
+
         amountEditText = (EditText) findViewById(R.id.amount);
         amountEditText.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(7,2)});
 
@@ -74,6 +77,11 @@ public class PayExpenseActivity extends AppCompatActivity {
         expenseNameTextView.setText(expenseName);
 
         amountEditText.setText(debt.toString());
+
+        currencyTextView = (TextView) findViewById(R.id.currency);
+        currencyTextView.setText(currency);
+
+
 
 
     }
@@ -127,7 +135,7 @@ public class PayExpenseActivity extends AppCompatActivity {
                     }
                     else
                     {
-                        //payDebtForExpense(userID, groupID, money);
+                        payDebtForExpense(userID, expenseID, money);
                         // todo add event for USER_PAY
                         intent = new Intent(this, ExpenseDetailActivity.class);
                         intent.putExtra("groupID", groupID);

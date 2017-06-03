@@ -58,6 +58,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FloatingActionButton fab;
     private Double expenseBalance;
+    private String currency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +138,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                     intent.putExtra("debt", expenseBalance);
                     intent.putExtra("expenseID", expenseID);
                     intent.putExtra("expenseName", expenseName);
+                    intent.putExtra("expenseCurrency", currency);
                     startActivity(intent);
                 }
 
@@ -152,19 +154,17 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
                 expenseName = dataSnapshot.child("description").getValue(String.class);
                 Double amount = dataSnapshot.child("amount").getValue(Double.class);
+                currency = dataSnapshot.child("currency").getValue(String.class);
                 expenseNameTextView.setText(expenseName);
 
                 DecimalFormat df = new DecimalFormat("#.##");
-                amountTextView.setText(df.format(amount) + " €");
+                amountTextView.setText(df.format(amount) + " " + currency);
 
                 //Retrieve my balance for this expense
                 Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                 Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
                 expenseBalance = alreadyPaid - dueImport;
                 expenseBalance = Math.floor(expenseBalance * 100) / 100;
-
-                String currency = dataSnapshot.child("currency").getValue(String.class);
-
 
 
                 if (expenseBalance > 0)

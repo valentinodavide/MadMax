@@ -57,6 +57,7 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
     private String expenseID;
 
 
+
     private OnFragmentInteractionListener mListener;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
@@ -135,9 +136,11 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
                 {
                     Double alreadyPaid = participantSnap.child("alreadyPaid").getValue(Double.class);
                     Double dueImport = alreadyPaid - participantSnap.child("fraction").getValue(Double.class) * dataSnapshot.child("amount").getValue(Double.class);
+                    String currency = dataSnapshot.child("currency").getValue(String.class);
                     User u = new User();
                     u.setAlreadyPaid(alreadyPaid);
                     u.setDueImport(dueImport);
+                    u.setExpenseCurrency(currency);
                     String participantID = participantSnap.getKey();
                     FirebaseUtils.getInstance().getParticipantName(participantID, participants, participantsViewAdapter, u);
 

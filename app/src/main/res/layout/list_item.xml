@@ -34,7 +34,9 @@
     <RelativeLayout
         android:layout_width="70dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.2">
+        android:layout_weight="0.2"
+        android:layout_marginRight="11dp"
+        >
 
         <TextView
             android:id="@+id/tv_balance_text"
@@ -42,29 +44,31 @@
             android:layout_height="wrap_content"
 
             android:layout_marginTop="8dp"
-            android:layout_marginRight="11dp"
             android:layout_marginBottom="3dp"
             android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
 
-            android:gravity="center"
             tools:text="SHOULD RECEIVE FROM GROUP"
             android:textColor="@color/colorPrimaryText"
-
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:gravity="end"
+            android:textAlignment="textEnd"
+            />
 
         <TextView
             android:id="@+id/tv_balance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tv_balance_text"
-
-            android:layout_marginRight="11dp"
-            android:layout_centerHorizontal="true"
+            android:layout_alignRight="@+id/tv_balance_text"
+            android:layout_alignParentRight="true"
 
             android:text="111"
             android:textColor="@color/colorAccent"
             android:textStyle="bold"
-            android:textSize="19sp" />
+            android:textSize="19sp"
+            android:gravity="end"
+            android:textAlignment="textEnd"/>
 
     </RelativeLayout>
 </LinearLayout>

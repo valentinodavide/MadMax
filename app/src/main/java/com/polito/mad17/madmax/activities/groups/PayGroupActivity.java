@@ -1,14 +1,17 @@
 package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,10 +23,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.DecimalDigitsInputFilter;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.SettingsFragment;
 
 import java.text.DecimalFormat;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 
@@ -32,16 +34,18 @@ public class PayGroupActivity extends AppCompatActivity {
     private static final String TAG = PayGroupActivity
             .class.getSimpleName();
 
-    String groupID;
-    String userID;
-    String groupName;
-    Double debt;
-    EditText amountEditText;
-    TextView groupNameTextView;
+    private String groupID;
+    private String userID;
+    private String groupName;
+    private Double debt;
+    private EditText amountEditText;
+    private TextView groupNameTextView;
+    private Spinner currency;
+
     DecimalFormat df = new DecimalFormat("#.##");
     private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-    Double myMoney;
+    private Double myMoney;
 
 
     @Override
@@ -51,6 +55,10 @@ public class PayGroupActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
+
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
@@ -59,6 +67,9 @@ public class PayGroupActivity extends AppCompatActivity {
         debt = intent.getDoubleExtra("debt", 0);
         debt = abs(Math.floor(debt * 100) / 100);
 
+        currency = (Spinner) findViewById(R.id.currency);
+
+
 
         amountEditText = (EditText) findViewById(R.id.amount);
         amountEditText.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(7,2)});
@@ -66,10 +77,17 @@ public class PayGroupActivity extends AppCompatActivity {
         groupNameTextView = (TextView) findViewById(R.id.tv_receiver);
         groupNameTextView.setText(groupName);
 
-
-
-
         amountEditText.setText(debt.toString());
+
+
+        // creating spinner for currencies
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        currency.setAdapter(adapter);
+
+        // set the defaultCurrency value for the spinner based on the user preferences
+        int spinnerPosition = adapter.getPosition(defaultCurrency);
+        currency.setSelection(spinnerPosition);
 
 
     }
@@ -123,6 +141,7 @@ public class PayGroupActivity extends AppCompatActivity {
                     }
                     else
                     {
+                        //currency.getSelectedItem().toString()
                         payDebtForExpenses(userID, groupID, money);
                         // todo add event for USER_PAY
                         intent = new Intent(this, GroupDetailActivity.class);

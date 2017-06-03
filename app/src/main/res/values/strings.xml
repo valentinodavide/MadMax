@@ -114,5 +114,7 @@
     <string name="dialog_verification_message">You have not checked your account. Click on \"Send again\" to receive another verification email or \"Cancel\" to close this message</string>
     <string name="dialog_verification_title">Email verification</string>
     <string name="send_again">Send again</string>
+    <string name="you_owe">"YOU OWE"</string>
+
 
 </resources>

@@ -13,10 +13,10 @@ public class Group implements Parcelable {
     private String description;                 // optional
     private Integer numberMembers;
     private Boolean deleted;
-
-
-
     private  Double balance;
+
+    //Bilancio verso un gruppo per ogni currency
+    private HashMap<String, Double> currencyBalances;
 
     // todo da eliminare?
     private Integer counterAddedExpenses;       // numero di spese aggiunte dall'ultima apertura del gruppo
@@ -146,6 +146,10 @@ public class Group implements Parcelable {
     public Boolean getDeleted() {return deleted;}
 
     public void setDeleted(Boolean deleted) {this.deleted = deleted;}
+
+    public HashMap<String, Double> getCurrencyBalances() {return currencyBalances;}
+
+    public void setCurrencyBalances(HashMap<String, Double> currencyBalances) {this.currencyBalances = currencyBalances;}
 
 
     // todo updateCounterAddedExpenses: ogni volta che l'utente apre un gruppo il numerino che segna

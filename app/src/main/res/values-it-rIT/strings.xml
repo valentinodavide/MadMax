@@ -61,5 +61,8 @@
     <string name="saved"> Salvato </string>
 
     <string name="prompt_comment"> Aggiungi commento </string>
+    <string name="you_owe">"DEVI RESTITUIRE"</string>
+    <string name="you_should_receive">"DEVI RICEVERE"</string>
+
 
 </resources>
