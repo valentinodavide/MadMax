@@ -55,7 +55,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
     private static final String TAG = "NewGroupActivity";
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();
     private StorageReference storageReference = firebaseStorage.getReference();

@@ -29,6 +29,7 @@ import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import org.w3c.dom.Text;
 
@@ -54,7 +55,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private TextView balanceTextView;
     private Button payExpenseButton;
     private Toolbar toolbar;
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FloatingActionButton fab;
     private Double expenseBalance;

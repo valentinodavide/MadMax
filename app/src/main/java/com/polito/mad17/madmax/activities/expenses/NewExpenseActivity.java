@@ -48,7 +48,7 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     private static final String TAG = NewExpenseActivity.class.getSimpleName();
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private FirebaseStorage firebaseStorage = FirebaseStorage.getInstance();

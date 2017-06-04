@@ -30,6 +30,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.groups.BalancesActivity;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class BarDetailFragment extends Fragment {
     private String groupName;
     private String defaultCurrency;
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     //private Double totBalance;
     private ValueEventListener groupListener;

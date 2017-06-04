@@ -119,6 +119,7 @@ public class BasicActivity extends AppCompatActivity {
                         auth.signOut();
 
                         intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                         break;

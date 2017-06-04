@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.users;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +33,7 @@ import java.util.TreeMap;
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener, FriendsViewAdapter.ListItemLongClickListener {
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private TreeMap<String, User> friends = new TreeMap<>(Collections.reverseOrder());
@@ -57,15 +59,12 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     Boolean listenedGroup = false;
     private Double totBalance;
 
-
-
-
     public FriendsFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d (TAG, "OnCreate from " + getActivity());
+        Log.d (TAG, "OnCreate from " + getActivity().getLocalClassName());
 
     }
 
@@ -84,7 +83,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
                 .orientation(InsetDivider.VERTICAL_LIST)
                 .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(getResources().getColor(R.color.colorDivider))
+                .color(ContextCompat.getColor(getContext(), R.color.colorDivider))
                 .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
                 .overlay(true)
                 .build();
@@ -101,9 +100,9 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         Log.d (TAG, "Sono nella activity: " + activityName);
 
         //Se sono in MainActivity visualizzo lista degli amici
-        if (activityName.equals("MainActivity"))
+        if (activityName.equals("MainActivity")) {
             query = databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends");
-
+        }
         //Se sono dentro un gruppo, visualizzo lista membri del gruppo
         else if (activityName.equals("GroupDetailActivity"))
         {
@@ -146,7 +145,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
                     final String id = friendSnapshot.getKey();
                     final Boolean finalDeleted = deleted;
-                    databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+                    databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
 
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {

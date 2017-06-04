@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 public class FirebaseServiceFCM extends FirebaseInstanceIdService {
     private String TAG = "FirebaseServiceFCM";
@@ -22,7 +23,7 @@ public class FirebaseServiceFCM extends FirebaseInstanceIdService {
     }
 
     private void sendRegistrationToServer(String refreshedToken) {
-        firebaseDatabase = MainActivity.getDatabase();
+        firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
         databaseReference = firebaseDatabase.getReference();
         databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("token").setValue(refreshedToken);
     }

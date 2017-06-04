@@ -33,7 +33,7 @@ import java.util.TreeMap;
 public class PendingExpensesFragment extends Fragment implements PendingExpenseViewAdapter.ListItemClickListener {
 
     private static final String TAG = PendingExpensesFragment.class.getSimpleName();
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private TreeMap<String, Expense> pendingExpensesMap = new TreeMap<>(Collections.reverseOrder());
 

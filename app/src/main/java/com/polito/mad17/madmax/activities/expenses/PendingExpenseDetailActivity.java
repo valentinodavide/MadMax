@@ -42,7 +42,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private TreeMap<String, User> voters = new TreeMap<>(Collections.reverseOrder());    //gruppi condivisi tra me e friend
     private String expenseID;
     private String userID;
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private ImageView imageView;
     private TextView amountTextView;

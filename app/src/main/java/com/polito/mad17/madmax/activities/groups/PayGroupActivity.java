@@ -24,6 +24,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.DecimalDigitsInputFilter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 
@@ -43,7 +44,7 @@ public class PayGroupActivity extends AppCompatActivity {
     private Spinner currency;
 
     DecimalFormat df = new DecimalFormat("#.##");
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Double myMoney;
 

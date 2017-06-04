@@ -45,7 +45,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     final private PendingExpenseViewAdapter.ListItemClickListener itemClickListener;
     private PendingExpenseViewAdapter.ListItemLongClickListener itemLongClickListener = null;
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Context mContext;
     private Activity activity;

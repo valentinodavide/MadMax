@@ -17,6 +17,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.User;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -76,7 +77,7 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
     public void onBindViewHolder(final EventViewHolder eventViewHolder, int position) {
         final Event event = getItem(position).getValue();
         User currentUser = MainActivity.getCurrentUser();
-        DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
+        DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
 
         switch(event.getEventType()) {
             case GROUP_ADD:

@@ -34,7 +34,7 @@ public class NewMemberActivity extends AppCompatActivity {
 
     private static final String TAG = NewMemberActivity.class.getSimpleName();
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private ListView addedFriendsListView;

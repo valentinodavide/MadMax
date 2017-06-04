@@ -29,7 +29,7 @@ import java.util.HashMap;
 
 public class ChooseGroupActivity extends AppCompatActivity implements GroupsViewAdapter.ListItemClickListener {
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private static final String TAG = ChooseGroupActivity.class.getSimpleName();
     private RecyclerView recyclerView;

@@ -40,7 +40,7 @@ public class FriendDetailFragment extends Fragment implements GroupsViewAdapter.
 
     private static final String TAG = FriendDetailFragment.class.getSimpleName();
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private OnItemClickInterface onClickGroupInterface;

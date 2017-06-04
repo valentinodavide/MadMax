@@ -17,6 +17,7 @@ import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -364,7 +365,7 @@ public class User implements Parcelable {
     }
 
     public void addFriend (final String friendID) {
-        final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
+        final DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
         final DatabaseReference usersRef = databaseReference.child("users");
         final DatabaseReference groupsRef = databaseReference.child("groups");
         final String currentUID = this.getID();
@@ -451,7 +452,7 @@ public class User implements Parcelable {
     }
 
     public void joinGroup (String groupID, String inviterUID) {
-        final DatabaseReference databaseReference = MainActivity.getDatabase().getReference();
+        final DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
         final String currentUID = this.getID();
 
         //Aggiungo gruppo alla lista gruppi dello user

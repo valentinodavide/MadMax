@@ -58,7 +58,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
     private String groupID, groupName;
     private String userID;
 
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
     private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend

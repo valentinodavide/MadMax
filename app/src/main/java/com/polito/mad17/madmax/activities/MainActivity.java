@@ -87,8 +87,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         Log.i(TAG, "onCreate");
 
         FirebaseUtils.getInstance().setUp();
-        firebaseDatabase = getDatabase();
-        databaseReference = firebaseDatabase.getReference();
+        firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
+        databaseReference = FirebaseUtils.getDatabaseReference();
         usersRef = databaseReference.child("users");
         groupRef = databaseReference.child("groups");
         auth = FirebaseAuth.getInstance();
@@ -156,12 +156,15 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 if(currentUser == null) {
                     //makeText(MainActivity.this, "Ricreato user", Toast.LENGTH_SHORT).show(); // todo: di debug, da rimuovere
                     currentUser = new User();
-                    currentUser.setID(currentUID);
                 }
+
+                currentUser.setID(currentUID);
                 currentUser.setName(dataSnapshot.child("name").getValue(String.class));
                 currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
                 currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
+
+                Log.d(TAG, "taken basic data of currentUser " +  currentUser.toString());
                 // get user friends's IDs
                 for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
                     currentUser.getUserFriends().put(friend.getKey(),null);
@@ -172,6 +175,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 }
                 //todo mettere altri dati in myself?
 
+                Log.d(TAG, "Taken friends and groups, now creating the adapter");
+
                 adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
 
                 viewPager.setAdapter(adapter);
@@ -180,7 +185,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     viewPager.setCurrentItem(currentFragment);
                     updateFab(currentFragment);
                 }
-
                 else
                 {
                     viewPager.setCurrentItem(1);
@@ -434,7 +438,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 popup.show();//showing popup menu
 
-
                 break;
 
             case "GroupsFragment":
@@ -499,17 +502,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     // check if permissions on reading storage must be asked: true only if API >= 23
     public static boolean shouldAskPermission(){
         return(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP_MR1);
-    }
-
-    // avoid to call setPersistenceEnabled on a database where it was already called ->
-    // when an instance of FirebaseDatabase is needed call this method to retrieve it
-    public static FirebaseDatabase getDatabase() {
-        if (firebaseDatabase == null) {
-            firebaseDatabase = FirebaseDatabase.getInstance();
-//            firebaseDatabase.setPersistenceEnabled(true);
-        }
-
-        return firebaseDatabase;
     }
 
     // return the instance of the current user logged into the app

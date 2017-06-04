@@ -30,11 +30,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 public class LoginFragment extends Fragment {
 
     private static final String TAG = LoginFragment.class.getSimpleName();
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener; // to track whenever user signs in or out
@@ -122,7 +123,7 @@ public class LoginFragment extends Fragment {
 
                 // if the user is already logged and has already verified the mail skip the login phase and go to main page of app
                 if(currentUser != null && currentUser.isEmailVerified())  {
-                    Log.i(TAG," user is logged, go to MainActivity");
+                    Log.i(TAG, "user is logged, go to MainActivity");
 
                     onClickLoginInterface.itemClicked(LoginFragment.class.getSimpleName(), currentUser.getUid());
                 }

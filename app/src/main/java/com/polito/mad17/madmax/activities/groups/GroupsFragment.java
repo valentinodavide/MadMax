@@ -23,6 +23,7 @@ import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
+import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,8 +33,8 @@ import java.util.TreeMap;
 public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener {
 
     private static final String TAG = GroupsFragment.class.getSimpleName();
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
-    private DatabaseReference databaseReference = firebaseDatabase.getReference();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
+    private DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
     private OnItemClickInterface onClickGroupInterface;
     private OnItemLongClickInterface onLongClickGroupInterface;
 
@@ -58,7 +59,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d (TAG, "OnCreate from " + getActivity());
+        Log.d (TAG, "OnCreate from " + getActivity().getLocalClassName());
 
     }
 
@@ -90,7 +91,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Per ogni gruppo dello user

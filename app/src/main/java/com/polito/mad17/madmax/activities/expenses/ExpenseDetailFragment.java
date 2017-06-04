@@ -51,7 +51,7 @@ public class ExpenseDetailFragment extends Fragment implements ParticipantsViewA
     private RecyclerView.LayoutManager layoutManager;
     private ParticipantsViewAdapter participantsViewAdapter;
     private OnItemClickInterface onClickFriendInterface;
-    private FirebaseDatabase firebaseDatabase = MainActivity.getDatabase();
+    private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private HashMap<String, User> participants = new HashMap<>();
     private String expenseID;
