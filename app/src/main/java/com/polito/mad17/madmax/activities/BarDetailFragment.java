@@ -63,6 +63,9 @@ public class BarDetailFragment extends Fragment {
     Boolean listenedGroup = false;
     private Button payButton;
     DecimalFormat df = new DecimalFormat("#.##");
+    String shownCurr;
+    Double shownBal;
+
 
 
     //key = currency
@@ -153,19 +156,29 @@ public class BarDetailFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Log.d (TAG, "Clicked payButton");
-                        if (totBalances.get(defaultCurrency) >= 0)
+
+                        if (shownCurr != null)
                         {
-                            Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
+                            if (totBalances.get(shownCurr) >= 0)
+                            {
+                                Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                            {
+                                Intent intent = new Intent(getActivity(), PayGroupActivity.class);
+                                intent.putExtra("groupID", groupID);
+                                intent.putExtra("userID", userID);
+                                intent.putExtra("totBalances", totBalances);
+                                intent.putExtra("shownCurrency", shownCurr);
+                                intent.putExtra("groupName", groupName);
+                                startActivity(intent);
+                            }
                         }
                         else
                         {
-                            Intent intent = new Intent(getActivity(), PayGroupActivity.class);
-                            intent.putExtra("groupID", groupID);
-                            intent.putExtra("userID", userID);
-                            intent.putExtra("debt", totBalances.get(defaultCurrency));
-                            intent.putExtra("groupName", groupName);
-                            startActivity(intent);
+                            Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
                         }
+
 
 
                     }
@@ -177,6 +190,7 @@ public class BarDetailFragment extends Fragment {
                         Log.d (TAG, "Clicked balance");
                         Intent intent = new Intent(getActivity(), BalancesActivity.class);
                         intent.putExtra("balances", totBalances);
+                        intent.putExtra("groupID", groupID);
                         startActivity(intent);
 
                     }
@@ -273,8 +287,6 @@ public class BarDetailFragment extends Fragment {
                                             //totBalance += balance;
 
                                             Boolean multipleCurrencies = false;
-                                            Double shownBal;
-                                            String shownCurr;
 
                                             balanceLayout.setVisibility(View.VISIBLE);
 

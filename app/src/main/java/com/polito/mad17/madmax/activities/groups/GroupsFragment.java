@@ -222,36 +222,44 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                         Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
 
                                         Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
-                                        Double balance = alreadyPaid - dueImport;
-                                        String currency = dataSnapshot.child("currency").getValue(String.class);
-                                        //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-
-                                        //current balance for that currency
-                                        Double temp = totBalances.get(currency);
-                                        //update balance for that currency
-                                        if (temp != null)
+                                        if (alreadyPaid != null && dueImport != null)
                                         {
-                                            totBalances.put(currency, temp + balance);
-                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                            Double balance = alreadyPaid - dueImport;
+                                            String currency = dataSnapshot.child("currency").getValue(String.class);
+                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+
+                                            //current balance for that currency
+                                            Double temp = totBalances.get(currency);
+                                            //update balance for that currency
+                                            if (temp != null)
+                                            {
+                                                totBalances.put(currency, temp + balance);
+                                                Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                            }
+                                            else
+                                            {
+                                                totBalances.put(currency, balance);
+                                                Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+
+                                            }
+                                            //Double currentBalance = totalBalance.get(userID);
+                                            //totalBalance.put(userID, currentBalance+balance);
+                                            //totBalance += balance;
+
+                                            Expense expense = new Expense();
+                                            expense.setID(dataSnapshot.getKey());
+                                            expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
+                                            expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+
+                                            groupExpenses.put(dataSnapshot.getKey(), expense);
+
+                                            Log.d(TAG, "added expense " + dataSnapshot.getKey());
                                         }
                                         else
                                         {
-                                            totBalances.put(currency, balance);
-                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
-
+                                            Log.d (TAG, "Qui sarebbe crashato");
                                         }
-                                        //Double currentBalance = totalBalance.get(userID);
-                                        //totalBalance.put(userID, currentBalance+balance);
-                                        //totBalance += balance;
 
-                                        Expense expense = new Expense();
-                                        expense.setID(dataSnapshot.getKey());
-                                        expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
-                                        expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
-
-                                        groupExpenses.put(dataSnapshot.getKey(), expense);
-
-                                        Log.d(TAG, "added expense " + dataSnapshot.getKey());
 
                                     }
 

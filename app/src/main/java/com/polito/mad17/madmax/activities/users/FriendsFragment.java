@@ -287,129 +287,130 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
                 if (deleted != null)
                 {
-                    for (DataSnapshot groupExpenseSnapshot: groupDataSnapshot.child("expenses").getChildren())
-                    {
-                        //Contribuiscono al bilancio solo le spese non eliminate dal gruppo
-                        if (groupExpenseSnapshot.getValue(Boolean.class) == true)
-                        {
-                            //Adesso sono sicuro che la spesa non è stata eliminata
-                            //Ascolto la singola spesa del gruppo
-                            String expenseID = groupExpenseSnapshot.getKey();
-                            databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    Boolean involved = false; //dice se user contribuisce o no a quella spesa
-
-                                    for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
-                                    {
-                                        //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
-                                        if (participantSnapshot.getKey().equals(userID))
-                                            involved = true;
-                                    }
-
-                                    //se user ha partecipato alla spesa
-                                    if (involved)
-                                    {
-                                        //alreadyPaid = soldi già messi dallo user per quella spesa
-                                        //dueImport = quota che user deve mettere per quella spesa
-                                        //balance = credito/debito dello user per quella spesa
-                                        for (DataSnapshot d : dataSnapshot.child("participants").getChildren())
-                                        {
-                                            Log.d (TAG, "PartCampo " + d.getKey() + ": " + d.getValue() );
-                                        }
-                                        Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
-
-                                        Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
-
-                                        Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
-                                        Double balance = alreadyPaid - dueImport;
-                                        String currency = dataSnapshot.child("currency").getValue(String.class);
-                                        //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-
-                                        //current balance for that currency
-                                        Double temp = totBalances.get(currency);
-                                        //update balance for that currency
-                                        if (temp != null)
-                                        {
-                                            totBalances.put(currency, temp + balance);
-                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
-                                        }
-                                        else
-                                        {
-                                            totBalances.put(currency, balance);
-                                            Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
-
-                                        }
-                                        //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-                                        //Double currentBalance = totBalances.get(userID);
-                                        //totBalances.put(userID, currentBalance+balance);
-
-                                    }
-
-                                    User u = new User();
-                                    //u.setBalanceWithGroup(totalBalance.get(userID));
-                                    u.setBalancesWithGroup(totBalances);
-                                    u.setName(name);
-                                    u.setSurname(surname);
-                                    u.setProfileImage(profileImage);
-
-                                    //u.setDeleted(deleted);
-                                    //g.setBalance(totBalance);
-                                    //se il gruppo non è deleted e io faccio ancora parte del gruppo
-                                    if (!deleted &&
-                                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
-                                            )
-                                    {
-                                        friends.put(userID, u);
-
-                                    }
-                                    else
-                                    {
-                                        friends.remove(userID);
-                                    }
-
-                                    friendsViewAdapter.update(friends);
-                                    friendsViewAdapter.notifyDataSetChanged();
-
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-                    }
-
-                    /*
-                    //Per gestire il caso di quando ho appena abbandonato o eliminato il gruppo
-                    //if (dataSnapshot.child("members").hasChild(userID))
-                    //{
-                    Group g = new Group();
-                    g.setName(groupName);
-                    g.setBalance(0d);
-                    g.setDeleted(deleted);
+                    final User u = new User();
+                    u.setName(name);
+                    u.setSurname(surname);
+                    u.setProfileImage(profileImage);
+                    u.setBalancesWithGroup(totBalances);
+                    //Metto subito user nella lista, con bilanci inizialmente a zero
                     if (!deleted &&
                             groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)) {
-                        groups.put(groupID, g);
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                            )
+                    {
+                        friends.put(userID, u);
+
                     }
                     else
                     {
-                        groups.remove(groupID);
+                        friends.remove(userID);
                     }
 
-//                    Group nullGroup = new Group();
-//                    nullGroup.setID(groupID + 1);
-//                    groups.put(nullGroup.getID(), nullGroup);
+                    friendsViewAdapter.update(friends);
+                    friendsViewAdapter.notifyDataSetChanged();
 
-                    groupsViewAdapter.update(groups);
-                    groupsViewAdapter.notifyDataSetChanged();
-                    totBalance = 0d;
-                    */
+                    //Se gruppo ha almeno una spesa
+                    if (groupDataSnapshot.child("expenses").getChildrenCount() > 0)
+                    {
+                        for (DataSnapshot groupExpenseSnapshot: groupDataSnapshot.child("expenses").getChildren())
+                        {
+                            //Contribuiscono al bilancio solo le spese non eliminate dal gruppo
+                            if (groupExpenseSnapshot.getValue(Boolean.class) == true)
+                            {
+                                //Adesso sono sicuro che la spesa non è stata eliminata
+                                //Ascolto la singola spesa del gruppo
+                                String expenseID = groupExpenseSnapshot.getKey();
+                                databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        Boolean involved = false; //dice se user contribuisce o no a quella spesa
+
+                                        for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
+                                        {
+                                            //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
+                                            if (participantSnapshot.getKey().equals(userID))
+                                                involved = true;
+                                        }
+
+                                        //se user ha partecipato alla spesa
+                                        if (involved)
+                                        {
+                                            //alreadyPaid = soldi già messi dallo user per quella spesa
+                                            //dueImport = quota che user deve mettere per quella spesa
+                                            //balance = credito/debito dello user per quella spesa
+                                            for (DataSnapshot d : dataSnapshot.child("participants").getChildren())
+                                            {
+                                                Log.d (TAG, "PartCampo " + d.getKey() + ": " + d.getValue() );
+                                            }
+                                            Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+
+                                            Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
+
+                                            Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                                            Double balance = alreadyPaid - dueImport;
+                                            String currency = dataSnapshot.child("currency").getValue(String.class);
+                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+
+                                            //current balance for that currency
+                                            Double temp = totBalances.get(currency);
+                                            //update balance for that currency
+                                            if (temp != null)
+                                            {
+                                                totBalances.put(currency, temp + balance);
+                                                Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                            }
+                                            else
+                                            {
+                                                totBalances.put(currency, balance);
+                                                Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+
+                                            }
+                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                            //Double currentBalance = totBalances.get(userID);
+                                            //totBalances.put(userID, currentBalance+balance);
+
+                                        }
+
+                                        //u.setBalanceWithGroup(totalBalance.get(userID));
+                                        u.setBalancesWithGroup(totBalances);
+                                        u.setName(name);
+                                        u.setSurname(surname);
+                                        u.setProfileImage(profileImage);
+
+                                        //u.setDeleted(deleted);
+                                        //g.setBalance(totBalance);
+                                        //se il gruppo non è deleted e io faccio ancora parte del gruppo
+                                        if (!deleted &&
+                                                groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
+                                                !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                                                )
+                                        {
+                                            friends.put(userID, u);
+
+                                        }
+                                        else
+                                        {
+                                            friends.remove(userID);
+                                        }
+
+                                        friendsViewAdapter.update(friends);
+                                        friendsViewAdapter.notifyDataSetChanged();
+
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+
+                    }
+
+
                 }
             }
 
