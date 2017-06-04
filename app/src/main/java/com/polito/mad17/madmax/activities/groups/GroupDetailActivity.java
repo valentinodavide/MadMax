@@ -56,13 +56,10 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
 
     static final int EXPENSE_DETAIL_REQUEST = 1;  // The request code
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseReference = FirebaseDatabase.getInstance().getReference();
-
 
         loadNavHeader();
 
@@ -71,8 +68,6 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         userID = intent.getStringExtra("userID");
 
         Log.d(TAG, "onCreate di GroupDetailActivity. Group: " + groupID);
-
-
 
         Bundle bundle = new Bundle();
         bundle.putString("groupID", groupID);

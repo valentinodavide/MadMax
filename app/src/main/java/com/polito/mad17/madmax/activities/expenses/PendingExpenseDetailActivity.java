@@ -54,7 +54,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
-
     }
 
     @Override
@@ -97,7 +96,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         recyclerView.addItemDecoration(divider);
 
         //todo mettere a posto
-        votersViewAdapter = new VotersViewAdapter(this, voters);
+        votersViewAdapter = new VotersViewAdapter(voters);
         recyclerView.setAdapter(votersViewAdapter);
 
         //Retrieve data of this pending expense

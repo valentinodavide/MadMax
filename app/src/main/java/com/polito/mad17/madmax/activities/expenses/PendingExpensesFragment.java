@@ -53,8 +53,6 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d (TAG, "onCreate");
-
-
     }
 
     @Override
@@ -76,7 +74,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
                 .orientation(InsetDivider.VERTICAL_LIST)
                 .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(getResources().getColor(R.color.colorDivider))
+                .color(ContextCompat.getColor(getContext(), R.color.colorDivider))
                 .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
                 .overlay(true)
                 .build();

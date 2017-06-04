@@ -9,25 +9,41 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-/**
- * Created by alessandro on 23/05/17.
- */
 
 public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.ItemVotersViewHolder> {
 
     private static final String TAG = VotersViewAdapter.class.getSimpleName();
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
-    final private VotersViewAdapter.ListItemClickListener itemClickListener;
-    private VotersViewAdapter.ListItemLongClickListener itemLongClickListener = null;
     private final ArrayList mData;
 
+    private LayoutInflater layoutInflater;
+
+    Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
+        @Override
+        public String getKey() {
+            return "0";
+        }
+
+        @Override
+        public Group getValue() {
+            return null;
+        }
+
+        @Override
+        public Group setValue(Group value) {
+            return null;
+        }
+    };
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -39,28 +55,19 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public VotersViewAdapter(VotersViewAdapter.ListItemClickListener listener, Map<String, User> map) {
-        itemClickListener = listener;
+    public VotersViewAdapter(Map<String, User> map) {
         mData = new ArrayList();
         mData.addAll(map.entrySet());
-        mData.add("");
-    }
-
-    public VotersViewAdapter(VotersViewAdapter.ListItemClickListener listener, VotersViewAdapter.ListItemLongClickListener longListener, Map<String, User> map) {
-        itemClickListener = listener;
-        itemLongClickListener = longListener;
-        mData = new ArrayList();
-        mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     public void update(Map<String, User> map) {
         mData.clear();
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
-    class ItemVotersViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    class ItemVotersViewHolder extends RecyclerView.ViewHolder {
 
         private ImageView imageView;
         private TextView nameTextView;
@@ -71,29 +78,6 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
             imageView = (ImageView) itemView.findViewById(R.id.img_photo);
             nameTextView = (TextView) itemView.findViewById(R.id.tv_voter_name);
             voteTextView = (TextView) itemView.findViewById(R.id.tv_vote);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int clickedPosition = getAdapterPosition();
-            Map.Entry<String, User> itemClicked = getItem(clickedPosition);
-
-            Log.d(TAG, "clickedVoter " + itemClicked.getKey());
-
-            //itemClickListener.onListItemClick(itemClicked.getKey());
-
-        }
-
-        @Override
-        public boolean onLongClick (View v) {
-            int clickedPosition = getAdapterPosition();
-            Map.Entry<String, User> itemClicked = getItem(clickedPosition);
-            Log.d(TAG, "longClickedVoter " + itemClicked.getKey());
-            //itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
-            return true;
-
         }
     }
 
@@ -101,7 +85,7 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
     public VotersViewAdapter.ItemVotersViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
-        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        layoutInflater = LayoutInflater.from(context);
         View view = layoutInflater.inflate(R.layout.voter_item, parent, false);
 
         VotersViewAdapter.ItemVotersViewHolder itemVotersViewHolder = new VotersViewAdapter.ItemVotersViewHolder(view);
@@ -115,26 +99,40 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         if(position == (mData.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
-//            groupViewHolder.imageView.
             holder.nameTextView.setText("");
-            holder.voteTextView.setText("");
+            holder.voteTextView.setVisibility(View.GONE);
         }
         else
         {
             Map.Entry<String, User> item = getItem(position);
 
-
             String photo = item.getValue().getProfileImage();
-            if (photo != null) {
-                int photoUserId = Integer.parseInt(photo);
-                holder.imageView.setImageResource(photoUserId);
+            if (photo != null && !photo.equals(""))
+            {
+                Glide.with(layoutInflater.getContext()).load(photo)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
+            }
+            else if(photo == null || photo.equals(""))
+            {
+                Glide.with(layoutInflater.getContext()).load(R.drawable.user_default)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
             }
 
             holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
 
+            Log.d(TAG, "vote " + item.getValue().getVote());
+
             if (item.getValue().getVote().equals("yes")) {
+                holder.voteTextView.setVisibility(View.VISIBLE);
                 holder.voteTextView.setBackgroundResource(R.drawable.thumb_up_black);
             } else if (item.getValue().getVote().equals("no")) {
+                holder.voteTextView.setVisibility(View.VISIBLE);
                 holder.voteTextView.setBackgroundResource(R.drawable.thumb_down_black);
             } else if (item.getValue().getVote().equals("null")) {
                 holder.voteTextView.setVisibility(View.GONE);

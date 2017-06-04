@@ -19,6 +19,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.activities.groups.BalancesActivity;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
@@ -41,8 +42,22 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     DecimalFormat df = new DecimalFormat("#.##");
     private HashMap<String, Double> totBalances = new HashMap<>();
 
+    Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
+        @Override
+        public String getKey() {
+            return "0";
+        }
 
+        @Override
+        public Group getValue() {
+            return null;
+        }
 
+        @Override
+        public Group setValue(Group value) {
+            return null;
+        }
+    };
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -59,23 +74,25 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         this.context = context;
         itemClickListener = listener;
         mData = new ArrayList();
+
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     public FriendsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
         this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
+
         mData = new ArrayList();
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     public void update(Map<String, User> map) {
         mData.clear();
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     class ItemFriendsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -111,14 +128,13 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
                 //itemClickListener.onListItemClick(itemClicked.getKey());
 
             }
-            else
-            {
+            else {
                 Log.d(TAG, "clickedFriend " + itemClicked.getKey());
 
-                itemClickListener.onListItemClick(itemClicked.getKey());
+                if (!itemClicked.getKey().equals("0")) {
+                    itemClickListener.onListItemClick(itemClicked.getKey());
+                }
             }
-
-
         }
 
         @Override
@@ -126,7 +142,10 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             int clickedPosition = getAdapterPosition();
             Map.Entry<String, User> itemClicked = getItem(clickedPosition);
             Log.d(TAG, "longClickedFriend " + itemClicked.getKey());
-            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+
+            if(!itemClicked.getKey().equals("0")) {
+                itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+            }
 
             return true;
         }
