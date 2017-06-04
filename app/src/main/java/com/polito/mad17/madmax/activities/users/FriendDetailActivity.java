@@ -50,21 +50,6 @@ public class FriendDetailActivity extends BasicActivity implements OnItemClickIn
         friendID = intent.getStringExtra("friendID");
         userID = intent.getStringExtra("userID");
 
-        //Creo FriendDetailFragment a cui passo friendID
-        /*if (findViewById(R.id.main) != null)
-        {
-            Bundle bundle = new Bundle();
-            bundle.putString("friendID", friendID);
-
-            Log.d(TAG, friendID);
-
-            FriendDetailFragment friendDetailFragment = new FriendDetailFragment();
-            friendDetailFragment.setArguments(bundle);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.main, friendDetailFragment)
-                    .commit();
-        }*/
-
         if(findViewById(R.id.collapsed_content) != null)
         {
             Bundle bundle = new Bundle();

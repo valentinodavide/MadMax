@@ -15,7 +15,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:text="In which group do you want to purpose a new expense?"
+        android:text="@string/propose_expense"
+        android:textColor="@color/colorPrimaryText"
+        android:textAlignment="center"
         android:layout_gravity="center"
         android:textSize="20sp"
         />

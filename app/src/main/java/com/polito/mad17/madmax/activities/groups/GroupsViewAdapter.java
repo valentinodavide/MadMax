@@ -45,7 +45,22 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     DecimalFormat df = new DecimalFormat("#.##");
     private HashMap<String, Double> totBalances = new HashMap<>();
 
+    Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
+        @Override
+        public String getKey() {
+            return "0";
+        }
 
+        @Override
+        public Group getValue() {
+            return null;
+        }
+
+        @Override
+        public Group setValue(Group value) {
+            return null;
+        }
+    };
 
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
@@ -61,22 +76,23 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         itemClickListener = listener;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map) {
         this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
+
         mData = new ArrayList();
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     public void update(Map<String, Group> map) {
         mData.clear();
         mData.addAll(map.entrySet());
-        mData.add("");
+        mData.add(nullEntry);
     }
 
     class ItemGroupViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -85,7 +101,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         private TextView nameTextView;
         private TextView balanceTextTextView;
         private TextView balanceTextView;
-        private String ID;
 
         public ItemGroupViewHolder(View itemView) {
             super(itemView);
@@ -105,7 +120,9 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             Log.d(TAG, "clickedGroup " + itemClicked.getKey());
 
-            itemClickListener.onListItemClick(itemClicked.getKey());
+            if(!itemClicked.getKey().equals("0")) {
+                itemClickListener.onListItemClick(itemClicked.getKey());
+            }
         }
 
         @Override
@@ -113,8 +130,10 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             int clickedPosition = getAdapterPosition();
             Map.Entry<String, Group> itemClicked = getItem(clickedPosition);
             Log.d(TAG, "longClickedGroup " + itemClicked.getKey());
-            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
+            if(!itemClicked.getKey().equals("0")) {
+                itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+            }
             return true;
 
         }
@@ -136,6 +155,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         final ItemGroupViewHolder groupViewHolder = (ItemGroupViewHolder) holder;
 
+        Map.Entry<String, Group> item = getItem(position);
+
         if(position == (mData.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
@@ -143,11 +164,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             groupViewHolder.nameTextView.setText("");
             groupViewHolder.balanceTextTextView.setText("");
             groupViewHolder.balanceTextView.setText("");
-            //groupViewHolder.itemView.setOnClickListener(null);
-            //groupViewHolder.itemView.setOnLongClickListener(null);
         }
         else {
-            Map.Entry<String, Group> item = getItem(position);
 
             Log.d(TAG, "item ID " + item.getKey());
 

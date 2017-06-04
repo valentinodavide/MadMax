@@ -100,6 +100,6 @@
     <string name="dialog_verification_title">Email not confirmed</string>
     <string name="send_again">Send again</string>
     <string name="you_owe">"YOU OWE"</string>
-
+    <string name="propose_expense">In which group do you want to\npropose a new expense?</string>
 
 </resources>

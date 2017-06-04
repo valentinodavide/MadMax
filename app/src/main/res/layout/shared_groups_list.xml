@@ -9,15 +9,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/tv_shared_groups_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/img_photo"
-        android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        android:text="@string/shared_groups"
-        />
+        <TextView
+            android:id="@+id/tv_shared_groups_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/img_photo"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="@string/shared_groups"
+            android:textAllCaps="true"
+            android:textSize="16dp"
+            android:textColor="@color/colorPrimaryText"
+            />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

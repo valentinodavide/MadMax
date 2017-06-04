@@ -18,6 +18,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -35,6 +36,23 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
 
     private LayoutInflater layoutInflater;
 
+    Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
+        @Override
+        public String getKey() {
+            return "0";
+        }
+
+        @Override
+        public Group getValue() {
+            return null;
+        }
+
+        @Override
+        public Group setValue(Group value) {
+            return null;
+        }
+    };
+
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
         void onListItemClick(String clickedItemIndex);
@@ -50,7 +68,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         itemClickListener = listener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
-        expenses.add("");
+        expenses.add(nullEntry);
     }
 
     public ExpensesViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Expense> expensesMap) {
@@ -59,7 +77,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         itemLongClickListener = longListener;
         this.expenses = new ArrayList<>();
         expenses.addAll(expensesMap.entrySet());
-        expenses.add("");
+        expenses.add(nullEntry);
 
     }
 
@@ -87,7 +105,9 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             int clickedPosition = getAdapterPosition();
             Log.d(TAG, "clickedExpense " + getItem(clickedPosition).getKey());
 
-            itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
+            if(!getItem(clickedPosition).getKey().equals("0")){
+                itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
+            }
         }
 
         @Override
@@ -95,7 +115,10 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             int clickedPosition = getAdapterPosition();
             Map.Entry<String, Expense> itemClicked = getItem(clickedPosition);
             Log.d(TAG, "longClickedExpense " + itemClicked.getKey());
-            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+
+            if(!getItem(clickedPosition).getKey().equals("0")) {
+                itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+            }
 
             return true;
 
@@ -197,7 +220,7 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
     public void update(Map<String, Expense> map) {
         expenses.clear();
         expenses.addAll(map.entrySet());
-        expenses.add("");
+        expenses.add(nullEntry);
     }
 
 }

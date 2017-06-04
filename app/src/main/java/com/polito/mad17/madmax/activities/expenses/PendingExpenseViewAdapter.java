@@ -25,6 +25,7 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
@@ -50,6 +51,23 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     private Activity activity;
     private LayoutInflater layoutInflater;
 
+    Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
+        @Override
+        public String getKey() {
+            return "0";
+        }
+
+        @Override
+        public Group getValue() {
+            return null;
+        }
+
+        @Override
+        public Group setValue(Group value) {
+            return null;
+        }
+    };
+
     // The interface that receives the onClick messages
     public interface ListItemClickListener {
         void onListItemClick(String clickedItemIndex);
@@ -66,7 +84,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         this.activity = activity;
         this.mContext = activity.getApplicationContext();
         pendingExpenses.addAll(pendingMap.entrySet());
-        pendingExpenses.add("");
+        pendingExpenses.add(nullEntry);
     }
 
     public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap, Activity activity) {
@@ -75,7 +93,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         this.pendingExpenses = new ArrayList<>();
         this.activity = activity;
         pendingExpenses.addAll(pendingMap.entrySet());
-        pendingExpenses.add("");
+        pendingExpenses.add(nullEntry);
     }
 
     class ItemExpensesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -107,9 +125,10 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             thumbDownButton = (Button) itemView.findViewById(R.id.thumb_down_button);
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+
             thumbUpButton.setOnClickListener(this);
             thumbDownButton.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -211,8 +230,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             }
             else
             {
-                Log.d (TAG, "altro");
-                itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
+                Log.d (TAG, "cliccato l'intero item");
+
+                if(!getItem(clickedPosition).getKey().equals("0")) {
+                    itemClickListener.onListItemClick(getItem(clickedPosition).getKey());
+                }
             }
         }
 
@@ -256,7 +278,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             holder.participantsCountTextView.setText("");
             holder.amountTextView.setText("");
             holder.partecipantsImageView.setVisibility(View.GONE);
-            holder.itemView.setOnClickListener(null);
 
             holder.thumbUpButton.setVisibility(View.GONE);
             holder.thumbDownButton.setVisibility(View.GONE);
@@ -326,6 +347,6 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
     public void update(Map<String, Expense> map) {
         pendingExpenses.clear();
         pendingExpenses.addAll(map.entrySet());
-        pendingExpenses.add("");
+        pendingExpenses.add(nullEntry);
     }
 }
