@@ -30,6 +30,7 @@ import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsFragment;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
+import com.polito.mad17.madmax.activities.users.NewMemberActivity;
 import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
@@ -253,29 +254,12 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d(TAG, "invite a member to join the group");
-                //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
-
-                        Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
-                                .appendQueryParameter("groupToBeAddedID", groupID)
-                                .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
-
-                        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
-                                .setDeepLink(builder.build())
-                                .setMessage(getString(R.string.invitationToGroup_message))//.setCustomImage(Uri.parse(getString(R.string.invitation_custom_image)))
-                                .setCallToActionText(getString(R.string.invitationToGroup)+" "+groupName) //todo vedere perchè non mostra questo link
-                                .build();
-
-                        startActivityForResult(intent, MainActivity.REQUEST_INVITE_GROUP);
+                        Intent intent = new Intent(getContext(), NewMemberActivity.class);
+                        intent.putExtra("groupID", groupID);
+                        intent.putExtra("groupName", groupName);
+                        startActivity(intent);
                     }
                 });
-                /*fab.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent myIntent = new Intent(getActivity(), NewMemberActivity.class);
-                        startActivity(myIntent);
-                    }
-                });*/
                 break;
             case 2:
                 // history fragment
@@ -373,7 +357,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 // Sending failed or it was canceled, show failure message to the user
                 Log.e(TAG, "onActivityResult: failed sent");
 
-                Toast.makeText(getActivity(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
     }

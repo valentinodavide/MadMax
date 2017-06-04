@@ -39,6 +39,8 @@ public class User implements Parcelable {
     private String password;
     private String profileImage; // optional, URL dell'immagine da Firebase
     private String defaultCurrency;
+    private String isInGroupForInvite;
+
 
     private String vote;
 
@@ -520,6 +522,14 @@ public class User implements Parcelable {
 
         return true;
     }*/
+
+    public String getIsInGroupForInvite() {
+        return isInGroupForInvite;
+    }
+
+    public void setIsInGroupForInvite(String isInGroupForInvite) {
+        this.isInGroupForInvite = isInGroupForInvite;
+    }
 
     public String toString() {
         return name + " " + surname + " ";

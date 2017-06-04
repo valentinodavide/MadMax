@@ -318,7 +318,6 @@ public class FirebaseUtils {
         databaseReference.child("groups").child(groupID).child("members").child(memberID).child("deleted").setValue(true);
         databaseReference.child("users").child(memberID).child("groups").child(groupID).setValue(false);
         deleteSharedGroup(memberID, groupID);
-
     }
 
     public String addExpenseFirebase(final Expense expense, ImageView expensePhoto, ImageView billPhoto) {
@@ -803,19 +802,20 @@ public class FirebaseUtils {
         });
     }
 
-    public void getFriendInviteToGroup(final String id, final  TreeMap<String, User> friends, final HashMapFriendsAdapter adapter ) {
-        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
+    public void getFriendInviteToGroup(final String userID, final String groupID, final  TreeMap<String, User> friends, final HashMapFriendsAdapter adapter ) {
+        databaseReference.child("users").child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User u = new User();
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 u.setID(dataSnapshot.getKey());
+                u.setIsInGroupForInvite(groupID);
 
                 //se l'amico letto da db non è già stato scelto, lo metto nella lista di quelli
                 //che saranno stampati
                 if (!alreadySelected.containsKey(u.getID())) {
-                    friends.put(id, u);
+                    friends.put(userID, u);
                     adapter.update(friends);
                     adapter.notifyDataSetChanged();
                 }
