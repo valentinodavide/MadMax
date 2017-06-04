@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.InsetDivider;
+import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.expenses.ChooseGroupActivity;
 
 import java.util.HashMap;
 
@@ -18,6 +21,7 @@ public class BalancesActivity extends AppCompatActivity implements BalancesViewA
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private BalancesViewAdapter balancesViewAdapter;
+    private String groupID;
 
 
 
@@ -29,6 +33,8 @@ public class BalancesActivity extends AppCompatActivity implements BalancesViewA
 
         Intent intent = getIntent();
         balances = (HashMap<String, Double>) intent.getSerializableExtra("balances");
+        groupID = intent.getStringExtra("groupID");
+
 
 
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(this)
@@ -55,5 +61,21 @@ public class BalancesActivity extends AppCompatActivity implements BalancesViewA
 
     @Override
     public void onListItemClick(String groupID) {
+    }
+
+    //to manage up button click
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Intent myIntent = new Intent(BalancesActivity.this, GroupDetailActivity.class);
+                myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                myIntent.putExtra("groupID", groupID);
+                startActivity(myIntent);
+                return(true);
+            default:
+                return(super.onOptionsItemSelected(item));
+        }
+
     }
 }

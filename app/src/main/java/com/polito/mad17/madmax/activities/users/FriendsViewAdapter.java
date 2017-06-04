@@ -213,7 +213,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             String shownCurr;
 
 
-            if (totBalances != null) {
+            if (totBalances != null && !totBalances.isEmpty()) {
 
                 if (!totBalances.isEmpty()) {
                     //If there is more than one currency

@@ -43,7 +43,6 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.SettingsFragment;
-import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
@@ -51,8 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
-import static android.R.attr.data;
-import static android.R.attr.notificationTimeout;
 import static android.app.Activity.RESULT_OK;
 
 public class SignUpFragment extends Fragment {
@@ -172,7 +169,6 @@ public class SignUpFragment extends Fragment {
 
         // first of all control if is the requested result and if it return something
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
             Uri uri = data.getData();
 
             try {
@@ -269,6 +265,9 @@ public class SignUpFragment extends Fragment {
             u.getUserFriends().put(inviterID, null);
         }
 
+        progressDialog.setMessage("Sending email verification, please wait...");
+        progressDialog.show();
+
         // for saving image
         if (imageSetted) {
             StorageReference uProfileImageFilenameRef = storageReference.child("users").child(UID).child(UID + "_profileImage.jpg");
@@ -297,11 +296,41 @@ public class SignUpFragment extends Fragment {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
 
                         u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
+
+                        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                progressDialog.dismiss();
+                                if (task.isSuccessful()) {
+                                    Log.i(TAG, "verification email successful sent");
+
+                                    Log.i(TAG, "insert new user into db");
+
+                                    HashMap<String, String> newUserEntry = new HashMap<>();
+
+                                    newUserEntry.put("email", u.getEmail());
+                                    newUserEntry.put("password", u.getPassword());
+                                    newUserEntry.put("friends", u.getUserFriends().toString());
+                                    newUserEntry.put("groups", u.getUserGroups().toString());
+                                    newUserEntry.put("image", u.getProfileImage());
+                                    newUserEntry.put("name", u.getName());
+                                    newUserEntry.put("surname", u.getSurname());
+                                    newUserEntry.put("username", u.getUsername());
+
+                                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                                    Toast.makeText(getContext(), R.string.emailVerification_text, Toast.LENGTH_LONG).show();
+                                } else {
+                                    // todo delete the account and restart the activity
+                                    Log.e(TAG, "verification email not sent, exception: " + task.getException());
+                                }
+                                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
+                            }
+                        });
                     }
                 });
         }
-
-        user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+        else {
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     progressDialog.dismiss();
@@ -331,9 +360,7 @@ public class SignUpFragment extends Fragment {
                     onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
                 }
             });
-
-        progressDialog.setMessage("Sending email verification, please wait...");
-        progressDialog.show();
+        }
     }
 
     // check if both email and password form are filled

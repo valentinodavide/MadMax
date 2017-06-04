@@ -27,6 +27,7 @@ import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 
 import static java.lang.Math.abs;
 
@@ -47,6 +48,11 @@ public class PayGroupActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private Double myMoney;
+    //key = currency
+    //value = balance for that currency
+    private HashMap<String, Double> totBalances = new HashMap<>();
+    private String shownCurrency;
+
 
 
     @Override
@@ -64,8 +70,10 @@ public class PayGroupActivity extends AppCompatActivity {
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
         groupName = intent.getStringExtra("groupName");
+        totBalances = (HashMap<String, Double>) intent.getSerializableExtra("totBalances");
+        shownCurrency = intent.getStringExtra("shownCurrency");
 
-        debt = intent.getDoubleExtra("debt", 0);
+        debt = totBalances.get(shownCurrency);
         debt = abs(Math.floor(debt * 100) / 100);
 
         currency = (Spinner) findViewById(R.id.currency);
@@ -87,7 +95,7 @@ public class PayGroupActivity extends AppCompatActivity {
         currency.setAdapter(adapter);
 
         // set the defaultCurrency value for the spinner based on the user preferences
-        int spinnerPosition = adapter.getPosition(defaultCurrency);
+        int spinnerPosition = adapter.getPosition(shownCurrency);
         currency.setSelection(spinnerPosition);
 
 

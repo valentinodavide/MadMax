@@ -439,18 +439,27 @@ public class FirebaseUtils {
                     User provaCurrent = MainActivity.getCurrentUser();
                     Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                     Double alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("alreadyPaid").getValue(Double.class);
-                    Double expenseBalance = alreadyPaid - dueImport;
-                    expenseBalance = Math.floor(expenseBalance * 100) / 100;
+                    Double expenseBalance;
+                    if (dueImport != null && alreadyPaid != null)
+                    {
+                        expenseBalance = alreadyPaid - dueImport;
+                        expenseBalance = Math.floor(expenseBalance * 100) / 100;
 
-                    Expense expense = new Expense();
-                    expense.setDescription(dataSnapshot.child("description").getValue(String.class));
-                    expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
-                    expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
-                    expense.setBalance(expenseBalance);
+                        Expense expense = new Expense();
+                        expense.setDescription(dataSnapshot.child("description").getValue(String.class));
+                        expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+                        expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
+                        expense.setBalance(expenseBalance);
 
-                    expensesMap.put(id, expense);
-                    expensesViewAdapter.update(expensesMap);
-                    expensesViewAdapter.notifyDataSetChanged();
+                        expensesMap.put(id, expense);
+                        expensesViewAdapter.update(expensesMap);
+                        expensesViewAdapter.notifyDataSetChanged();
+                    }
+                    else
+                    {
+                        Log.d (TAG, "Qui sarebbe crashato");
+                    }
+
                 }
                 //Se user non è più participant della spesa
                 else
