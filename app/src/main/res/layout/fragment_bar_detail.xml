@@ -77,7 +77,6 @@
                 android:clickable="true"
                 tools:text="33333.33 €"
                 />
-                tools:text="130 €" />
 
         </RelativeLayout>
 

@@ -204,8 +204,6 @@ public class BarDetailFragment extends Fragment {
 
                         //Retrieve group image
                         String image = dataSnapshot.child("image").getValue(String.class);
-                        if (image != null && image != "noImage")
-
                         if (image != null && !image.equals("noImage"))
                         {
                             Log.d (TAG, "Nome gruppo: " + dataSnapshot.child("name").getValue(String.class) + "  Immagine: " + image);
