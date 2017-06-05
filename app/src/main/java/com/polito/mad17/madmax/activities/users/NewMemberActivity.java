@@ -41,7 +41,7 @@ public class NewMemberActivity extends AppCompatActivity {
     private ListView friendsListView;
     private TreeMap<String, User> friends = new TreeMap<>();
     //todo usare SharedPreferences invece della map globale alreadySelected
-    public static HashMap<String, User> alreadySelected = new HashMap<>();
+    public static TreeMap<String, User> alreadySelected = new TreeMap<>();
     private HashMapFriendsAdapter friendsAdapter;
     private HashMapFriendsAdapter addedAdapter;
 
@@ -71,16 +71,32 @@ public class NewMemberActivity extends AppCompatActivity {
 
         addedFriendsListView = (ListView) findViewById(R.id.lv_added_members);
         addedAdapter = new HashMapFriendsAdapter(alreadySelected);
+
         addedFriendsListView.setAdapter(addedAdapter);
 
         databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean alreadyAdded = false;
                 for (DataSnapshot friendSnapshot: dataSnapshot.getChildren()) {
-                    FirebaseUtils.getInstance().getFriendInviteToGroup(friendSnapshot.getKey(), friends, friendsAdapter);
+                    if (friendSnapshot.hasChild("sharedGroups")) {
+                        if (friendSnapshot.child("sharedGroups").hasChild(groupID)) {
+                            alreadyAdded = friendSnapshot.child("sharedGroups").child(groupID).getValue(Boolean.class);
+                        }
+                    }
+
+                    // se sono già nel gruppo => vengono inseriti nell'addedAdapter
+                    if (alreadyAdded) {
+                        FirebaseUtils.getInstance().getFriendInviteToGroup(friendSnapshot.getKey(), groupID, alreadySelected, addedAdapter);
+                    }
+                    // altrimenti vengono inseriti nella lista friendsAdapter degli amici disponibili
+                    else {
+                        FirebaseUtils.getInstance().getFriendInviteToGroup(friendSnapshot.getKey(), "", friends, friendsAdapter);
+                    }
                 }
 
                 friendsListView.setAdapter(friendsAdapter);
+                addedFriendsListView.setAdapter(addedAdapter);
             }
 
             @Override
@@ -99,7 +115,6 @@ public class NewMemberActivity extends AppCompatActivity {
                 friendsAdapter.notifyDataSetChanged();
 
                 alreadySelected.put(item.getID(), item);
-
                 addedAdapter.update(alreadySelected);
                 addedAdapter.notifyDataSetChanged();
             }
@@ -111,11 +126,10 @@ public class NewMemberActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User item = addedAdapter.getItem(position).getValue();
                 alreadySelected.remove(item.getID());
-                addedAdapter.update(friends);
+                addedAdapter.update(alreadySelected);
                 addedAdapter.notifyDataSetChanged();
 
                 friends.put(item.getID(), item);
-
                 friendsAdapter.update(friends);
                 friendsAdapter.notifyDataSetChanged();
             }
@@ -141,7 +155,6 @@ public class NewMemberActivity extends AppCompatActivity {
                 startActivityForResult(intent, MainActivity.REQUEST_INVITE_GROUP);
             }
         });
-
     }
 
     @Override
@@ -173,7 +186,7 @@ public class NewMemberActivity extends AppCompatActivity {
                 // Sending failed or it was canceled, show failure message to the user
                 Log.e(TAG, "onActivityResult: failed sent");
 
-                Toast.makeText(this, "Unable to send invitation", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -188,13 +201,10 @@ public class NewMemberActivity extends AppCompatActivity {
     //When I click SAVE
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int itemThatWasClickedId = item.getItemId();
 
-        if (itemThatWasClickedId == R.id.action_save)
-        {
-            for(User newMemeber : alreadySelected.values())
-            {
+        if (itemThatWasClickedId == R.id.action_save) {
+            for(User newMemeber : alreadySelected.values()) {
                 FirebaseUtils.getInstance().joinGroupFirebase(newMemeber.getID(), groupID);
 
                 // add event for GROUP_MEMBER_ADD
@@ -210,17 +220,34 @@ public class NewMemberActivity extends AppCompatActivity {
                 FirebaseUtils.getInstance().addEvent(event);
             }
 
+            for(User user : friends.values()) {
+                if (user.getIsInGroupForInvite().equals(groupID)) {
+                    FirebaseUtils.getInstance().removeMemberFirebase(user.getID(), groupID);
+
+                    // add event for GROUP_MEMBER_REMOVE
+                    User currentUser = MainActivity.getCurrentUser();
+                    Event event = new Event(
+                            groupID,
+                            Event.EventType.GROUP_MEMBER_REMOVE,
+                            currentUser.getName() + " " + currentUser.getSurname(),
+                            user.getName() + " " + user.getSurname()
+                    );
+                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                    FirebaseUtils.getInstance().addEvent(event);
+                }
+            }
+
+            friends.clear();
             alreadySelected.clear();
 
             Toast.makeText(getApplicationContext(), "Friends added to group", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-
             finish();
 
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

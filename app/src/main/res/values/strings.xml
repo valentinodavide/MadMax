@@ -60,7 +60,7 @@
     <string name="invitationToGroup_message">A friend want to share expenses with you</string>
     <string name="invitation_title">Invite on BeeShare!</string>
     <string name="invitation_cta">Install BeeShare!</string>
-    <string name="invitationToGroup">Join to the group!</string>
+    <string name="invitationToGroup">Join the group!</string>
     <string name="title_activity_group_info">GroupInfoActivity</string>
     <string name="title_activity_new_member">NewMemberActivity</string>
     <string name="invite_member">Invite a friend</string>

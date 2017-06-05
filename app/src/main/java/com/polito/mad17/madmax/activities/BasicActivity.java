@@ -163,7 +163,7 @@ public class BasicActivity extends AppCompatActivity {
                 // Sending failed or it was canceled, show failure message to the user
                 Log.e(TAG, "onActivityResult: failed sent");
 
-                Toast.makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
             }
         }
     }
