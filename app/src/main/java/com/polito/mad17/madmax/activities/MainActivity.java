@@ -76,7 +76,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
 
     private static User currentUser = null;
-    private String currentUID, inviterID, groupToBeAddedID;
+    private static String currentUID;
+    private String inviterID, groupToBeAddedID;
 
     private HashMap<String, String> userFriends = new HashMap<>();
     private HashMap<String, String> userGroups = new HashMap<>();
@@ -164,6 +165,13 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             finish();
         }
 
+        currentUID = auth.getCurrentUser().getUid();
+
+        // in the main we don't want an expansible bar
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        appBarLayout.setExpanded(false);
+        //todo: capire come bloccare la barra nel main
+
 
         // insert tabs and current fragment in the main layout
         mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
@@ -172,10 +180,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         tabLayout.addTab(tabLayout.newTab().setText(R.string.groups));
         tabLayout.addTab(tabLayout.newTab().setText(R.string.pending));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-        viewPager = (ViewPager) findViewById(R.id.main_view_pager);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -191,10 +195,12 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        // in the main we don't want an expansible bar
-        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        appBarLayout.setExpanded(false);
-        //todo: capire come bloccare la barra nel main
+
+        viewPager = (ViewPager) findViewById(R.id.main_view_pager);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+
+        viewPager.setAdapter(adapter);
 
         progressDialog = new ProgressDialog(this);
     }
@@ -237,9 +243,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 Log.d(TAG, "Taken friends and groups, now creating the adapter");
 
-                adapter = new MainActivityPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-
-                viewPager.setAdapter(adapter);
                 if (currentFragment != null)
                 {
                     viewPager.setCurrentItem(currentFragment);
@@ -625,6 +628,11 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     // return the instance of the current user logged into the app
     public static User getCurrentUser() {
         return currentUser;
+    }
+
+    // return the instance of the current user logged into the app
+    public static String getCurrentUID() {
+        return currentUID ;
     }
 
     /*

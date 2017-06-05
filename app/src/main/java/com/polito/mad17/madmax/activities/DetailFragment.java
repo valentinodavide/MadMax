@@ -2,7 +2,6 @@ package com.polito.mad17.madmax.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -16,7 +15,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.google.firebase.database.DataSnapshot;
@@ -27,8 +25,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.expenses.ExpensesFragment;
 import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
-import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsFragment;
+import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.users.FriendsFragment;
 import com.polito.mad17.madmax.activities.users.NewMemberActivity;
 import com.polito.mad17.madmax.entities.Event;
@@ -37,7 +35,6 @@ import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import static android.app.Activity.RESULT_OK;
@@ -241,7 +238,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                     public void onClick(View v) {
                         Intent myIntent = new Intent(getActivity(), NewExpenseActivity.class);
                         myIntent.putExtra("groupID", groupID);
-                        myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                        myIntent.putExtra("userID", MainActivity.getCurrentUID());
                         myIntent.putExtra("callingActivity", "DetailFragment");
                         startActivity(myIntent);
                     }

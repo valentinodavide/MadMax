@@ -88,7 +88,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
 
 
         //Ascolto le pending expenses dello user
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("proposedExpenses").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("proposedExpenses").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Per ogni pending expense dello user

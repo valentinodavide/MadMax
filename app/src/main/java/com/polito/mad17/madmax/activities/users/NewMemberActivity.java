@@ -27,7 +27,6 @@ import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 public class NewMemberActivity extends AppCompatActivity {
@@ -74,7 +73,7 @@ public class NewMemberActivity extends AppCompatActivity {
 
         addedFriendsListView.setAdapter(addedAdapter);
 
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Boolean alreadyAdded = false;
@@ -140,11 +139,11 @@ public class NewMemberActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "button clicked");
                 Log.d(TAG, "invite a member to join the group");
-                //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
+                //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUID();
 
                 Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
                     .appendQueryParameter("groupToBeAddedID", groupID)
-                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUser().getID());
+                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUID());
 
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(builder.build())

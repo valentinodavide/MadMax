@@ -244,7 +244,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, billPhoto);
                         //todo qui
                         Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
-                        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                        myIntent.putExtra("UID", MainActivity.getCurrentUID());
                         myIntent.putExtra("currentFragment", 2);
                         startActivity(myIntent);
 

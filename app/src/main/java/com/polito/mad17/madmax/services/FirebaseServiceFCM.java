@@ -25,6 +25,6 @@ public class FirebaseServiceFCM extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String refreshedToken) {
         firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
         databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("token").setValue(refreshedToken);
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("token").setValue(refreshedToken);
     }
 }

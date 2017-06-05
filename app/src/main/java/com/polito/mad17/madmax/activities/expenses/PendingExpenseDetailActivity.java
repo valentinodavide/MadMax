@@ -76,7 +76,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
         Intent intent = getIntent();
         expenseID = intent.getStringExtra("expenseID");
-        userID = MainActivity.getCurrentUser().getID(); // intent.getStringExtra("userID");
+        userID = MainActivity.getCurrentUID(); // intent.getStringExtra("userID");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -264,7 +264,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 databaseReference.child("proposedExpenses").child(expenseID).child("creatorID").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(MainActivity.getCurrentUser().getID().matches(dataSnapshot.getValue(String.class))) {
+                        if(MainActivity.getCurrentUID().matches(dataSnapshot.getValue(String.class))) {
                             FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
                             // add event for PENDING_EXPENSE_REMOVE
                             databaseReference.child("proposedExpenses").child(expenseID)
@@ -304,7 +304,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
                 finish();
                 Intent myIntent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
-                myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                myIntent.putExtra("UID", MainActivity.getCurrentUID());
                 myIntent.putExtra("currentFragment", 2);
                 startActivity(myIntent);
                 return(true);
@@ -325,7 +325,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         Log.d(TAG, "onBackPressed");
         finish();
         Intent myIntent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
-        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("UID", MainActivity.getCurrentUID());
         myIntent.putExtra("currentFragment", 2);
         startActivity(myIntent);
     }

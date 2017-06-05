@@ -98,7 +98,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
         //Se sono in MainActivity visualizzo lista degli amici
         if (activityName.equals("MainActivity")) {
-            query = databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends");
+            query = databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends");
         }
         //Se sono dentro un gruppo, visualizzo lista membri del gruppo
         else if (activityName.equals("GroupDetailActivity"))
@@ -252,7 +252,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
         if (listenedFriends)
         {
-            databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").removeEventListener(groupMembersListener);
+            databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends").removeEventListener(groupMembersListener);
             Log.d(TAG, "Detached friends listener");
 
         }
@@ -294,8 +294,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                     u.setBalancesWithGroup(totBalances);
                     //Metto subito user nella lista, con bilanci inizialmente a zero
                     if (!deleted &&
-                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUID()) &&
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class)
                             )
                     {
                         friends.put(userID, u);
@@ -382,8 +382,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                                         //g.setBalance(totBalance);
                                         //se il gruppo non è deleted e io faccio ancora parte del gruppo
                                         if (!deleted &&
-                                                groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                                                !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                                                groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUID()) &&
+                                                !groupDataSnapshot.child("members").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class)
                                                 )
                                         {
                                             friends.put(userID, u);

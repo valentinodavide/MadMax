@@ -122,10 +122,11 @@ public class FirebaseUtils {
 
                 Group g = new Group();
                 g.setName(dataSnapshot.child("name").getValue(String.class));
+                g.setImage(dataSnapshot.child("image").getValue(String.class));
 
                 if (deleted!= null && !deleted &&
-                        dataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                        !dataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class))
+                        dataSnapshot.child("members").hasChild(MainActivity.getCurrentUID()) &&
+                        !dataSnapshot.child("members").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class))
                 {
                     groups.put(id, g);
                 }
@@ -174,7 +175,7 @@ public class FirebaseUtils {
                 GroupsFragment.groups.remove(groupID);
 
                 //Elimino gruppo dagli shared groups tra me e ogni membro del gruppo
-                deleteSharedGroup(MainActivity.getCurrentUser().getID(), groupID);
+                deleteSharedGroup(MainActivity.getCurrentUID(), groupID);
 
                 return 2;
             }
@@ -299,7 +300,7 @@ public class FirebaseUtils {
         //Aggiungo user (con sottocampi admin e timestamp) alla lista membri del gruppo
     //    databaseReference.child("groups").child(groupID).child("members").push(); tolto perchè non ci serve la chiave
     //    databaseReference.child("groups").child(groupID).child("members").child(userID).push(); tolto perchè non ci serve la chiave
-        if(userID.equals(MainActivity.getCurrentUser().getID())) {
+        if(userID.equals(MainActivity.getCurrentUID())) {
             databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue(true);
         }
         else {
@@ -454,7 +455,7 @@ public class FirebaseUtils {
                 Log.d(TAG, " ");
 
                 //Se io sono tra i participant e la spesa non è stata eliminata
-                if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUser().getID()) &&
+                if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUID()) &&
                         dataSnapshot.hasChild("deleted") &&
                         !dataSnapshot.child("deleted").getValue(Boolean.class))
                 {
@@ -462,18 +463,18 @@ public class FirebaseUtils {
                     User provaCurrent = MainActivity.getCurrentUser();
                     Double dueImport;
                     Double alreadyPaid;
-                    if (dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).hasChild("fraction") &&
+                    if (dataSnapshot.child("participants").child(MainActivity.getCurrentUID()).hasChild("fraction") &&
                             dataSnapshot.hasChild("amount"))
                     {
-                        dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                        dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
                     }
                     else
                     {
                         dueImport = null;
                     }
-                    if (dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).hasChild("alreadyPaid"))
+                    if (dataSnapshot.child("participants").child(MainActivity.getCurrentUID()).hasChild("alreadyPaid"))
                     {
-                        alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("alreadyPaid").getValue(Double.class);
+                        alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUID()).child("alreadyPaid").getValue(Double.class);
                     }
                     else
                     {
@@ -528,7 +529,7 @@ public class FirebaseUtils {
                 String groupID = dataSnapshot.child("groupID").getValue(String.class);
 
                 // aggiunto da riky per mandare la notifica a tutti tranne a chi ha eliminato la spesa
-                databaseReference.child("expenses").child(expenseID).child("deletedBy").setValue(MainActivity.getCurrentUser().getID());
+                databaseReference.child("expenses").child(expenseID).child("deletedBy").setValue(MainActivity.getCurrentUID());
 
                 //Elimino spesa dal gruppo
                 databaseReference.child("groups").child(groupID).child("expenses").child(expenseID).setValue(false);
@@ -625,9 +626,9 @@ public class FirebaseUtils {
 
                 //Questo listener è chiamato ogni volta che questa spesa pending è modificata, quindi devo controllare
                 //che io faccia ancora parte di questa spesa e che la spesa pending esista ancora (NELLE PROPOSED EXPESES)
-                if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUser().getID()) &&
-                        dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).hasChild("deleted") &&
-                        !dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class) &&
+                if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUID()) &&
+                        dataSnapshot.child("participants").child(MainActivity.getCurrentUID()).hasChild("deleted") &&
+                        !dataSnapshot.child("participants").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class) &&
                         dataSnapshot.hasChild("deleted") &&
                         !dataSnapshot.child("deleted").getValue(Boolean.class))
                 {
@@ -642,14 +643,14 @@ public class FirebaseUtils {
                                 if (participantSnap.child("vote").getValue(String.class).equals("yes"))
                                 {
                                     yes++;
-                                    if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
+                                    if (participantSnap.getKey().equals(MainActivity.getCurrentUID()))
                                         myvote = "yes";
 
                                 }
                                 if (participantSnap.child("vote").getValue(String.class).equals("no"))
                                 {
                                     no++;
-                                    if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
+                                    if (participantSnap.getKey().equals(MainActivity.getCurrentUID()))
                                         myvote = "no";
                                 }
                             }
@@ -664,11 +665,12 @@ public class FirebaseUtils {
                     pendingExpense.setGroupName(dataSnapshot.child("groupName").getValue(String.class));
                     pendingExpense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
                     pendingExpense.setGroupImage(dataSnapshot.child("groupImage").getValue(String.class));
+                    pendingExpense.setExpensePhoto(dataSnapshot.child("expensePhoto").getValue(String.class));
                     pendingExpense.setParticipantsCount(participantsCount);
                     pendingExpense.setYes(yes);
                     pendingExpense.setNo(no);
                     pendingExpense.setMyVote(myvote);
-                    pendingExpense.setCreatorID(dataSnapshot.child("creatorID").getValue(String.class));// aggiunto riky
+                    pendingExpense.setCreatorID(dataSnapshot.child("creatorID").getValue(String.class));
                     pendingExpense.setCurrency(dataSnapshot.child("currency").getValue(String .class));
                     pendingExpensesMap.put(pendingID, pendingExpense);
                     pendingExpenseViewAdapter.update(pendingExpensesMap);
@@ -900,7 +902,7 @@ public class FirebaseUtils {
 
 
     public void addFriend(String friendID){
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").child(friendID).child("deleted").setValue(false);
-        databaseReference.child("users").child(friendID).child("friends").child(MainActivity.getCurrentUser().getID()).child("deleted").setValue(false);
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends").child(friendID).child("deleted").setValue(false);
+        databaseReference.child("users").child(friendID).child("friends").child(MainActivity.getCurrentUID()).child("deleted").setValue(false);
     }
 }

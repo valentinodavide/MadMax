@@ -2,7 +2,6 @@ package com.polito.mad17.madmax.activities.users;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,23 +22,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.InsetDivider;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.BarDetailFragment;
 import com.polito.mad17.madmax.activities.DetailFragment;
-import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
+import com.polito.mad17.madmax.activities.InsetDivider;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.Collections;
 import java.util.TreeMap;
-
-import static com.polito.mad17.madmax.R.string.friends;
-import static com.polito.mad17.madmax.activities.expenses.ChooseGroupActivity.groups;
 
 public class FriendDetailActivity extends AppCompatActivity implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener {
     private static final String TAG = FriendDetailActivity.class.getSimpleName();
@@ -150,7 +143,7 @@ public class FriendDetailActivity extends AppCompatActivity implements GroupsVie
         }
 
         //Show shared groups
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").child(friendID).child("sharedGroups").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends").child(friendID).child("sharedGroups").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -186,7 +179,7 @@ public class FriendDetailActivity extends AppCompatActivity implements GroupsVie
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
                 finish();
                 Intent myIntent = new Intent(this, MainActivity.class);
-                myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                myIntent.putExtra("UID", MainActivity.getCurrentUID());
                 myIntent.putExtra("currentFragment", 0);
                 startActivity(myIntent);
                 return(true);

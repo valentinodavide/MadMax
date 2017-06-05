@@ -1,15 +1,12 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,12 +17,10 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
-import java.util.HashMap;
 import java.util.TreeMap;
 
 public class ChooseGroupActivity extends AppCompatActivity implements GroupsViewAdapter.ListItemClickListener {
@@ -72,7 +67,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Per ogni gruppo dello user
@@ -104,7 +99,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         Log.d(TAG, "clickedItemIndex " + groupID);
         //onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
         Intent myIntent = new Intent(ChooseGroupActivity.this, NewExpenseActivity.class);
-        myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("userID", MainActivity.getCurrentUID());
         myIntent.putExtra("groupID", groupID);
         myIntent.putExtra("callingActivity", "ChooseGroupActivity");
         myIntent.putExtra("groupName", groups.get(groupID).getName());
@@ -119,7 +114,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         Log.d(TAG, "onBackPressed");
         finish();
         Intent myIntent = new Intent(ChooseGroupActivity.this, MainActivity.class);
-        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("UID", MainActivity.getCurrentUID());
         myIntent.putExtra("currentFragment", 2);
         startActivity(myIntent);
     }
@@ -130,7 +125,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent myIntent = new Intent(ChooseGroupActivity.this, MainActivity.class);
-                myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                myIntent.putExtra("UID", MainActivity.getCurrentUID());
                 myIntent.putExtra("currentFragment", 2);
                 startActivity(myIntent);
                 return(true);
