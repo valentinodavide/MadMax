@@ -331,57 +331,80 @@ public class FirebaseUtils {
         databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
         //databaseReference.child("expenses").child(eID).child("deleted").setValue(false);
 
-        StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_expensePhoto.jpg");
+        Bitmap bitmap;
+        ByteArrayOutputStream baos;
+        byte[] data;
+        UploadTask uploadTask;
 
         // Get the data from an ImageView as bytes
-        expensePhoto.setDrawingCacheEnabled(true);
-        expensePhoto.buildDrawingCache();
-        Bitmap bitmap = expensePhoto.getDrawingCache();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
+        if (expensePhoto != null) {
+            StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID + "_expensePhoto.jpg");
+            expensePhoto.setDrawingCacheEnabled(true);
+            expensePhoto.buildDrawingCache();
+            bitmap = expensePhoto.getDrawingCache();
+            baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            data = baos.toByteArray();
 
-        UploadTask uploadTask = uExpensePhotoFilenameRef.putBytes(data);
+            uploadTask = uExpensePhotoFilenameRef.putBytes(data);
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // todo Handle unsuccessful uploads
-                Log.e(TAG, "image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
-            }
-        });
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // todo Handle unsuccessful uploads
+                    Log.e(TAG, "image upload failed");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
+                }
+            });
 
-        StorageReference uBillPhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_billPhoto.jpg");
+        }
+        else if (expense.getExpensePhoto() != null)
+        {
+            databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(expense.getExpensePhoto());
 
-        // Get the data from an ImageView as bytes
-        billPhoto.setDrawingCacheEnabled(true);
-        billPhoto.buildDrawingCache();
-        bitmap = billPhoto.getDrawingCache();
-        baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        data = baos.toByteArray();
+        }
 
-        uploadTask = uBillPhotoFilenameRef.putBytes(data);
+        if (billPhoto != null)
+        {
+            StorageReference uBillPhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID+"_billPhoto.jpg");
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // todo Handle unsuccessful uploads
-                Log.e(TAG, "image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                databaseReference.child("expenses").child(eID).child("billPhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
-            }
-        });
+            // Get the data from an ImageView as bytes
+            billPhoto.setDrawingCacheEnabled(true);
+            billPhoto.buildDrawingCache();
+            bitmap = billPhoto.getDrawingCache();
+            baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            data = baos.toByteArray();
+
+            uploadTask = uBillPhotoFilenameRef.putBytes(data);
+
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    // todo Handle unsuccessful uploads
+                    Log.e(TAG, "image upload failed");
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    databaseReference.child("expenses").child(eID).child("billPhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
+                }
+            });
+        }
+        else if (expense.getBillPhoto() != null)
+        {
+            databaseReference.child("expenses").child(eID).child("billPhoto").setValue(expense.getBillPhoto());
+
+        }
+
+
+
 
         Log.d(TAG, "creator expense " + expense.getCreatorID());
 

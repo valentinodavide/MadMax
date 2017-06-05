@@ -68,10 +68,12 @@ public class BalancesActivity extends AppCompatActivity implements BalancesViewA
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent myIntent = new Intent(BalancesActivity.this, GroupDetailActivity.class);
+                /*Intent myIntent = new Intent(BalancesActivity.this, GroupDetailActivity.class);
                 myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
                 myIntent.putExtra("groupID", groupID);
-                startActivity(myIntent);
+                finish();
+                startActivity(myIntent);*/
+                onBackPressed();
                 return(true);
             default:
                 return(super.onOptionsItemSelected(item));
