@@ -138,7 +138,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                     else
                         if(activityName.equals("GroupDetailActivity"))
                         {
-                            deleted  = friendSnapshot.child("deleted").getValue().equals(true);
+                            deleted  = friendSnapshot.child("deleted").getValue(Boolean.class).equals(true);
                             //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
                             if (!listenedGroups.contains(groupID))
                                 listenedGroups.add(groupID);

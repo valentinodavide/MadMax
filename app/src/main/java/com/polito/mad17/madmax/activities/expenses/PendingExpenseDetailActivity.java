@@ -1,10 +1,10 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -36,8 +36,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener {
@@ -137,7 +135,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                             newExpense.setTimestamp(timeStamp);
 
                             //Add expense to db
-                            FirebaseUtils.getInstance().addExpenseFirebase(newExpense, null, null);
+                            FirebaseUtils.getInstance().addExpenseFirebase(newExpense, null, null, getApplicationContext());
 
                             //Delete pending expense from proposed expenses list
                             databaseReference.child("proposedExpenses").child(expenseID).child("deleted").setValue(true);
