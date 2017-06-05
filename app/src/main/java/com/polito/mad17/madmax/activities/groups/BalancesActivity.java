@@ -3,6 +3,7 @@ package com.polito.mad17.madmax.activities.groups;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -69,9 +70,13 @@ public class BalancesActivity extends AppCompatActivity implements BalancesViewA
         switch (item.getItemId()) {
             case android.R.id.home:
                 Intent myIntent = new Intent(BalancesActivity.this, GroupDetailActivity.class);
+                myIntent.putExtra("userID", MainActivity.getCurrentUID());
+                /*Intent myIntent = new Intent(BalancesActivity.this, GroupDetailActivity.class);
                 myIntent.putExtra("userID", MainActivity.getCurrentUser().getID());
                 myIntent.putExtra("groupID", groupID);
-                startActivity(myIntent);
+                finish();
+                startActivity(myIntent);*/
+                onBackPressed();
                 return(true);
             default:
                 return(super.onOptionsItemSelected(item));

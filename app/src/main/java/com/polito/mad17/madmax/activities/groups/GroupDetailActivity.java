@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -54,6 +57,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
     private MenuItem one;
     private Bundle bundle = new Bundle();
     private Button payButton;
+    private BarDetailFragment barDetailFragment = new BarDetailFragment();
 
     static final int EXPENSE_DETAIL_REQUEST = 1;  // The request code
 
@@ -74,11 +78,10 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         bundle.putString("groupID", groupID);
         bundle.putString("userID", userID);
 
-        if(findViewById(R.id.collapsed_content)!=null){
+        if(findViewById(R.id.collapsed_content) != null){
 
             Log.d(TAG, groupID);
 
-            BarDetailFragment barDetailFragment = new BarDetailFragment();
             barDetailFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.collapsed_content, barDetailFragment)
@@ -113,7 +116,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 Log.d(TAG, "hai cliccato sulla spesa: " + fragmentName +" "+ itemID);
                 intent = new Intent(this, ExpenseDetailActivity.class);
                 intent.putExtra("expenseID", itemID);
-                intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("userID", MainActivity.getCurrentUID());
                 intent.putExtra("groupID", groupID);
                 startActivityForResult(intent, EXPENSE_DETAIL_REQUEST);
                 break;
@@ -250,7 +253,6 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
             if(resultCode == RESULT_OK) {
                 userID = data.getStringExtra("userID");
                 groupID = data.getStringExtra("groupID");
-
             }
         }
     }

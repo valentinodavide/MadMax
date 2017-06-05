@@ -28,12 +28,16 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
+import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
+import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.exp;
 
 public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface, NewCommentDialogFragment.NewCommentDialogListener {
 
@@ -63,21 +67,22 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expense_detail);
 
+        Intent intent = getIntent();
+        groupID = intent.getStringExtra("groupID");
+        userID = intent.getStringExtra("userID");
+        expenseID = intent.getStringExtra("expenseID");
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         updateFab(0);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(0x0000FF00);
+
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
-
-        Intent intent = getIntent();
-        groupID = intent.getStringExtra("groupID");
-        userID = intent.getStringExtra("userID");
-        expenseID = intent.getStringExtra("expenseID");
 
         // insert tabs and current fragment in the main layout
         //mainView.addView(getLayoutInflater().inflate(R.layout.activity_expense_detail, null));
@@ -110,7 +115,6 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         viewPager.setCurrentItem(0);
 
         //Set data of upper part of Activity
-
         imageView = (ImageView) findViewById(R.id.img_photo);
         amountTextView = (TextView) findViewById(R.id.tv_amount);
         creatorNameTextView = (TextView) findViewById(R.id.tv_creator_name);
@@ -126,7 +130,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 Log.d (TAG, "Clicked payButton");
                 if (expenseBalance >= 0)
                 {
-                    Toast.makeText(ExpenseDetailActivity.this,"You have no debts to pay for this expense",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ExpenseDetailActivity.this, "You have no debts to pay for this expense", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -138,12 +142,10 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                     intent.putExtra("expenseName", expenseName);
                     intent.putExtra("expenseCurrency", currency);
                     startActivity(intent);
+                    finish();
                 }
-
-
             }
         });
-
 
         //Retrieve data of this expense
         databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -181,7 +183,6 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                     balanceTextTextView.setText("For this expense you have no debts");
                     balanceTextView.setText("0" + " " + currency);
                 }
-
 
                 //Retrieve name and surname of creator
                 String creatorID = dataSnapshot.child("creatorID").getValue(String.class);
@@ -234,53 +235,21 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
+
+                intent = new Intent(this, GroupDetailActivity.class);
+                intent.putExtra("groupID", groupID);
+                intent.putExtra("userID", userID);
+                setResult(RESULT_OK, intent);
+
                 finish();
-
-                intent = new Intent(this, MainActivity.class);
-                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
-                intent.putExtra("currentFragment", 2);
-                startActivity(intent);
                 return(true);
-
-            default:
-                return super.onOptionsItemSelected(item);
         }
+
+        return(super.onOptionsItemSelected(item));
     }
 
     @Override
     public void itemClicked(String fragmentName, String itemID) {
-
-        /*Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        Bundle bundle = new Bundle();
-        Intent intent = null;
-
-        switch(fragmentName) {
-            case "FriendsFragment":
-                intent = new Intent(this, FriendDetailActivity.class);
-                intent.putExtra("friendID", itemID);
-                intent.putExtra("userID", currentUser.getID());
-                startActivity(intent);
-                break;
-
-            case "GroupsFragment":
-                intent = new Intent(this, GroupDetailActivity.class);
-                intent.putExtra("groupID", itemID);
-                intent.putExtra("userID", currentUser.getID());
-                startActivity(intent);
-                break;
-
-            case "PendingExpensesFragment":
-                intent = new Intent(this, PendingExpenseDetailActivity.class);
-                intent.putExtra("expenseID", itemID);
-                intent.putExtra("userID", currentUser.getID());
-                startActivity(intent);
-                break;
-        }*/
-
     }
 
     private void updateFab(int position){

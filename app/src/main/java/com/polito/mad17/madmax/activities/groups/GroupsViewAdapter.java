@@ -2,11 +2,8 @@ package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,16 +17,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
-import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.polito.mad17.madmax.R.string.balance;
 
 public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -40,6 +33,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     final private ListItemClickListener itemClickListener;
     private ListItemLongClickListener itemLongClickListener = null;
     private Context context;
+
+    private String activityName;
 
     private LayoutInflater layoutInflater;
     DecimalFormat df = new DecimalFormat("#.##");
@@ -71,19 +66,20 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public GroupsViewAdapter(Context context, ListItemClickListener listener, Map<String, Group> map) {
+    public GroupsViewAdapter(Context context, ListItemClickListener listener, Map<String, Group> map, String activityName) {
         this.context = context;
         itemClickListener = listener;
+        this.activityName = activityName;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);
     }
 
-    public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map) {
+    public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map, String activityName) {
         this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
-
+        this.activityName = activityName;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);
@@ -207,73 +203,78 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 Log.d(TAG, "sii");
             }
 
-            if (totBalances != null) {
-                for (Map.Entry<String, Double> entry : totBalances.entrySet()) {
-                    Log.d(TAG, "Bilancio in " + groupname + " : " + entry.getValue() + " " + entry.getKey());
+            if(!activityName.equals("FriendDetailActivity")) {
+                if (totBalances != null) {
+                    for (Map.Entry<String, Double> entry : totBalances.entrySet()) {
+                        Log.d(TAG, "Bilancio in " + groupname + " : " + entry.getValue() + " " + entry.getKey());
+                    }
+
+                    if (!totBalances.isEmpty()) {
+                        //If there is more than one currency
+                        if (totBalances.size() > 1) {
+                            multipleCurrencies = true;
+
+                        }
+                        //If there is just one currency
+                        else {
+                            multipleCurrencies = false;
+                        }
+
+                        if (totBalances.containsKey(defaultCurrency)) {
+                            shownBal = totBalances.get(defaultCurrency);
+                            shownCurr = defaultCurrency;
+                        } else {
+                            shownCurr = (String) totBalances.keySet().toArray()[0];
+                            shownBal = totBalances.get(shownCurr);
+                        }
+
+                        //Print balance
+                        if (shownBal > 0) {
+                            groupViewHolder.balanceTextTextView.setText(R.string.you_should_receive);
+                            groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+
+                            if (multipleCurrencies)
+                                groupViewHolder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr + "*");
+                            else
+                                groupViewHolder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr);
+
+                            groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+
+                        } else if (shownBal < 0) {
+                            groupViewHolder.balanceTextTextView.setText(R.string.you_owe);
+                            groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+
+                            if (multipleCurrencies)
+                                groupViewHolder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr + "*");
+                            else
+                                groupViewHolder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr);
+
+                            groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+
+                        } else if (shownBal == 0) {
+                            groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
+                            groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                            groupViewHolder.balanceTextView.setText("0 " + defaultCurrency);
+                            groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                        }
+
+                    }
                 }
-
-                if (!totBalances.isEmpty()) {
-                    //If there is more than one currency
-                    if (totBalances.size() > 1) {
-                        multipleCurrencies = true;
-
-                    }
-                    //If there is just one currency
-                    else {
-                        multipleCurrencies = false;
-                    }
-
-                    if (totBalances.containsKey(defaultCurrency)) {
-                        shownBal = totBalances.get(defaultCurrency);
-                        shownCurr = defaultCurrency;
-                    } else {
-                        shownCurr = (String) totBalances.keySet().toArray()[0];
-                        shownBal = totBalances.get(shownCurr);
-                    }
-
-                    //Print balance
-                    if (shownBal > 0) {
-                        groupViewHolder.balanceTextTextView.setText(R.string.you_should_receive);
-                        groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
-
-
-                        if (multipleCurrencies)
-                            groupViewHolder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr + "*");
-                        else
-                            groupViewHolder.balanceTextView.setText(df.format(shownBal) + " " + shownCurr);
-
-                        groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
-
-                    } else if (shownBal < 0) {
-                        groupViewHolder.balanceTextTextView.setText(R.string.you_owe);
-                        groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-
-
-
-                        if (multipleCurrencies)
-                            groupViewHolder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr + "*");
-                        else
-                            groupViewHolder.balanceTextView.setText(df.format(Math.abs(shownBal)) + " " + shownCurr);
-
-                        groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-
-                    } else if (shownBal == 0) {
-                        groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
-                        groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
-                        groupViewHolder.balanceTextView.setText("0 " + defaultCurrency);
-                        groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
-                    }
-
-                }
-            }
                 //If there are no balances in the map
-                else
-                {
+                else {
                     groupViewHolder.balanceTextTextView.setText(R.string.no_debts);
                     groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
                     groupViewHolder.balanceTextView.setText("0 " + defaultCurrency);
                     groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
                 }
+            }
+            else
+            {
+                groupViewHolder.balanceTextTextView.setVisibility(View.GONE);
+                groupViewHolder.balanceTextView.setVisibility(View.GONE);
+            }
 
 
 

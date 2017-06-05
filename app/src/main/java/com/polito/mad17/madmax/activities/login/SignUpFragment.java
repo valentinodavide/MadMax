@@ -78,8 +78,6 @@ public class SignUpFragment extends Fragment {
     private Button signupButton;
     private Boolean imageSetted = false;
 
-    private String inviterID;
-
     public static Boolean CREATING_ACCOUNT = false;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
@@ -92,8 +90,6 @@ public class SignUpFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
-
-        inviterID = getArguments().getString("inviterID");
     }
 
     @Override
@@ -261,9 +257,6 @@ public class SignUpFragment extends Fragment {
                 passwordView.getText().toString(),
                 "",
                 defaultCurrency);
-        if(inviterID != null) {
-            u.getUserFriends().put(inviterID, null);
-        }
 
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
@@ -310,8 +303,8 @@ public class SignUpFragment extends Fragment {
 
                                     newUserEntry.put("email", u.getEmail());
                                     newUserEntry.put("password", u.getPassword());
-                                    newUserEntry.put("friends", u.getUserFriends().toString());
-                                    newUserEntry.put("groups", u.getUserGroups().toString());
+//                                    newUserEntry.put("friends", u.getUserFriends().toString());
+//                                    newUserEntry.put("groups", u.getUserGroups().toString());
                                     newUserEntry.put("image", u.getProfileImage());
                                     newUserEntry.put("name", u.getName());
                                     newUserEntry.put("surname", u.getSurname());
@@ -323,7 +316,7 @@ public class SignUpFragment extends Fragment {
                                     // todo delete the account and restart the activity
                                     Log.e(TAG, "verification email not sent, exception: " + task.getException());
                                 }
-                                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
+                                onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "1");
                             }
                         });
                     }
@@ -343,8 +336,8 @@ public class SignUpFragment extends Fragment {
 
                         newUserEntry.put("email", u.getEmail());
                         newUserEntry.put("password", u.getPassword());
-                        newUserEntry.put("friends", u.getUserFriends().toString());
-                        newUserEntry.put("groups", u.getUserGroups().toString());
+//                        newUserEntry.put("friends", u.getUserFriends().toString());
+//                        newUserEntry.put("groups", u.getUserGroups().toString());
                         newUserEntry.put("image", u.getProfileImage());
                         newUserEntry.put("name", u.getName());
                         newUserEntry.put("surname", u.getSurname());
@@ -357,7 +350,7 @@ public class SignUpFragment extends Fragment {
                         // todo delete the account and restart the activity
                         Log.e(TAG, "verification email not sent, exception: " + task.getException());
                     }
-                    onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "0");
+                    onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "1");
                 }
             });
         }

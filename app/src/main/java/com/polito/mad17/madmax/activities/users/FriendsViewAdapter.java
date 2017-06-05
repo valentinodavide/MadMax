@@ -36,11 +36,12 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     private ListItemLongClickListener itemLongClickListener = null;
 
     private final ArrayList mData;
-
-    private LayoutInflater layoutInflater;
-    private Context context;
-    DecimalFormat df = new DecimalFormat("#.##");
     private HashMap<String, Double> totBalances = new HashMap<>();
+
+    private Context context;
+    private LayoutInflater layoutInflater;
+
+    private DecimalFormat df = new DecimalFormat("#.##");
 
     Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
         @Override
@@ -68,7 +69,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     public interface ListItemLongClickListener {
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
-
 
     public FriendsViewAdapter(Context context, ListItemClickListener listener, Map<String, User> map) {
         this.context = context;
@@ -113,7 +113,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             //balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
-            balanceTextView.setOnClickListener(this);
         }
 
         @Override
@@ -172,8 +171,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             holder.nameTextView.setText("");
             holder.balanceTextView.setText("");
             holder.balanceTextTextView.setText("");
-            holder.itemView.setOnClickListener(null);
-
         }
         else {
             Map.Entry<String, User> item = getItem(position);

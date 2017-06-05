@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,13 +26,18 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.entities.Event;
+import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener {
@@ -49,7 +57,9 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private TextView expenseNameTextView;
     private TextView creatorNameTextView;
     private TextView groupTextView;
+    private Button moveExpenseButton;
     private Toolbar toolbar;
+    String creatorID;
 
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
@@ -66,7 +76,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
         Intent intent = getIntent();
         expenseID = intent.getStringExtra("expenseID");
-        userID = intent.getStringExtra("userID");
+        userID = MainActivity.getCurrentUID(); // intent.getStringExtra("userID");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,11 +91,96 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         creatorNameTextView = (TextView) findViewById(R.id.tv_creator_name);
         groupTextView = (TextView) findViewById(R.id.tv_group_name);
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
+        moveExpenseButton = (Button) findViewById(R.id.btn_move_expense);
+
+        //Click on button to move from pending to real expense
+        moveExpenseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Only the creator of pending expense can move it
+                if (creatorID.equals(userID))
+                {
+                    databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            ArrayList<String> participants = new ArrayList<String>();
+                            String expenseName = dataSnapshot.child("description").getValue(String.class);
+                            String groupID = dataSnapshot.child("groupID").getValue(String.class);
+                            Double amount = dataSnapshot.child("amount").getValue(Double.class);
+                            String currency = dataSnapshot.child("currency").getValue(String.class);
+                            String creatorID = dataSnapshot.child("creatorID").getValue(String.class);
+                            String expensePhoto = dataSnapshot.child("expensePhoto").getValue(String.class);
+                            for (DataSnapshot participantSnap : dataSnapshot.child("participants").getChildren())
+                                participants.add(participantSnap.getKey());
+
+                            Expense newExpense = new Expense();
+                            newExpense.setDescription(expenseName);
+                            newExpense.setAmount(amount);
+                            newExpense.setCurrency(currency);
+                            newExpense.setGroupID(groupID);
+                            newExpense.setCreatorID(creatorID);
+                            newExpense.setEquallyDivided(true);
+                            newExpense.setDeleted(false);
+                            newExpense.setExpensePhoto(expensePhoto);
+                            Double amountPerMember = 1 / (double) participants.size();
+
+                            for (String participant : participants)
+                            {
+                                newExpense.getParticipants().put(participant, amountPerMember);
+                                //Delete expense from his proposed expenses
+                                databaseReference.child("users").child(participant).child("proposedExpenses").child(expenseID).setValue(false);
+                            }
+
+                            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                            newExpense.setTimestamp(timeStamp);
+
+                            //Add expense to db
+                            FirebaseUtils.getInstance().addExpenseFirebase(newExpense, null, null);
+
+                            //Delete pending expense from proposed expenses list
+                            databaseReference.child("proposedExpenses").child(expenseID).child("deleted").setValue(true);
+                            //Delete pending expense from group
+                            databaseReference.child("groups").child(groupID).child("proposedExpenses").child(expenseID).setValue(false);
+
+
+
+
+                            Intent myIntent = new Intent(PendingExpenseDetailActivity.this, GroupDetailActivity.class);
+                            myIntent.putExtra("groupID", groupID);
+                            myIntent.putExtra("userID", userID);
+                            finish();
+                            startActivity(myIntent);
+
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+
+                else
+                {
+                    Toast.makeText(PendingExpenseDetailActivity.this,"Only the proposer can move it to expenses",Toast.LENGTH_SHORT).show();
+                    return;
+
+                }
+
+
+            }
+        });
+
 
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(this)
                 .orientation(InsetDivider.VERTICAL_LIST)
                 .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(getResources().getColor(R.color.colorDivider))
+                .color(ContextCompat.getColor(getApplicationContext(), R.color.colorDivider))
                 .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
                 .overlay(true)
                 .build();
@@ -96,20 +191,31 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         recyclerView.addItemDecoration(divider);
 
         //todo mettere a posto
-        votersViewAdapter = new VotersViewAdapter(voters);
+        votersViewAdapter = new VotersViewAdapter(voters, this);
         recyclerView.setAdapter(votersViewAdapter);
 
         //Retrieve data of this pending expense
         databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 String expenseName = dataSnapshot.child("description").getValue(String.class);
                 String groupName = dataSnapshot.child("groupName").getValue(String.class);
                 Double amount = dataSnapshot.child("amount").getValue(Double.class);
                 expenseNameTextView.setText(expenseName);
                 groupTextView.setText(groupName);
                 amountTextView.setText(amount.toString());
+                creatorID = dataSnapshot.child("creatorID").getValue(String.class);
+                databaseReference.child("users").child(creatorID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot creatorSnapshot) {
+                        creatorNameTextView.setText(creatorSnapshot.child("name").getValue(String.class)+" "+creatorSnapshot.child("surname").getValue(String.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 DecimalFormat df = new DecimalFormat("#.##");
 
@@ -119,13 +225,19 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 for (DataSnapshot voterSnap : dataSnapshot.child("participants").getChildren())
                 {
                     String vote = voterSnap.child("vote").getValue(String.class);
-                    FirebaseUtils.getInstance().getFriend(voterSnap.getKey(), vote, voters, votersViewAdapter, creatorNameTextView);
+                    FirebaseUtils.getInstance().getVoter(voterSnap.getKey(), vote, voters, votersViewAdapter);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) { }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 
     //overflow button
@@ -158,9 +270,8 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
                 finish();
-
                 intent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
-                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("UID", MainActivity.getCurrentUID());
                 intent.putExtra("currentFragment", 2);
                 startActivity(intent);
                 return(true);
@@ -181,7 +292,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         Log.d(TAG, "onBackPressed");
         finish();
         Intent myIntent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
-        myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+        myIntent.putExtra("UID", MainActivity.getCurrentUID());
         myIntent.putExtra("currentFragment", 2);
         startActivity(myIntent);
     }

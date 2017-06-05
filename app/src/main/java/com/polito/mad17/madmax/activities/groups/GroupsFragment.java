@@ -48,7 +48,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private ValueEventListener groupListener;
     private ArrayList<String> listenedGroups = new ArrayList<>();
 
-
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickGroupInterface = onItemClickInterface;
         onLongClickGroupInterface = onItemLongClickInterface;
@@ -87,11 +86,11 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         recyclerView.addItemDecoration(divider);
 
         groups.clear();
-        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups, GroupsFragment.TAG);
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("groups").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("groups").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Per ogni gruppo dello user
@@ -101,7 +100,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                     try{
                     Boolean trueGroup = (Boolean) groupSnapshot.getValue();
                     if (trueGroup)
-                        getGroupAndBalance(MainActivity.getCurrentUser().getID(), groupSnapshot.getKey());
+                        getGroupAndBalance(MainActivity.getCurrentUID(), groupSnapshot.getKey());
                     else
                     {
                         //tolgo il gruppo da quelli che verranno stampati, così lo vedo sparire realtime
@@ -273,8 +272,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                     //g.setBalance(totBalance);
                                     //se il gruppo non è deleted e io faccio ancora parte del gruppo
                                     if (!deleted &&
-                                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)
+                                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUID()) &&
+                                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class)
                                             )
                                     {
                                         groups.put(groupID, g);
@@ -305,8 +304,8 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                     g.setBalance(0d);
                     g.setDeleted(deleted);
                     if (!deleted &&
-                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUser().getID()) &&
-                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class)) {
+                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUID()) &&
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class)) {
                         groups.put(groupID, g);
                     }
                     else

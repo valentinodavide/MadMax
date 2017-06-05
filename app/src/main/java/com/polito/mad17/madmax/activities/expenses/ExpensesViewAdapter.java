@@ -97,7 +97,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
-
         }
 
         @Override
@@ -204,7 +203,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
                     expensesViewHolder.balanceTextView.setText("0 " + defaultCurrency);
                 }
             }
-
         }
     }
 

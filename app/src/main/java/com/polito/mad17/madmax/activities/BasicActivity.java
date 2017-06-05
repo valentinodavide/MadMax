@@ -100,7 +100,7 @@ public class BasicActivity extends AppCompatActivity {
                         break;
                     case R.id.invite_friend:
                         Log.d(TAG, "my ID is " + getCurrentUser().getID());
-                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + getCurrentUser().getID();
+                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterID=" + getCurrentUser().getID();
 
                         intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                                 .setDeepLink(Uri.parse(deepLink))

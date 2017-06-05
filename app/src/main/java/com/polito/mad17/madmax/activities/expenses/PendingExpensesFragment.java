@@ -1,11 +1,9 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,15 +20,14 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.TreeMap;
 
-public class PendingExpensesFragment extends Fragment implements PendingExpenseViewAdapter.ListItemClickListener {
+public class PendingExpensesFragment extends Fragment implements PendingExpenseViewAdapter.ListItemClickListener, PendingExpenseViewAdapter.ListItemLongClickListener {
 
     private static final String TAG = PendingExpensesFragment.class.getSimpleName();
     private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
@@ -42,9 +39,11 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     private PendingExpenseViewAdapter pendingExpenseViewAdapter;
 
     private OnItemClickInterface onClickGroupInterface;
+    private OnItemLongClickInterface onLongClickGroupInterface;
 
-    public void setInterface(OnItemClickInterface onItemClickInterface) {
+    public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickGroupInterface = onItemClickInterface;
+        onLongClickGroupInterface = onItemLongClickInterface;
     }
 
     public PendingExpensesFragment() {}
@@ -67,7 +66,7 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
 
         Log.d (TAG, "onCreateView");
 
-        setInterface((OnItemClickInterface) getActivity());
+        setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
         View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
@@ -84,12 +83,12 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(divider);
 
-        pendingExpenseViewAdapter = new PendingExpenseViewAdapter(this, pendingExpensesMap, getActivity());
+        pendingExpenseViewAdapter = new PendingExpenseViewAdapter(this.getContext() ,this, this, pendingExpensesMap);
         recyclerView.setAdapter(pendingExpenseViewAdapter);
 
 
         //Ascolto le pending expenses dello user
-        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("proposedExpenses").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("proposedExpenses").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //Per ogni pending expense dello user
@@ -145,6 +144,13 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     public void onListItemClick(String groupID) {
         Log.d(TAG, "clickedItemIndex " + groupID);
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), groupID);
+    }
+
+    @Override
+    public boolean onListItemLongClick(String pendingID, View v) {
+        Log.d(TAG, "longClickedItemIndex " + pendingID);
+        onLongClickGroupInterface.itemLongClicked(getClass().getSimpleName(), pendingID, v);
+        return true;
     }
 }
 

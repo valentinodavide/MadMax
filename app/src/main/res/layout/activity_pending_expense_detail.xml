@@ -6,8 +6,7 @@
     android:layout_height="match_parent">
 
     <include layout="@layout/simple_toolbar"
-        android:id="@+id/toolbar">
-    </include>
+        android:id="@+id/toolbar"/>
 
     <ImageView
         android:id="@+id/img_photo"
@@ -42,13 +41,14 @@
 
         <TextView
             android:id="@+id/tv_pending_name"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:textSize="25sp"
             android:textColor="@color/colorPrimaryLight"
-            android:paddingTop="5dp"
             tools:text="Pending Expense Name"
+            android:ellipsize="end"
+            android:maxLines="1"
             />
 
         <TextView
@@ -75,7 +75,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="4dp"
             android:text="Proposed by: "
             android:textSize="16dp"
@@ -86,7 +85,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="4dp"
             android:layout_below="@+id/tv_creator"
             android:text="Group: "
@@ -97,6 +95,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/relative_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/relative_names"
@@ -108,7 +107,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="4dp"
             android:text="Name Surname"
             android:textSize="16dp"
@@ -121,7 +119,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="4dp"
             android:layout_below="@+id/tv_creator_name"
             android:text="GroupName"
@@ -130,6 +127,23 @@
             />
 
         </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_move_expense"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pay_button_border"
+            android:textColor="@color/colorPrimaryLight"
+            android:text="@string/move_to_expenses"
+            android:layout_toRightOf="@+id/tv_pending_name"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginEnd="23dp"
+            android:layout_alignTop="@+id/tv_pending_name"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+
 
 
 

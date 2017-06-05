@@ -144,7 +144,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             }
 
             Log.d(TAG, "Second step: invite members to group");
-            //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUser().getID();
+            //        String deepLink = getString(R.string.invitation_deep_link) + "?groupToBeAddedID=" + groupID+ "?inviterToGroupUID=" + MainActivity.getCurrentUID();
 
             newgroup_id = databaseReference.child("groups").push().getKey();
 
@@ -180,7 +180,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                             String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                             databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
                             databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                            FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
+                            FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
                             Log.d(TAG, "group " + newgroup_id + " created");
 
                             // add event for GROUP_ADD
@@ -203,7 +203,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                 databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
                 databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
+                FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
                 Log.d(TAG, "group " + newgroup_id + " created");
 
                 // add event for GROUP_ADD
@@ -310,7 +310,7 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                         databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
                         databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                        FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUser().getID(), newgroup_id);
+                        FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
 
 
                         Log.d(TAG, "group " + newgroup_id + " created");

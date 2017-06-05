@@ -100,4 +100,6 @@
     <string name="product_image">FOTO DEL PRODOTTO</string>
     <string name="product_bill">SCONTRINO</string>
 
+    <string name="move_to_expenses">"SPOSTA NELLE SPESE"</string>
+
 </resources>

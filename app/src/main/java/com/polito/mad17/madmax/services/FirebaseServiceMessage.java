@@ -14,11 +14,12 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.expenses.ExpenseDetailActivity;
+import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 
 import java.util.Map;
 
-import static com.polito.mad17.madmax.activities.MainActivity.getCurrentUser;
+import static com.polito.mad17.madmax.activities.MainActivity.getCurrentUID;
 
 
 public class FirebaseServiceMessage extends FirebaseMessagingService {
@@ -56,9 +57,13 @@ public class FirebaseServiceMessage extends FirebaseMessagingService {
                 resultIntent.putExtra("groupID", data.get("groupID"));
                 resultIntent.putExtra("expenseID", data.get("expenseID"));
                 break;
+            case "notification_proposalExpense_added":
+                resultIntent = new Intent(getApplicationContext(), PendingExpenseDetailActivity.class);
+                resultIntent.putExtra("expenseID", data.get("expenseID"));
+                break;
         }
        // User provaCurrent = MainActivity.getCurrentUser();
-        resultIntent.putExtra("userID", getCurrentUser().getID());
+        resultIntent.putExtra("userID", getCurrentUID());
 
         NotificationCompat.Builder mBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(getApplicationContext())

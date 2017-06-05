@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
 
@@ -25,6 +26,7 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
 
     // OnClick handler to help the Activity easier to interface with RecyclerView
     private final ArrayList mData;
+    private Context context;
 
     private LayoutInflater layoutInflater;
 
@@ -55,7 +57,8 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public VotersViewAdapter(Map<String, User> map) {
+    public VotersViewAdapter(Map<String, User> map, Context context) {
+        this.context = context;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);
@@ -107,21 +110,15 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
             Map.Entry<String, User> item = getItem(position);
 
             String photo = item.getValue().getProfileImage();
-            if (photo != null && !photo.equals(""))
-            {
-                Glide.with(layoutInflater.getContext()).load(photo)
+            if (photo != null) {
+                Glide.with(context).load(photo)
+                        .placeholder(R.drawable.user_default)
                         .centerCrop()
-                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .bitmapTransform(new CropCircleTransformation(context))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
-            }
-            else if(photo == null || photo.equals(""))
-            {
-                Glide.with(layoutInflater.getContext()).load(R.drawable.user_default)
-                        .centerCrop()
-                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(holder.imageView);
+              /*  int photoUserId = Integer.parseInt(photo);
+                holder.imageView.setImageResource(photoUserId);*/
             }
 
             holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());

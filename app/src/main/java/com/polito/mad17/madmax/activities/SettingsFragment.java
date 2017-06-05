@@ -43,9 +43,9 @@ public class SettingsFragment extends PreferenceFragment {
         CheckBoxPreference boxPref = (CheckBoxPreference)preference;
 
         if(boxPref.isChecked())
-            databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("notifications").child(boxPref.getKey()).setValue(true);
+            databaseReference.child("users").child(MainActivity.getCurrentUID()).child("notifications").child(boxPref.getKey()).setValue(true);
         else
-            databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("notifications").child(boxPref.getKey()).setValue(false);
+            databaseReference.child("users").child(MainActivity.getCurrentUID()).child("notifications").child(boxPref.getKey()).setValue(false);
 
         /*if(((CheckBoxPreference)preference).isChecked())
             Log.d(TAG, "preference "+preference.getKey()+" has been activated");

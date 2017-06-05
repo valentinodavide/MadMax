@@ -21,6 +21,7 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -466,7 +467,8 @@ public class User implements Parcelable {
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("admin").setValue(false);
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
-        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue("time");
+        String timestamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("timestamp").setValue(timestamp);
         // aggiunto da riky
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).push();
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("deleted").setValue(false);

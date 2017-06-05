@@ -27,7 +27,10 @@ import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import static com.polito.mad17.madmax.activities.groups.GroupExpensesActivity.expenses;
 import static com.polito.mad17.madmax.activities.groups.NewGroupActivity.groups;
@@ -50,7 +53,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     private DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
     private DatabaseReference groupRef;
 
-    private HashMap<String, Expense> expensesMap = new HashMap<>();
+    private TreeMap<String, Expense> expensesMap = new TreeMap<>(Collections.reverseOrder());
 
 
     public ExpensesFragment() {}
@@ -76,7 +79,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
                 .orientation(InsetDivider.VERTICAL_LIST)
                 .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(getResources().getColor(R.color.colorDivider))
+                .color(ContextCompat.getColor(getContext(), R.color.colorDivider))
                 .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
                 .overlay(true)
                 .build();

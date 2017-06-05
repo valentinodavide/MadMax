@@ -6,6 +6,9 @@
     android:layout_height="match_parent"
     android:id="@+id/fr_detail_friend">
 
+    <include layout="@layout/simple_toolbar"
+        android:id="@+id/fd_toolbar"/>
+
     <ImageView
         android:id="@+id/img_photo"
         android:layout_width="match_parent"
@@ -90,19 +93,6 @@
                 />
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btn_pay_debt"
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/lv_balance_layout"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="100dp"
-            android:background="@drawable/pay_button_border"
-            android:textColor="@color/colorPrimaryLight"
-            android:text="@string/paydebt"
-            />
-
 
     </RelativeLayout>
 

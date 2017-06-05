@@ -87,11 +87,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         pendingExpenses.add(nullEntry);
     }
 
-    public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap, Activity activity) {
+    public PendingExpenseViewAdapter(Context context, PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap) {
         itemClickListener = listener;
         itemLongClickListener = longListener;
         this.pendingExpenses = new ArrayList<>();
-        this.activity = activity;
+        this.mContext = context;
         pendingExpenses.addAll(pendingMap.entrySet());
         pendingExpenses.add(nullEntry);
     }
@@ -146,19 +146,19 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                 databaseReference.child("proposedExpenses").child(getItem(clickedPosition).getKey()).runTransaction(new Transaction.Handler() {
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
-                        String myVote = mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").getValue(String.class);
+                        String myVote = mutableData.child("participants").child(MainActivity.getCurrentUID()).child("vote").getValue(String.class);
                         final Event.EventType eventType;
 
                         if (myVote.equals("null") || myVote.equals("no"))
                         {
                             //up diventa blu, down diventa nero
-                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("yes");
+                            mutableData.child("participants").child(MainActivity.getCurrentUID()).child("vote").setValue("yes");
                             eventType = Event.EventType.PENDING_EXPENSE_VOTE_UP;
                         }
                         else
                         {
                             //up diventa nero
-                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
+                            mutableData.child("participants").child(MainActivity.getCurrentUID()).child("vote").setValue("null");
                             eventType = Event.EventType.PENDING_EXPENSE_VOTE_DOWN;
                         }
 
@@ -205,16 +205,16 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
                     @Override
                     public Transaction.Result doTransaction(MutableData mutableData) {
 
-                        String myVote = mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").getValue(String.class);
+                        String myVote = mutableData.child("participants").child(MainActivity.getCurrentUID()).child("vote").getValue(String.class);
 
                         if (myVote.equals("null") || myVote.equals("yes"))
                         {
                             //up diventa blu, down diventa nero
-                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("no");
+                            mutableData.child("participants").child(MainActivity.getCurrentUID()).child("vote").setValue("no");
                         }
                         else if (myVote.equals("no")) {
                             //up diventa nero
-                            mutableData.child("participants").child(MainActivity.getCurrentUser().getID()).child("vote").setValue("null");
+                            mutableData.child("participants").child(MainActivity.getCurrentUID()).child("vote").setValue("null");
                         }
 
                         return Transaction.success(mutableData);
@@ -243,7 +243,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             int clickedPosition = getAdapterPosition();
             Map.Entry<String, Expense> itemClicked = getItem(clickedPosition);
             Log.d(TAG, "longClickedExpense " + itemClicked.getKey());
-            //itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
             return true;
         }

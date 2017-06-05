@@ -11,9 +11,6 @@ import android.view.ViewGroup;
 import com.polito.mad17.madmax.activities.expenses.ExpenseCommentsFragment;
 import com.polito.mad17.madmax.activities.expenses.ExpenseDetailFragment;
 
-/**
- * Created by alessandro on 26/05/17.
- */
 
 public class ExpenseDetailPagerAdapter extends FragmentPagerAdapter {
 
@@ -38,19 +35,19 @@ public class ExpenseDetailPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        Bundle b = new Bundle();
-        b.putString("expenseID", expenseID);
+        Bundle bundle = new Bundle();
+        bundle.putString("expenseID", expenseID);
 
         switch(position) {
             case 0:
                 Log.i(TAG, "here in case 0: ExpenseDetailFragment");
                 expenseDetailFragment = new ExpenseDetailFragment();
-                expenseDetailFragment.setArguments(b);
+                expenseDetailFragment.setArguments(bundle);
                 return expenseDetailFragment;
             case 1:
                 Log.i(TAG, "here in case 1: ExpenseCommentsFragment");
                 expenseCommentsFragment = new ExpenseCommentsFragment();
-                expenseCommentsFragment.setArguments(b);
+                expenseCommentsFragment.setArguments(bundle);
                 return expenseCommentsFragment;
             default:
                 return null;
