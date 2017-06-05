@@ -29,23 +29,6 @@
         <activity android:name=".activities.login.LoginSignUpActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"
             android:theme="@style/AppTheme.Login">
-
-            <intent-filter android:label="MadMaxInvitiationFilter">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data
-                    android:host="www.madmax.com"
-                    android:pathPrefix="/beeshare"
-                    android:scheme="http" />
-                <!-- note that the leading "/" is required for pathPrefix -->
-                <!-- Accepts URIs that begin with "example://gizmos” -->
-                <data
-                    android:host="beeshare"
-                    android:scheme="madmax" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activities.groups.GroupExpensesActivity"
@@ -77,6 +60,23 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter android:label="MadMaxInvitiationFilter">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data
+                    android:host="www.madmax.com"
+                    android:pathPrefix="/beeshare"
+                    android:scheme="http" />
+                <!-- note that the leading "/" is required for pathPrefix -->
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <data
+                    android:host="beeshare"
+                    android:scheme="madmax" />
             </intent-filter>
 
         </activity>

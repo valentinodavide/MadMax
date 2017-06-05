@@ -621,6 +621,7 @@ public class FirebaseUtils {
                     pendingExpense.setYes(yes);
                     pendingExpense.setNo(no);
                     pendingExpense.setMyVote(myvote);
+                    pendingExpense.setCreatorID(dataSnapshot.child("creatorID").getValue(String.class));// aggiunto riky
                     pendingExpense.setCurrency(dataSnapshot.child("currency").getValue(String .class));
                     pendingExpensesMap.put(pendingID, pendingExpense);
                     pendingExpenseViewAdapter.update(pendingExpensesMap);
@@ -777,8 +778,8 @@ public class FirebaseUtils {
     /*
         END COMMENT
      */
-
-    public void getFriend(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)
+// sostituisce la vecchia public void getFriend(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)
+    public void getVoter(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter)
     {
         databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener()
         {
@@ -789,11 +790,10 @@ public class FirebaseUtils {
                 u.setName(dataSnapshot.child("name").getValue(String.class));
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 u.setVote(vote);
+                u.setProfileImage(dataSnapshot.child("image").getValue(String.class));
                 voters.put(id, u);
                 votersViewAdapter.update(voters);
                 votersViewAdapter.notifyDataSetChanged();
-
-                creatorNameTextView.setText(u.getName() + " " + u.getSurname());
             }
 
             @Override
@@ -849,5 +849,11 @@ public class FirebaseUtils {
 
             }
         });
+    }
+
+
+    public void addFriend(String friendID){
+        databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends").child(friendID).child("deleted").setValue(false);
+        databaseReference.child("users").child(friendID).child("friends").child(MainActivity.getCurrentUser().getID()).child("deleted").setValue(false);
     }
 }

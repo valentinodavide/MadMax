@@ -48,7 +48,6 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
     private ValueEventListener groupListener;
     private ArrayList<String> listenedGroups = new ArrayList<>();
 
-
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickGroupInterface = onItemClickInterface;
         onLongClickGroupInterface = onItemLongClickInterface;

@@ -1,5 +1,6 @@
 package com.polito.mad17.madmax.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,9 +38,11 @@ import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.NewGroupActivity;
 import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
 import com.polito.mad17.madmax.activities.users.FriendDetailActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import static android.widget.Toast.makeText;
@@ -72,13 +76,15 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
 
     private static User currentUser = null;
-    private String currentUID, inviterUID, groupToBeAddedID;
+    private String currentUID, inviterID, groupToBeAddedID;
 
     private HashMap<String, String> userFriends = new HashMap<>();
     private HashMap<String, String> userGroups = new HashMap<>();
 
     private Intent startingIntent;
     private ValueEventListener currentUserListener;
+    private ProgressDialog progressDialog;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,21 +98,72 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         usersRef = databaseReference.child("users");
         groupRef = databaseReference.child("groups");
         auth = FirebaseAuth.getInstance();
+        /*
+        // getting Intent from invitation
+        Intent intent = getIntent();
+
+        String action = intent.getAction();
+        Log.d(TAG, "action " + action);
+
+        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
+        Uri data = intent.getData();
+        if(data != null) {
+            // to be used to set the current user as friend of the inviter
+            Log.d(TAG, "there is an invite");
+            inviterUID = data.getQueryParameter("inviterUID");
+            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
+        }
+        else {
+            inviterUID = null;
+            groupToBeAddedID = null;
+            Log.d(TAG, "there is not an invite");
+        }*/
+        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
+        startingIntent = getIntent();
+        Uri data = startingIntent.getData();
+        if(data != null){
+            inviterID = data.getQueryParameter("inviterID");
+            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
+        }
+        else{
+            // retrieving data from the intent inviterID & groupToBeAddedID as the group ID where to add the current user
+            if(startingIntent.hasExtra("inviterID")) {
+                // to be used to set the current user as friend of the inviter
+                Log.d(TAG, "there is an invite");
+                inviterID = startingIntent.getStringExtra("inviterID");
+                startingIntent.removeExtra("inviterID");
+            }
+            else
+                inviterID = null;
+
+            if(startingIntent.hasExtra("groupToBeAddedID")) {
+                groupToBeAddedID = startingIntent.getStringExtra("groupToBeAddedID");
+                startingIntent.removeExtra("groupToBeAddedID");
+            }
+            else
+                groupToBeAddedID = null;
+        }
+
+        //todo a cosa serve?
+        currentFragment = startingIntent.getIntExtra("currentFragment", 1);
+
 
         if((auth.getCurrentUser() == null) ||(!auth.getCurrentUser().isEmailVerified())){
             if (auth.getCurrentUser() != null) {
                 auth.signOut();
             }
 
-            startActivity(new Intent(getApplicationContext(), LoginSignUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            Intent doLogin = new Intent(getApplicationContext(), LoginSignUpActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            if(inviterID!= null)
+                doLogin.putExtra("inviterID", inviterID);
+            if(groupToBeAddedID!= null)
+                doLogin.putExtra("groupToBeAddedID", groupToBeAddedID);
+
+            startActivity(doLogin);
             overridePendingTransition(0,0); //0 for no animation
             finish();
         }
-        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
-        startingIntent = getIntent();
 
-        //todo a cosa serve?
-        currentFragment = startingIntent.getIntExtra("currentFragment", 1);
 
         // insert tabs and current fragment in the main layout
         mainView.addView(getLayoutInflater().inflate(R.layout.skeleton_tab, null));
@@ -138,6 +195,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         appBarLayout.setExpanded(false);
         //todo: capire come bloccare la barra nel main
+
+        progressDialog = new ProgressDialog(this);
     }
 
     @Override
@@ -153,6 +212,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG, "onDataChange currentUserref");
+
                 if(currentUser == null) {
                     //makeText(MainActivity.this, "Ricreato user", Toast.LENGTH_SHORT).show(); // todo: di debug, da rimuovere
                     currentUser = new User();
@@ -196,31 +256,31 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 Log.d(TAG, "logged user name: "+currentUser.getName());
                 Log.d(TAG, "logged user surname: "+currentUser.getSurname());
 
-                // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
-                if(startingIntent.hasExtra("inviterUID")) {
-                    // to be used to set the current user as friend of the inviter
-                    Log.d(TAG, "there is an invite");
-                    inviterUID = startingIntent.getStringExtra("inviterUID");
-                    startingIntent.removeExtra("inviterUID");
+                Uri data = startingIntent.getData();
+                if(data != null){
+                    inviterID = data.getQueryParameter("inviterID");
+                    groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
+                }
+                else{
+                    // retrieving data from the intent inviterID & groupToBeAddedID as the group ID where to add the current user
+                    if(startingIntent.hasExtra("inviterID")) {
+                        // to be used to set the current user as friend of the inviter
+                        Log.d(TAG, "there is an invite");
+                        inviterID = startingIntent.getStringExtra("inviterID");
+                        startingIntent.removeExtra("inviterID");
+                    }
+
                     if(startingIntent.hasExtra("groupToBeAddedID")) {
                         groupToBeAddedID = startingIntent.getStringExtra("groupToBeAddedID");
                         startingIntent.removeExtra("groupToBeAddedID");
                     }
-                    else {
-                        inviterUID = null;
-                        groupToBeAddedID = null;
-                        Log.d(TAG, "there is not an invite");
-                    }
                 }
-                else {
-                    inviterUID = null;
-                    groupToBeAddedID = null;
-                    Log.d(TAG, "there is not an invite");
-                }
+
                 // control if user that requires the friendship is already a friend
-                if (inviterUID != null) {
-                    if(!currentUser.getUserFriends().containsKey(inviterUID)){
-                        currentUser.addFriend(inviterUID);
+                if (inviterID != null) {
+                    if(!currentUser.getUserFriends().containsKey(inviterID)){
+                        FirebaseUtils.getInstance().addFriend(inviterID);
+                        inviterID = null;
                         makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
                     }
                     else
@@ -234,6 +294,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 //                        currentUser.joinGroup(groupToBeAddedID); //todo usare questa? non aggiorna il numero dei membri
                         currentUser.getUserGroups().put(groupToBeAddedID, null);
                         FirebaseUtils.getInstance().joinGroupFirebase(currentUID, groupToBeAddedID);
+                        groupToBeAddedID = null;
                         makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
                     }
                     else
@@ -323,7 +384,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     @Override
                     public void onClick(View v) {
                         Log.d(TAG, "my ID is " + MainActivity.getCurrentUser().getID());
-                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterUID=" + MainActivity.getCurrentUser().getID();
+                        String deepLink = getString(R.string.invitation_deep_link) + "?inviterID=" + MainActivity.getCurrentUser().getID();
 
                         Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                                 .setDeepLink(Uri.parse(deepLink))
@@ -407,7 +468,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
     //Apro popup menu quando ho tenuto premuto un friend o gruppo per 1 secondo
     @Override
-    public void itemLongClicked(String fragmentName, final String itemID, View v) {
+    public void itemLongClicked(String fragmentName, final String itemID, final View v) {
 
         Log.i(TAG, "fragmentName " + fragmentName + " itemID " + itemID);
 
@@ -494,6 +555,57 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 popup.show();//showing popup menu
 
+                break;
+            case "PendingExpensesFragment":
+                popup = new PopupMenu(MainActivity.this, v, Gravity.RIGHT);
+                popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+                one = popup.getMenu().findItem(R.id.one);
+                one.setTitle("Remove Pending");
+                popup.getMenu().findItem(R.id.two).setVisible(false);
+                popup.getMenu().findItem(R.id.three).setVisible(false);
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        databaseReference.child("proposedExpenses").child(itemID).child("creatorID").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(MainActivity.getCurrentUser().getID().matches(dataSnapshot.getValue(String.class))) {
+                                    FirebaseUtils.getInstance().removePendingExpenseFirebase(itemID, getApplicationContext());
+                                    // add event for PENDING_EXPENSE_REMOVE
+                                    databaseReference.child("proposedExpenses").child(itemID)
+                                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                @Override
+                                                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                    User currentUser = MainActivity.getCurrentUser();
+                                                                                    Event event = new Event(
+                                                                                            dataSnapshot.child("groupID").getValue(String.class),
+                                                                                            Event.EventType.PENDING_EXPENSE_REMOVE,
+                                                                                            currentUser.getName() + " " + currentUser.getSurname(),
+                                                                                            dataSnapshot.child("description").getValue(String.class)
+                                                                                    );
+                                                                                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                                                                                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                                                                                    FirebaseUtils.getInstance().addEvent(event);
+                                                                                }
+
+                                                                                @Override
+                                                                                public void onCancelled(DatabaseError databaseError) {
+                                                                                    Log.w(TAG, databaseError.toException());
+                                                                                }
+                                                                            }
+                                            );
+                                }
+                                else
+                                    Toast.makeText(MainActivity.this,"You are not the proposal creator",Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {}
+                        });
+                        return  true;
+                    }
+                });
+                popup.show();//showing popup menu
                 break;
         }
     }

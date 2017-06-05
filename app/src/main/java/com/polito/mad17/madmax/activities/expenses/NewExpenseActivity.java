@@ -201,7 +201,6 @@ public class NewExpenseActivity extends AppCompatActivity {
             newExpense.setEquallyDivided(true);
             newExpense.setDeleted(false);
 
-
             Log.d(TAG, "Before first access to firebase");
 
             groupRef = databaseReference.child("groups");

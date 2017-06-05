@@ -49,11 +49,12 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
     private ViewPager viewPager;
     private PagerAdapter adapter;
 
-    private String inviterUID;
+    private String inviterID;
     private String groupToBeAddedID;
 
-    Bundle bundle = null;
     private ProgressDialog progressDialog;
+
+    Intent goToMain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,31 +65,35 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
 
         Log.i(TAG, "onCreate");
 
+        FirebaseUtils.getInstance().setUp();
         // getting Intent from invitation
         Intent startingIntent = getIntent();
+
+        //prepare intent for MainActivity
+        goToMain = new Intent(getApplicationContext(), MainActivity.class);
+        goToMain.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
         String action = startingIntent.getAction();
         Log.d(TAG, "action " + action);
 
-        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
-        Uri data = startingIntent.getData();
-        if(data != null) {
+        // retrieving data from the intent inviterID & groupToBeAddedID as the group ID where to add the current user
+        if(startingIntent.hasExtra("inviterID")) {
             // to be used to set the current user as friend of the inviter
             Log.d(TAG, "there is an invite");
-            bundle = new Bundle();
-            inviterUID = data.getQueryParameter("inviterUID");
-            bundle.putString("inviterUID", inviterUID);
-            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
-            bundle.putString("groupToBeAddedID", groupToBeAddedID);
-                startActivity(new Intent(getApplicationContext(), MainActivity.class).putExtras(bundle));
-                finish();
+            inviterID = startingIntent.getStringExtra("inviterID");
+            startingIntent.removeExtra("inviterID");
+            goToMain.putExtra("inviterID", inviterID);
         }
-        else {
-            bundle = null;
-            inviterUID = null;
+        else
+            inviterID = null;
+
+        if(startingIntent.hasExtra("groupToBeAddedID")) {
+            groupToBeAddedID = startingIntent.getStringExtra("groupToBeAddedID");
+            startingIntent.removeExtra("groupToBeAddedID");
+            goToMain.putExtra("groupToBeAddedID", groupToBeAddedID);
+        }
+        else
             groupToBeAddedID = null;
-            Log.d(TAG, "there is not an invite");
-        }
 
         // insert tabs and current fragment in the main layout
         setContentView(R.layout.activity_log_in_signup);
@@ -169,11 +174,6 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
                 case 1:
                     Log.i(TAG, "here in case 1: SignUpFragment");
                     signUpFragment = new SignUpFragment();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("inviterUID", inviterUID);
-                    signUpFragment.setArguments(bundle);
-
                     return signUpFragment;
                 default:
                     return null;
@@ -199,8 +199,6 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
         switch(fragmentName) {
             case "LoginFragment":
 
@@ -209,16 +207,8 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
                     viewPager.setCurrentItem(1);
                 }
                 else {
-                    if (bundle != null) {
-                        // you arrive from a click of an invitate, so this avoid glitch
-                        intent.putExtras(bundle);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        startActivity(intent);
-                        overridePendingTransition(0,0); //0 for no animation
-                    }
-                    else{
-                        startActivity(intent);
-                    }
+                    startActivity(goToMain);
+                    overridePendingTransition(0,0); //0 for no animation
                     finish();
                 }
 
@@ -229,6 +219,11 @@ public class LoginSignUpActivity extends AppCompatActivity implements OnItemClic
                 if(itemID.equals("0"))
                 {
                     viewPager.setCurrentItem(0);
+                }
+                else {
+                    startActivity(goToMain);
+                    overridePendingTransition(0,0); //0 for no animation
+                    finish();
                 }
                 break;
         }

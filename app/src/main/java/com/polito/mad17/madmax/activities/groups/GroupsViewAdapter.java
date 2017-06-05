@@ -2,11 +2,8 @@ package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,14 +19,11 @@ import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
-import com.polito.mad17.madmax.entities.User;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.polito.mad17.madmax.R.string.balance;
 
 public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

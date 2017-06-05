@@ -51,6 +51,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private TextView creatorNameTextView;
     private TextView groupTextView;
     private Toolbar toolbar;
+    String creatorID;
 
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
@@ -97,20 +98,31 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         recyclerView.addItemDecoration(divider);
 
         //todo mettere a posto
-        votersViewAdapter = new VotersViewAdapter(voters);
+        votersViewAdapter = new VotersViewAdapter(voters, this);
         recyclerView.setAdapter(votersViewAdapter);
 
         //Retrieve data of this pending expense
         databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 String expenseName = dataSnapshot.child("description").getValue(String.class);
                 String groupName = dataSnapshot.child("groupName").getValue(String.class);
                 Double amount = dataSnapshot.child("amount").getValue(Double.class);
                 expenseNameTextView.setText(expenseName);
                 groupTextView.setText(groupName);
                 amountTextView.setText(amount.toString());
+                creatorID = dataSnapshot.child("creatorID").getValue(String.class);
+                databaseReference.child("users").child(creatorID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot creatorSnapshot) {
+                        creatorNameTextView.setText(creatorSnapshot.child("name").getValue(String.class)+" "+creatorSnapshot.child("surname").getValue(String.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 DecimalFormat df = new DecimalFormat("#.##");
 
@@ -120,13 +132,20 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 for (DataSnapshot voterSnap : dataSnapshot.child("participants").getChildren())
                 {
                     String vote = voterSnap.child("vote").getValue(String.class);
-                    FirebaseUtils.getInstance().getFriend(voterSnap.getKey(), vote, voters, votersViewAdapter, creatorNameTextView);
+                    FirebaseUtils.getInstance().getVoter(voterSnap.getKey(), vote, voters, votersViewAdapter);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) { }
         });
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 
     //Per creare overflow button
@@ -147,34 +166,46 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 return true;
             case R.id.two:
                 Log.d (TAG, "clicked Remove Expense");
-                FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
+                final Intent intent = new Intent(this, MainActivity.class);
 
-                // add event for PENDING_EXPENSE_REMOVE
-                databaseReference.child("proposedExpenses").child(expenseID)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User currentUser = MainActivity.getCurrentUser();
-                            Event event = new Event(
-                                    dataSnapshot.child("groupID").getValue(String.class),
-                                    Event.EventType.PENDING_EXPENSE_REMOVE,
-                                    currentUser.getName() + " " + currentUser.getSurname(),
-                                    dataSnapshot.child("description").getValue(String.class)
-                            );
-                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
-                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                            FirebaseUtils.getInstance().addEvent(event);
-                        }
+                databaseReference.child("proposedExpenses").child(expenseID).child("creatorID").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(MainActivity.getCurrentUser().getID().matches(dataSnapshot.getValue(String.class))) {
+                            FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
+                            // add event for PENDING_EXPENSE_REMOVE
+                            databaseReference.child("proposedExpenses").child(expenseID)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                            User currentUser = MainActivity.getCurrentUser();
+                                                                            Event event = new Event(
+                                                                                    dataSnapshot.child("groupID").getValue(String.class),
+                                                                                    Event.EventType.PENDING_EXPENSE_REMOVE,
+                                                                                    currentUser.getName() + " " + currentUser.getSurname(),
+                                                                                    dataSnapshot.child("description").getValue(String.class)
+                                                                            );
+                                                                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                                                                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                                                                            FirebaseUtils.getInstance().addEvent(event);
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w(TAG, databaseError.toException());
+                                                                            startActivity(intent);
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(DatabaseError databaseError) {
+                                                                            Log.w(TAG, databaseError.toException());
+                                                                        }
+                                                                    }
+                                    );
                         }
+                        else
+                            Toast.makeText(getApplicationContext(),"You are not the proposal creator",Toast.LENGTH_SHORT).show();
                     }
-                );
 
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
                 return true;
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");

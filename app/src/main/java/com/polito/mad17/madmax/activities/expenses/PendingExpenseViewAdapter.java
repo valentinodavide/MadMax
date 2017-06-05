@@ -87,11 +87,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         pendingExpenses.add(nullEntry);
     }
 
-    public PendingExpenseViewAdapter(PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap, Activity activity) {
+    public PendingExpenseViewAdapter(Context context, PendingExpenseViewAdapter.ListItemClickListener listener, PendingExpenseViewAdapter.ListItemLongClickListener longListener, Map<String, Expense> pendingMap) {
         itemClickListener = listener;
         itemLongClickListener = longListener;
         this.pendingExpenses = new ArrayList<>();
-        this.activity = activity;
+        this.mContext = context;
         pendingExpenses.addAll(pendingMap.entrySet());
         pendingExpenses.add(nullEntry);
     }
@@ -243,7 +243,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             int clickedPosition = getAdapterPosition();
             Map.Entry<String, Expense> itemClicked = getItem(clickedPosition);
             Log.d(TAG, "longClickedExpense " + itemClicked.getKey());
-            //itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
+            itemLongClickListener.onListItemLongClick(itemClicked.getKey(), v);
 
             return true;
         }
