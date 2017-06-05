@@ -81,10 +81,6 @@ public class PayExpenseActivity extends AppCompatActivity {
 
         currencyTextView = (TextView) findViewById(R.id.currency);
         currencyTextView.setText(currency);
-
-
-
-
     }
 
     @Override
@@ -127,15 +123,16 @@ public class PayExpenseActivity extends AppCompatActivity {
                 {
                     if (money > debt)
                     {
-                        Toast.makeText(PayExpenseActivity.this,"You cannot pay more than what you due",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayExpenseActivity.this, "You cannot pay more than what you due", Toast.LENGTH_SHORT).show();
                         return  true;
                     }
                     else if (money <= 0) {
-                        Toast.makeText(PayExpenseActivity.this,"Invalid amount",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayExpenseActivity.this, "Invalid amount", Toast.LENGTH_SHORT).show();
                         return  true;
                     }
                     else
                     {
+                        Toast.makeText(PayExpenseActivity.this, "Debt payed", Toast.LENGTH_SHORT).show();
                         payDebtForExpense(userID, expenseID, money);
                         // todo add event for USER_PAY
                         intent = new Intent(this, ExpenseDetailActivity.class);
@@ -163,7 +160,6 @@ public class PayExpenseActivity extends AppCompatActivity {
     void payDebtForExpense (final String userID, final String expenseID, Double money)
     {
         myMoney = money;
-
 
         databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -216,19 +212,13 @@ public class PayExpenseActivity extends AppCompatActivity {
                             }
                         }
 
-
                     }
-
-
-                    }
+                }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
 
                     }
-                });
+        });
     }
-
-
-
 }

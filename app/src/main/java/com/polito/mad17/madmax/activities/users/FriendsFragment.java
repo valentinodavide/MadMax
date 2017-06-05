@@ -43,11 +43,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private OnItemClickInterface onClickFriendInterface;
     private OnItemLongClickInterface onLongClickFriendInterface;
 
-    public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
-        onClickFriendInterface = onItemClickInterface;
-        onLongClickFriendInterface = onItemLongClickInterface;
-    }
-
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private FriendsViewAdapter friendsViewAdapter;
@@ -59,19 +54,24 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     Boolean listenedGroup = false;
     private Double totBalance;
 
+    public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
+        onClickFriendInterface = onItemClickInterface;
+        onLongClickFriendInterface = onItemLongClickInterface;
+    }
+
     public FriendsFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d (TAG, "OnCreate from " + getActivity().getLocalClassName());
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        Log.d (TAG, "OnCreateView from " + getActivity());
+        final String activityName = getActivity().getClass().getSimpleName();
+        Log.d (TAG, "Sono nella activity: " + activityName);
 
         final View view = inflater.inflate(R.layout.skeleton_list, container, false);
 
@@ -96,9 +96,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         friendsViewAdapter = new FriendsViewAdapter(this.getContext(), this, this, friends);
         recyclerView.setAdapter(friendsViewAdapter);
 
-        final String activityName = getActivity().getClass().getSimpleName();
-        Log.d (TAG, "Sono nella activity: " + activityName);
-
         //Se sono in MainActivity visualizzo lista degli amici
         if (activityName.equals("MainActivity")) {
             query = databaseReference.child("users").child(MainActivity.getCurrentUser().getID()).child("friends");
@@ -122,7 +119,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                 //svuoto la map, così se viene eliminato uno user dal db, non viene tenuto nella map che si ricarica da zero
                 //friends.clear();
 
-                for (final DataSnapshot friendSnapshot: externalDataSnapshot.getChildren()) {
+                for (final DataSnapshot friendSnapshot : externalDataSnapshot.getChildren()) {
                         //getFriend(friendSnapshot.getKey());
                     Boolean deleted = true;
                     if(activityName.equals("MainActivity")){
@@ -130,6 +127,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                         Log.d(TAG, "value: "+friendSnapshot.getValue());
                         if (!listenedFriends)
                             listenedFriends = true;
+                        Log.d(TAG,  friendSnapshot.child("deleted").getValue() + " ");
                         deleted  = friendSnapshot.child("deleted").getValue().equals(true);
                     }
                     else
@@ -140,8 +138,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                             if (!listenedGroups.contains(groupID))
                                 listenedGroups.add(groupID);
                         }
-
-
 
                     final String id = friendSnapshot.getKey();
                     final Boolean finalDeleted = deleted;
@@ -415,13 +411,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
-
             }
         });
     }
-
-
-
-
-    }
+}

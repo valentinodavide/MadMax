@@ -109,7 +109,7 @@ public class FirebaseUtils {
         return storageReference;
     }
 
-    public void getGroup(final String id, final HashMap<String, Group> groups, final GroupsViewAdapter groupsViewAdapter)
+    public void getGroup(final String id, final TreeMap<String, Group> groups, final GroupsViewAdapter groupsViewAdapter)
     {
         databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
         {
@@ -189,7 +189,7 @@ public class FirebaseUtils {
 
     public void deleteSharedGroup(final String userID, final String groupID)
     {
-        databaseReference.child("groups").child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("groups").child(groupID).child("members").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -250,7 +250,7 @@ public class FirebaseUtils {
 
     public void removeGroupFirebase (final String userID, final String groupID, final Context context)
     {
-        databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -306,7 +306,8 @@ public class FirebaseUtils {
             databaseReference.child("groups").child(groupID).child("members").child(userID).child("admin").setValue(false);
         }
   //      databaseReference.child("groups").child(groupID).child("members").child(userID).push();   tolto perchè non ci serve la chiave
-        databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue("time");
+        String timestamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        databaseReference.child("groups").child(groupID).child("members").child(userID).child("timestamp").setValue(timestamp);
         databaseReference.child("groups").child(groupID).child("members").child(userID).child("deleted").setValue(false);
 
         addSharedGroup(userID, groupID);
@@ -418,7 +419,7 @@ public class FirebaseUtils {
         return eID;
     }
 
-    public void getExpense(final String id, final HashMap<String, Expense> expensesMap, final ExpensesViewAdapter expensesViewAdapter) {
+    public void getExpense(final String id, final TreeMap<String, Expense> expensesMap, final ExpensesViewAdapter expensesViewAdapter) {
         databaseReference.child("expenses").child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -480,7 +481,7 @@ public class FirebaseUtils {
 
     public void removeExpenseFirebase (final String expenseID, final Context context)
     {
-        databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("expenses").child(expenseID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -642,7 +643,7 @@ public class FirebaseUtils {
 
     public void removePendingExpenseFirebase (final String expenseID, final Context context)
     {
-        databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("proposedExpenses").child(expenseID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -780,7 +781,7 @@ public class FirebaseUtils {
 
     public void getFriend(final String id, final String vote, final TreeMap<String, User> voters, final VotersViewAdapter votersViewAdapter, final TextView creatorNameTextView)
     {
-        databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener()
+        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
@@ -830,7 +831,7 @@ public class FirebaseUtils {
 
     public void getParticipantName(final String id, final HashMap<String, User> participants, final ParticipantsViewAdapter participantsViewAdapter, final User u)
     {
-        databaseReference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 

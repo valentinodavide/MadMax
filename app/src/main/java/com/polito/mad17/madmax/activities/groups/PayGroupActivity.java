@@ -30,6 +30,7 @@ import java.text.DecimalFormat;
 import java.util.HashMap;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.exp;
 
 public class PayGroupActivity extends AppCompatActivity {
 
@@ -65,7 +66,6 @@ public class PayGroupActivity extends AppCompatActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
 
-
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
@@ -78,8 +78,6 @@ public class PayGroupActivity extends AppCompatActivity {
 
         currency = (Spinner) findViewById(R.id.currency);
 
-
-
         amountEditText = (EditText) findViewById(R.id.amount);
         amountEditText.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(7,2)});
 
@@ -87,7 +85,6 @@ public class PayGroupActivity extends AppCompatActivity {
         groupNameTextView.setText(groupName);
 
         amountEditText.setText(debt.toString());
-
 
         // creating spinner for currencies
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
@@ -97,8 +94,6 @@ public class PayGroupActivity extends AppCompatActivity {
         // set the defaultCurrency value for the spinner based on the user preferences
         int spinnerPosition = adapter.getPosition(shownCurrency);
         currency.setSelection(spinnerPosition);
-
-
     }
 
     @Override
@@ -139,14 +134,15 @@ public class PayGroupActivity extends AppCompatActivity {
                 }
                 if (money != null)
                 {
+                    Log.d(TAG, "payed " + money);
                     if (money > debt)
                     {
                         Toast.makeText(PayGroupActivity.this,"You cannot pay more than what you due",Toast.LENGTH_SHORT).show();
-                        return  true;
+                        return true;
                     }
                     else if (money <= 0) {
                         Toast.makeText(PayGroupActivity.this,"Nessun pagamento effettuato",Toast.LENGTH_SHORT).show();
-                        return  true;
+                        return true;
                     }
                     else
                     {
@@ -178,28 +174,31 @@ public class PayGroupActivity extends AppCompatActivity {
     {
         myMoney = money;
 
+        Log.d(TAG, "here in payDebtForExpenses");
+
         databaseReference.child("groups").child(groupID).addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(final DataSnapshot groupDataSnapshot) {
 
-
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
-
 
                 if (deleted != null)
                 {
-                    for (DataSnapshot groupExpenseSnapshot: groupDataSnapshot.child("expenses").getChildren())
+                    for (DataSnapshot groupExpenseSnapshot : groupDataSnapshot.child("expenses").getChildren())
                     {
                         //Se ho ancora soldi per ripagare le spese
                         if (myMoney > 0)
                         {
+                            Log.d(TAG, "myMoney " + myMoney);
                             //Considero solo le spese non eliminate dal gruppo
                             if (groupExpenseSnapshot.getValue(Boolean.class) == true)
                             {
                                 //Adesso sono sicuro che la spesa non è stata eliminata
                                 //Ascolto la singola spesa del gruppo
                                 final String expenseID = groupExpenseSnapshot.getKey();
+                                Log.d(TAG, "ripangando la spesa " + expenseID);
+
                                 databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -209,12 +208,14 @@ public class PayGroupActivity extends AppCompatActivity {
 
                                         Boolean involved = false; //dice se user contribuisce o no a quella spesa
 
-                                        for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
+                                        for (DataSnapshot participantSnapshot : dataSnapshot.child("participants").getChildren())
                                         {
                                             //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
                                             if (participantSnapshot.getKey().equals(userID))
                                                 involved = true;
                                         }
+
+                                        Log.d(TAG, "\t involded in " + expenseID);
 
                                         //se user ha partecipato alla spesa
                                         if (involved)
@@ -223,6 +224,7 @@ public class PayGroupActivity extends AppCompatActivity {
                                             //dueImport = quota che user deve mettere per quella spesa
                                             Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
                                             Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
+
                                             Double amount = dataSnapshot.child("amount").getValue(Double.class);
                                             Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * amount;
                                             Double stillToPay = dueImport - alreadyPaid;
@@ -250,11 +252,7 @@ public class PayGroupActivity extends AppCompatActivity {
                                                     myMoney = 0d;
                                                 }
                                             }
-
-
                                         }
-
-
                                     }
 
                                     @Override

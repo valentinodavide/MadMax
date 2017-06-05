@@ -37,6 +37,7 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -61,7 +62,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
     private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
 
-    private HashMap<String, Group> groups = new HashMap<>();    //gruppi condivisi tra me e friend
+    private TreeMap<String, Group> groups = new TreeMap<>();    //gruppi condivisi tra me e friend
     private FloatingActionButton fab;
 
 
@@ -90,7 +91,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
         // when an item in the list will be clicked the onListItemClicked will be called
-        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, groups, DetailFragment.TAG);
 
         if(activityName.equals("FriendDetailActivity")){
 

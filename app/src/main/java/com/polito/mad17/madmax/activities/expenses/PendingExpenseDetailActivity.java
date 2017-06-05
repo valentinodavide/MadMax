@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -85,7 +86,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(this)
                 .orientation(InsetDivider.VERTICAL_LIST)
                 .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(getResources().getColor(R.color.colorDivider))
+                .color(ContextCompat.getColor(getApplicationContext(), R.color.colorDivider))
                 .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
                 .overlay(true)
                 .build();

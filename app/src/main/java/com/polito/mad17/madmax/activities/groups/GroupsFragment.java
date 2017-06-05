@@ -87,7 +87,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         recyclerView.addItemDecoration(divider);
 
         groups.clear();
-        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(this.getContext(), this, this, groups, GroupsFragment.TAG);
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user

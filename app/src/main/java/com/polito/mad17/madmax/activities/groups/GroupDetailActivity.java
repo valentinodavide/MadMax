@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -53,6 +54,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
     private MenuItem one;
     private Bundle bundle = new Bundle();
     private Button payButton;
+    private BarDetailFragment barDetailFragment = new BarDetailFragment();
 
     static final int EXPENSE_DETAIL_REQUEST = 1;  // The request code
 
@@ -73,11 +75,10 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         bundle.putString("groupID", groupID);
         bundle.putString("userID", userID);
 
-        if(findViewById(R.id.collapsed_content)!=null){
+        if(findViewById(R.id.collapsed_content) != null){
 
             Log.d(TAG, groupID);
 
-            BarDetailFragment barDetailFragment = new BarDetailFragment();
             barDetailFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.collapsed_content, barDetailFragment)
@@ -249,7 +250,6 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
             if(resultCode == RESULT_OK) {
                 userID = data.getStringExtra("userID");
                 groupID = data.getStringExtra("groupID");
-
             }
         }
     }

@@ -26,6 +26,7 @@ import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class ChooseGroupActivity extends AppCompatActivity implements GroupsViewAdapter.ListItemClickListener {
 
@@ -35,7 +36,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
-    public static HashMap<String, Group> groups = new HashMap<>();
+    public static TreeMap<String, Group> groups = new TreeMap<>();
     private OnItemClickInterface onClickGroupInterface;
 
 
@@ -67,7 +68,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(divider);
 
-        groupsViewAdapter = new GroupsViewAdapter(getBaseContext(), this, groups);
+        groupsViewAdapter = new GroupsViewAdapter(getBaseContext(), this, groups, ChooseGroupActivity.TAG);
         recyclerView.setAdapter(groupsViewAdapter);
 
         //Ascolto i gruppi dello user

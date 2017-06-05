@@ -68,16 +68,11 @@ public class BarDetailFragment extends Fragment {
     Double shownBal;
 
 
-
     //key = currency
     //value = balance for that currency
     private HashMap<String, Double> totBalances = new HashMap<>();
 
     static final int PAY_GROUP_REQUEST = 1;  // The request code
-
-
-
-
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
@@ -107,7 +102,6 @@ public class BarDetailFragment extends Fragment {
         balanceTextView = (TextView)mainView.findViewById(R.id.tv_balance_text);
         balanceView = (TextView)mainView.findViewById(R.id.tv_balance);
         payButton = (Button) mainView.findViewById(R.id.btn_pay_debt);
-
 
         initCollapsingToolbar();
 
@@ -145,8 +139,8 @@ public class BarDetailFragment extends Fragment {
                     }
                 });
         }}
-        else if(activityName.equals("GroupDetailActivity")){
-
+        else if(activityName.equals("GroupDetailActivity"))
+        {
             if(bundle != null){
                 //Extract data from bundle
                 groupID = bundle.getString("groupID");
@@ -179,9 +173,6 @@ public class BarDetailFragment extends Fragment {
                         {
                             Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
                         }
-
-
-
                     }
                 });
 
@@ -196,7 +187,6 @@ public class BarDetailFragment extends Fragment {
 
                     }
                 });
-
 
 
                 // todo qui currency
@@ -237,17 +227,15 @@ public class BarDetailFragment extends Fragment {
                                     .into(imageView);
                         }
 
-
-
                         //Retrieve group balances in all currencies
-                        for (DataSnapshot groupExpenseSnapshot: dataSnapshot.child("expenses").getChildren())
+                        for (DataSnapshot groupExpenseSnapshot : dataSnapshot.child("expenses").getChildren())
                         {
                             //Se la spesa non è stata eliminata
                             if (groupExpenseSnapshot.getValue(Boolean.class) == true)
                             {
                                 //Ascolto la singola spesa del gruppo
                                 final String expenseID = groupExpenseSnapshot.getKey();
-                                Log.d(TAG, "considero la spesa "+expenseID);
+                                Log.d(TAG, "considero la spesa " + expenseID);
                                 databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
