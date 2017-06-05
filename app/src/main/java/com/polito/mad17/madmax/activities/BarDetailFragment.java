@@ -34,6 +34,7 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -152,23 +153,32 @@ public class BarDetailFragment extends Fragment {
                     public void onClick(View v) {
                         Log.d (TAG, "Clicked payButton");
 
-                        if (shownCurr != null)
+                        //Suppongo di non avere debiti in nessuna valuta
+                        Boolean mustPay = false;
+                        String currency = null;
+                        //Se ho debiti in anche una sola valuta, allora posso entrare nella PayGroupActivity
+                        for (Map.Entry<String, Double> entry : totBalances.entrySet())
                         {
-                            if (totBalances.get(shownCurr) >= 0)
+                            if (entry.getValue() < 0)
                             {
-                                Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
+                                mustPay = true;
+                                currency = entry.getKey();
                             }
-                            else
-                            {
-                                Intent intent = new Intent(getActivity(), PayGroupActivity.class);
-                                intent.putExtra("groupID", groupID);
-                                intent.putExtra("userID", userID);
-                                intent.putExtra("totBalances", totBalances);
-                                intent.putExtra("shownCurrency", shownCurr);
-                                intent.putExtra("groupName", groupName);
-                                startActivity(intent);
-                            }
+
                         }
+
+                        //Se ho debiti in almeno una valuta
+                        if (mustPay)
+                        {
+                            Intent intent = new Intent(getActivity(), PayGroupActivity.class);
+                            intent.putExtra("groupID", groupID);
+                            intent.putExtra("userID", userID);
+                            intent.putExtra("totBalances", totBalances);
+                            intent.putExtra("shownCurrency", currency);
+                            intent.putExtra("groupName", groupName);
+                            startActivity(intent);
+                        }
+                        //Se non ho debiti in nessuna valuta
                         else
                         {
                             Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();

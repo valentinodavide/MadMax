@@ -90,4 +90,6 @@
     <string name="send_again">Invia di nuovo</string>
     <string name="you_owe">"DEVI RESTITUIRE"</string>
     <string name="propose_expense">In quale gruppo vorresti proporre la nuova spesa?</string>
+    <string name="move_to_expenses">"SPOSTA NELLE SPESE"</string>
+
 </resources>

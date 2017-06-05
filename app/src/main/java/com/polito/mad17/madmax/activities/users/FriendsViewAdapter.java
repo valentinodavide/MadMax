@@ -113,7 +113,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             //balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
-            balanceTextView.setOnClickListener(this);
         }
 
         @Override

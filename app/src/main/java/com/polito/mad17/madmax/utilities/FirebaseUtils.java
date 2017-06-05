@@ -437,8 +437,26 @@ public class FirebaseUtils {
                 {
                     //Retrieve my balance for this expense
                     User provaCurrent = MainActivity.getCurrentUser();
-                    Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
-                    Double alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("alreadyPaid").getValue(Double.class);
+                    Double dueImport;
+                    Double alreadyPaid;
+                    if (dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).hasChild("fraction") &&
+                            dataSnapshot.hasChild("amount"))
+                    {
+                        dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                    }
+                    else
+                    {
+                        dueImport = null;
+                    }
+                    if (dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).hasChild("alreadyPaid"))
+                    {
+                        alreadyPaid = dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("alreadyPaid").getValue(Double.class);
+                    }
+                    else
+                    {
+                        alreadyPaid = null;
+                    }
+
                     Double expenseBalance;
                     if (dueImport != null && alreadyPaid != null)
                     {
@@ -585,7 +603,9 @@ public class FirebaseUtils {
                 //Questo listener è chiamato ogni volta che questa spesa pending è modificata, quindi devo controllare
                 //che io faccia ancora parte di questa spesa e che la spesa pending esista ancora (NELLE PROPOSED EXPESES)
                 if (dataSnapshot.child("participants").hasChild(MainActivity.getCurrentUser().getID()) &&
+                        dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).hasChild("deleted") &&
                         !dataSnapshot.child("participants").child(MainActivity.getCurrentUser().getID()).child("deleted").getValue(Boolean.class) &&
+                        dataSnapshot.hasChild("deleted") &&
                         !dataSnapshot.child("deleted").getValue(Boolean.class))
                 {
                     for (DataSnapshot participantSnap : dataSnapshot.child("participants").getChildren())
@@ -594,19 +614,23 @@ public class FirebaseUtils {
                         if (participantSnap.child("deleted").getValue(Boolean.class) == false)
                         {
                             participantsCount++;
-                            if (participantSnap.child("vote").getValue(String.class).equals("yes"))
+                            if (participantSnap.hasChild("vote"))
                             {
-                                yes++;
-                                if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
-                                    myvote = "yes";
+                                if (participantSnap.child("vote").getValue(String.class).equals("yes"))
+                                {
+                                    yes++;
+                                    if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
+                                        myvote = "yes";
 
+                                }
+                                if (participantSnap.child("vote").getValue(String.class).equals("no"))
+                                {
+                                    no++;
+                                    if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
+                                        myvote = "no";
+                                }
                             }
-                            if (participantSnap.child("vote").getValue(String.class).equals("no"))
-                            {
-                                no++;
-                                if (participantSnap.getKey().equals(MainActivity.getCurrentUser().getID()))
-                                    myvote = "no";
-                            }
+
                         }
                     }
 

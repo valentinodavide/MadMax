@@ -46,10 +46,10 @@
             android:layout_centerHorizontal="true"
             android:layout_alignParentRight="true"
 
-            android:gravity="center"
-            tools:text="@string/owes_you"
+            tools:text="YOU SHOULD RECEIVE"
             android:textColor="@color/colorPrimaryText"
-
+            android:textAlignment="textEnd"
+            android:gravity="end"
             android:textSize="12sp" />
 
         <TextView

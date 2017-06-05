@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +52,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private TextView expenseNameTextView;
     private TextView creatorNameTextView;
     private TextView groupTextView;
+    private Button moveExpenseButton;
     private Toolbar toolbar;
     String creatorID;
 
@@ -83,6 +86,17 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         creatorNameTextView = (TextView) findViewById(R.id.tv_creator_name);
         groupTextView = (TextView) findViewById(R.id.tv_group_name);
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
+        moveExpenseButton = (Button) findViewById(R.id.btn_move_expense);
+
+        //Click on button to move from pending to real expense
+        moveExpenseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
+
 
         RecyclerView.ItemDecoration divider = new InsetDivider.Builder(this)
                 .orientation(InsetDivider.VERTICAL_LIST)

@@ -84,6 +84,7 @@
             android:id="@+id/btn_pay_debt"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
+            android:background="@drawable/pay_button_border"
             android:textColor="@color/colorPrimaryLight"
             android:text="@string/paydebt"
             android:layout_marginRight="23dp"

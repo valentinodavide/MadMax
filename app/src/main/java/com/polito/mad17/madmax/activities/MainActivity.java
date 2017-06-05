@@ -659,7 +659,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         super.onStop();
         Log.i(TAG, "onStop");
 
-        if(authListener != null){
+        if(authListener != null && currentUserRef!= null && currentUserListener != null){
             currentUserRef.removeEventListener(currentUserListener);
             auth.removeAuthStateListener(authListener);
         }

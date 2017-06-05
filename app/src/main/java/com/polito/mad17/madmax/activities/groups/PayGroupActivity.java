@@ -132,22 +132,35 @@ public class PayGroupActivity extends AppCompatActivity {
                         e1.printStackTrace();
                     }
                 }
+
+                //Retrieve selected currency and debt for that currency
+                shownCurrency = currency.getSelectedItem().toString();
+                debt = totBalances.get(shownCurrency);
+                //If you have no debts in that currency
+                if (debt == null || debt >= 0)
+                {
+                    Toast.makeText(PayGroupActivity.this,"You have no debt in this currency",Toast.LENGTH_SHORT).show();
+                    return  true;
+                }
+                debt = abs(Math.floor(debt * 100) / 100);
+
                 if (money != null)
                 {
                     Log.d(TAG, "payed " + money);
                     if (money > debt)
                     {
-                        Toast.makeText(PayGroupActivity.this,"You cannot pay more than what you due",Toast.LENGTH_SHORT).show();
-                        return true;
+                        Toast.makeText(PayGroupActivity.this,"You can't pay more than what you due in this currency",Toast.LENGTH_SHORT).show();
+                        return  true;
                     }
-                    else if (money <= 0) {
+                    else if (money <= 0)
+                    {
                         Toast.makeText(PayGroupActivity.this,"Nessun pagamento effettuato",Toast.LENGTH_SHORT).show();
                         return true;
                     }
                     else
                     {
                         //currency.getSelectedItem().toString()
-                        payDebtForExpenses(userID, groupID, money);
+                        payDebtForExpenses(userID, groupID, money, shownCurrency);
                         // todo add event for USER_PAY
                         intent = new Intent(this, GroupDetailActivity.class);
                         intent.putExtra("groupID", groupID);
@@ -169,8 +182,8 @@ public class PayGroupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //money = cifra che ho a disposizione per ripianare i debiti
-    void payDebtForExpenses (final String userID, String groupID, Double money)
+    //money = cifra che ho a disposizione per ripianare i debiti (solo in una certa valuta!!)
+    void payDebtForExpenses (final String userID, String groupID, Double money, final String currency)
     {
         myMoney = money;
 
@@ -183,6 +196,7 @@ public class PayGroupActivity extends AppCompatActivity {
 
                 final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
 
+                //If group has not been deleted (should be useless here)
                 if (deleted != null)
                 {
                     for (DataSnapshot groupExpenseSnapshot : groupDataSnapshot.child("expenses").getChildren())
@@ -203,53 +217,50 @@ public class PayGroupActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                        String creatorID = dataSnapshot.child("creatorID").getValue(String.class);
-                                        Double alreadyPaidByCreator = dataSnapshot.child("participants").child(creatorID).child("alreadyPaid").getValue(Double.class);
-
-                                        Boolean involved = false; //dice se user contribuisce o no a quella spesa
-
-                                        for (DataSnapshot participantSnapshot : dataSnapshot.child("participants").getChildren())
+                                        //I can use money only to pay expenses in the currency of money!!
+                                        if (dataSnapshot.child("currency").getValue(String.class).equals(currency))
                                         {
-                                            //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
-                                            if (participantSnapshot.getKey().equals(userID))
-                                                involved = true;
-                                        }
+                                            String creatorID = dataSnapshot.child("creatorID").getValue(String.class);
+                                            Double alreadyPaidByCreator = dataSnapshot.child("participants").child(creatorID).child("alreadyPaid").getValue(Double.class);
 
-                                        Log.d(TAG, "\t involded in " + expenseID);
+                                            Boolean involved = false; //dice se user contribuisce o no a quella spesa
 
-                                        //se user ha partecipato alla spesa
-                                        if (involved)
-                                        {
-                                            //alreadyPaid = soldi già messi dallo user per quella spesa
-                                            //dueImport = quota che user deve mettere per quella spesa
-                                            Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
-                                            Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
-
-                                            Double amount = dataSnapshot.child("amount").getValue(Double.class);
-                                            Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * amount;
-                                            Double stillToPay = dueImport - alreadyPaid;
-
-                                            //Se questa spesa non è già stata ripagata in toto
-                                            if (stillToPay > 0)
+                                            for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
                                             {
-                                                //Se ho ancora abbastanza soldi per ripagare in toto questa spesa, la ripago in toto AL CREATOR!!
-                                                if (myMoney >= stillToPay)
-                                                {
-                                                    //Quota già pagata DA ME per questa spesa aumenta
-                                                    databaseReference.child("expenses").child(expenseID).child("participants").child(userID).child("alreadyPaid").setValue(dueImport);
-                                                    //Quota già pagata DAL CREATOR per questa spesa diminuisce, perchè gli sto dando dei soldi
-                                                    databaseReference.child("expenses").child(expenseID).child("participants").child(creatorID).child("alreadyPaid").setValue(alreadyPaidByCreator-stillToPay);
+                                                //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
+                                                if (participantSnapshot.getKey().equals(userID))
+                                                    involved = true;
+                                            }
 
-                                                    //Adesso ho meno soldi a disposizione, perchè li ho usati in parte per ripagare questa spesa
-                                                    myMoney -= stillToPay;
-                                                }
-                                                //Altrimenti la ripago solo in parte
-                                                else
-                                                {
-                                                    databaseReference.child("expenses").child(expenseID).child("participants").child(userID).child("alreadyPaid").setValue(alreadyPaid+myMoney);
-                                                    databaseReference.child("expenses").child(expenseID).child("participants").child(creatorID).child("alreadyPaid").setValue(alreadyPaidByCreator-myMoney);
+                                            //se user ha partecipato alla spesa
+                                            if (involved) {
+                                                //alreadyPaid = soldi già messi dallo user per quella spesa
+                                                //dueImport = quota che user deve mettere per quella spesa
+                                                Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+                                                Log.d(TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
+                                                Double amount = dataSnapshot.child("amount").getValue(Double.class);
+                                                Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * amount;
+                                                Double stillToPay = dueImport - alreadyPaid;
 
-                                                    myMoney = 0d;
+                                                //Se questa spesa non è già stata ripagata in toto
+                                                if (stillToPay > 0) {
+                                                    //Se ho ancora abbastanza soldi per ripagare in toto questa spesa, la ripago in toto AL CREATOR!!
+                                                    if (myMoney >= stillToPay) {
+                                                        //Quota già pagata DA ME per questa spesa aumenta
+                                                        databaseReference.child("expenses").child(expenseID).child("participants").child(userID).child("alreadyPaid").setValue(dueImport);
+                                                        //Quota già pagata DAL CREATOR per questa spesa diminuisce, perchè gli sto dando dei soldi
+                                                        databaseReference.child("expenses").child(expenseID).child("participants").child(creatorID).child("alreadyPaid").setValue(alreadyPaidByCreator - stillToPay);
+
+                                                        //Adesso ho meno soldi a disposizione, perchè li ho usati in parte per ripagare questa spesa
+                                                        myMoney -= stillToPay;
+                                                    }
+                                                    //Altrimenti la ripago solo in parte
+                                                    else {
+                                                        databaseReference.child("expenses").child(expenseID).child("participants").child(userID).child("alreadyPaid").setValue(alreadyPaid + myMoney);
+                                                        databaseReference.child("expenses").child(expenseID).child("participants").child(creatorID).child("alreadyPaid").setValue(alreadyPaidByCreator - myMoney);
+
+                                                        myMoney = 0d;
+                                                    }
                                                 }
                                             }
                                         }
