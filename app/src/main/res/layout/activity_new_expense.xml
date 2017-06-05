@@ -75,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
-                android:text="Image Product"
+                android:text="@string/product_image"
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="20sp" />
@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
-                android:text="Image Bill"
+                android:text="@string/product_bill"
                 android:textAllCaps="true"
                 android:textColor="@color/colorPrimaryText"
                 android:textSize="20sp" />

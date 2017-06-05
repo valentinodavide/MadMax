@@ -344,7 +344,6 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     }*/
 
-    // check if both email and password form are filled
     private boolean validateForm() {
         Log.i(TAG, "validateForm");
 

@@ -3,18 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".activities.groups.GroupDetailActivity">
 
     <item
         android:id="@+id/one"
         android:orderInCategory="100"
-        android:title="@string/edit_expense"
+        android:title="@string/edit_group"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/two"
         android:orderInCategory="100"
-        android:title="@string/remove_expense"
+        android:title="@string/remove_group"
         app:showAsAction="never" />
 
 </menu>

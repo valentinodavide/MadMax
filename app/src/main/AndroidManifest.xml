@@ -84,8 +84,12 @@
             android:name=".activities.SettingsActivity"
             android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".activities.ProfileEdit"
+            android:name=".activities.users.ProfileEdit"
             android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.groups.GroupEdit" />
+        <activity
+            android:name=".activities.expenses.ExpenseEdit" />
         <activity android:name=".activities.expenses.ChooseGroupActivity" />
         <activity
             android:name=".activities.expenses.PendingExpenseDetailActivity"
@@ -95,21 +99,15 @@
             android:name=".activities.expenses.ExpenseDetailActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".activities.groups.PayGroupActivity"
-            android:parentActivityName=".activities.groups.GroupDetailActivity"/>
         <activity android:name=".activities.expenses.PayExpenseActivity"
-            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"/>
+            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.groups.PayGroupActivity"
-            android:parentActivityName=".activities.groups.GroupDetailActivity"></activity>
-        <activity
-            android:name=".activities.expenses.PayExpenseActivity"
-            android:parentActivityName=".activities.expenses.ExpenseDetailActivity"></activity>
+            android:parentActivityName=".activities.groups.GroupDetailActivity" />
         <activity
             android:name=".activities.groups.BalancesActivity"
-            android:parentActivityName=".activities.groups.GroupDetailActivity"></activity>
-
+            android:parentActivityName=".activities.groups.GroupDetailActivity"/>
 
         <service
             android:name=".services.FirebaseServiceMessage">
@@ -123,7 +121,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
-
 
         <receiver android:name=".services.BroadcastReceiverOnBootComplete" android:enabled="true" android:exported="false">
             <intent-filter>

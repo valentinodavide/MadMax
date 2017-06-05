@@ -28,15 +28,12 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
-import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.exp;
 
 public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface, NewCommentDialogFragment.NewCommentDialogListener {
 
@@ -208,8 +205,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         });
     }
 
-
-    //Per creare overflow button
+    //overflow button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.expense_menu, menu);
@@ -218,19 +214,37 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // do something useful
-                Log.d (TAG, "Clicked up button");
-                Intent intent = new Intent();
-                intent.putExtra("groupID", groupID);
-                intent.putExtra("userID", userID);
-                setResult(RESULT_OK, intent);
-                finish();
-                return(true);
-        }
+        Intent intent;
 
-        return(super.onOptionsItemSelected(item));
+        Log.d (TAG, "Clicked item: " + item.getItemId());
+        switch (item.getItemId()) {
+            case R.id.one:
+                Log.d (TAG, "clicked Modify expense");
+
+                intent = new Intent(this, ExpenseEdit.class);
+                intent.putExtra("expenseID", expenseID);
+                intent.putExtra("EXPENSE_TYPE", "EXPENSE_EDIT");
+                startActivity(intent);
+                return true;
+
+            case R.id.two:
+                Log.d (TAG, "clicked Remove expense");
+                FirebaseUtils.getInstance().removeExpenseFirebase(expenseID, getApplicationContext());
+                return true;
+
+            case android.R.id.home:
+                Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
+                finish();
+
+                intent = new Intent(this, MainActivity.class);
+                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("currentFragment", 2);
+                startActivity(intent);
+                return(true);
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

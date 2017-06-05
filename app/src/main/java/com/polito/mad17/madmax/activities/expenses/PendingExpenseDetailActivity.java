@@ -128,7 +128,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         });
     }
 
-    //Per creare overflow button
+    //overflow button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.expense_menu, menu);
@@ -137,51 +137,32 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
 
         Log.d (TAG, "Clicked item: " + item.getItemId());
         switch (item.getItemId()) {
             case R.id.one:
-                Log.d (TAG, "clicked Modify expense");
-                Toast.makeText(PendingExpenseDetailActivity.this,"Functionality still not available",Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.two:
-                Log.d (TAG, "clicked Remove Expense");
-                FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
+                Log.d (TAG, "clicked Modify pending expense");
 
-                // add event for PENDING_EXPENSE_REMOVE
-                databaseReference.child("proposedExpenses").child(expenseID)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User currentUser = MainActivity.getCurrentUser();
-                            Event event = new Event(
-                                    dataSnapshot.child("groupID").getValue(String.class),
-                                    Event.EventType.PENDING_EXPENSE_REMOVE,
-                                    currentUser.getName() + " " + currentUser.getSurname(),
-                                    dataSnapshot.child("description").getValue(String.class)
-                            );
-                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
-                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                            FirebaseUtils.getInstance().addEvent(event);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.w(TAG, databaseError.toException());
-                        }
-                    }
-                );
-
-                Intent intent = new Intent(this, MainActivity.class);
+                intent = new Intent(this, ExpenseEdit.class);
+                intent.putExtra("expenseID", expenseID);
+                intent.putExtra("EXPENSE_TYPE", "PENDING_EXPENSE_EDIT");
                 startActivity(intent);
                 return true;
+
+            case R.id.two:
+                Log.d (TAG, "clicked Remove pending expense");
+                FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
+                return true;
+
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
                 finish();
-                Intent myIntent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
-                myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
-                myIntent.putExtra("currentFragment", 2);
-                startActivity(myIntent);
+
+                intent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
+                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("currentFragment", 2);
+                startActivity(intent);
                 return(true);
 
             default:

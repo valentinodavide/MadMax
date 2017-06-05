@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -251,6 +252,47 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 groupID = data.getStringExtra("groupID");
 
             }
+        }
+    }
+
+    //overflow button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.group_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+
+        Log.d (TAG, "Clicked item: " + item.getItemId());
+        switch (item.getItemId()) {
+            case R.id.one:
+                Log.d (TAG, "clicked Modify group");
+
+                intent = new Intent(this, GroupEdit.class);
+                intent.putExtra("groupID", groupID);
+                startActivity(intent);
+                return true;
+
+            case R.id.two:
+                Log.d (TAG, "clicked Remove group");
+                FirebaseUtils.getInstance().removeGroupFirebase(userID, groupID, getApplicationContext());
+                return true;
+
+            case android.R.id.home:
+                Log.d (TAG, "Clicked up button on GroupDetailActivity");
+                finish();
+
+                intent = new Intent(this, MainActivity.class);
+                intent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("currentFragment", 2);
+                startActivity(intent);
+                return(true);
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

@@ -24,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.login.LoginSignUpActivity;
+import com.polito.mad17.madmax.activities.users.ProfileEdit;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 
 import static com.polito.mad17.madmax.activities.MainActivity.auth;
