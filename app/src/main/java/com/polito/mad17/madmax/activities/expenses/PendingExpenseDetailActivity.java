@@ -76,7 +76,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
         Intent intent = getIntent();
         expenseID = intent.getStringExtra("expenseID");
-        userID = intent.getStringExtra("userID");
+        userID = MainActivity.getCurrentUser().getID(); // intent.getStringExtra("userID");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

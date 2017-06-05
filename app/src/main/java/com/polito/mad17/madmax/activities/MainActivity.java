@@ -325,6 +325,12 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                                 notificationIntent.putExtra("groupID", startingIntent.getStringExtra("groupID"));
                             }
                             break;
+                        case "notification_proposalExpense_added":
+                            if(startingIntent.hasExtra("expenseID")){
+                                notificationIntent = new Intent(getApplicationContext(), PendingExpenseDetailActivity.class);
+                                notificationIntent.putExtra("expenseID", startingIntent.getStringExtra("expenseID"));
+                            }
+                            break;
                     }
                     if(notificationIntent != null){
                         notificationIntent.putExtra("userID", currentUID);
@@ -355,7 +361,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                     //take refreshed toked and save it to use FCM
                     currentUserRef.child("token").setValue(FirebaseInstanceId.getInstance().getToken());
-
+                    Log.d(TAG, "device token: "+FirebaseInstanceId.getInstance().getToken());
                     // attach a listener on all the current user data
                     currentUserRef.addValueEventListener(currentUserListener);
                 }
@@ -458,7 +464,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             case "PendingExpensesFragment":
                 intent = new Intent(this, PendingExpenseDetailActivity.class);
                 intent.putExtra("expenseID", itemID);
-                intent.putExtra("userID", currentUser.getID());
+           //     intent.putExtra("userID", currentUser.getID());
                 Log.d (TAG, "Sto per aprire il dettaglio");
                 startActivity(intent);
                 break;
