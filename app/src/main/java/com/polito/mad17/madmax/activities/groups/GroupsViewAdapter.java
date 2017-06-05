@@ -17,7 +17,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
-import com.polito.mad17.madmax.entities.Expense;
 import com.polito.mad17.madmax.entities.Group;
 
 import java.text.DecimalFormat;
@@ -70,7 +69,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public GroupsViewAdapter(Context context, ListItemClickListener listener, Map<String, Group> map, String activityName) {
         this.context = context;
         itemClickListener = listener;
-
+        this.activityName = activityName;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);

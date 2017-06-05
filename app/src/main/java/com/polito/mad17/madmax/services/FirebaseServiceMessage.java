@@ -14,6 +14,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.expenses.ExpenseDetailActivity;
+import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 
 import java.util.Map;
@@ -54,6 +55,10 @@ public class FirebaseServiceMessage extends FirebaseMessagingService {
             case "notification_expense_removed":
                 resultIntent = new Intent(getApplicationContext(), GroupDetailActivity.class);
                 resultIntent.putExtra("groupID", data.get("groupID"));
+                resultIntent.putExtra("expenseID", data.get("expenseID"));
+                break;
+            case "notification_proposalExpense_added":
+                resultIntent = new Intent(getApplicationContext(), PendingExpenseDetailActivity.class);
                 resultIntent.putExtra("expenseID", data.get("expenseID"));
                 break;
         }
