@@ -49,6 +49,9 @@ public class User implements Parcelable {
     private Double alreadyPaid;
     private Double dueImport;
 
+    //Serve per divisione esatta della spesa
+    private Double splitPart;
+
 
 
 
@@ -280,6 +283,9 @@ public class User implements Parcelable {
 
     public void setBalancesWithGroup(HashMap<String, Double> balancesWithGroup) {this.balancesWithGroup = balancesWithGroup;}
 
+    public Double getSplitPart() {return splitPart;}
+
+    public void setSplitPart(Double splitPart) {this.splitPart = splitPart;}
     /*
         END GETTERS & SETTERS
      */

@@ -141,4 +141,9 @@
     <string name="error_not_admin">Devi essere l\'amministratore del gruppo per rimuoverlo!</string>
     <string name="expense">Spesa</string>
     <string name="group">Group</string>
+    <string name="split_by_exact">Dividi per importo esatto</string>
+    <string name="split_by_percentage">Dividi per percentuale</string>
+    <string name="split_desire">Desideri dividere la spesa in modo particolare?</string>
+    <string name="cannot_leave_group">Hai un debito verso questo gruppo. Pareggia i conti prima di lasciare</string>
+    <string name="leaving_group">Abbandono gruppo in corso</string>
 </resources>

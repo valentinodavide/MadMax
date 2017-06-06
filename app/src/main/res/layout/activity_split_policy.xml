@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.polito.mad17.madmax.activities.expenses.SplitPolicyActivity">
+
+    <RelativeLayout
+        android:id="@+id/buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        >
+
+        <Button
+            android:id="@+id/btn_not_equal"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/not_equal"
+            />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tv_split_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttons"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:text="@string/split_by_exact"
+        android:textAllCaps="true"
+        android:textSize="16dp"
+        android:textColor="@color/colorPrimaryText"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rv_skeleton"
+        android:layout_width="match_parent"
+        android:layout_height="290dp"
+        android:layout_below="@+id/tv_split_text"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"
+        android:descendantFocusability="beforeDescendants"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rv_skeleton"
+        android:gravity="center"
+        >
+
+
+
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Total: "
+            android:textSize="22dp"
+            />
+
+        <TextView
+            android:id="@+id/total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_total"
+            android:layout_marginLeft="10dp"
+            android:text="0"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/currency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/total"
+            android:layout_marginLeft="10dp"
+            android:text="€"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/tv_of"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/currency"
+            android:layout_marginLeft="10dp"
+            android:text="of"
+            android:textSize="22dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_of"
+            android:layout_marginLeft="10dp"
+            android:text="300"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/currency_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_amount"
+            android:layout_marginLeft="10dp"
+            android:text="€"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,10 +19,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -43,8 +45,9 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-
-import static android.R.attr.data;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class NewExpenseActivity extends AppCompatActivity {
@@ -61,27 +64,40 @@ public class NewExpenseActivity extends AppCompatActivity {
     private EditText amount;
     private Spinner currency;
     private ImageView expensePhoto;
-    private TextView billPhotoText;
     private ImageView billPhoto;
+    private Button splitButton;
 
     private String groupID = null;
     private String userID = null;
     private String callingActivity;
     private String groupName;
     private String groupImage;
-    private Boolean newExpensePhoto, newBillPhoto, isNewPending;
+    private Boolean newExpensePhoto, newBillPhoto;
     //private Integer numberMembers = null;
+    private Context context;
+
+
+    //key = memberID
+    //value = amount put by this member for this expense
+    private HashMap<String, Double> members = new HashMap<>();
+    Double totalSplit = null;
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
     private int PICK_BILL_PHOTO_REQUEST = 1;
     private boolean IMAGE_CHANGED = false;
     private boolean BILL_CHANGED = false;
     //private int EXPENSE_SAVED = 2;
+    private int PICK_SPLIT_REQUEST = 2;
+
+    private CheckBox unequalCheckBox;
+    Boolean equalSplit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_expense);
+
+        context = NewExpenseActivity.this;
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
@@ -90,19 +106,18 @@ public class NewExpenseActivity extends AppCompatActivity {
         newBillPhoto = false;
 
         Intent intent = getIntent();
-        groupID = intent.getStringExtra("groupID");
+        if (groupID == null)
+            groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
         callingActivity = intent.getStringExtra("callingActivity");
         groupName = intent.getStringExtra("groupName");
         groupImage = intent.getStringExtra("groupImage");
-        isNewPending = intent.getBooleanExtra("newPending", false);
 
         description = (EditText) findViewById(R.id.edit_description);
         amount = (EditText) findViewById(R.id.edit_amount);
         currency = (Spinner) findViewById(R.id.currency);
         expensePhoto = (ImageView) findViewById(R.id.img_expense);
         billPhoto = (ImageView) findViewById(R.id.img_bill);
-        billPhotoText = (TextView) findViewById(R.id.tv_bill_expense);
 
         // creating spinner for currencies
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
@@ -129,29 +144,21 @@ public class NewExpenseActivity extends AppCompatActivity {
             }
         });
 
-        if(isNewPending)
-        {
-            billPhotoText.setVisibility(View.GONE);
-            billPhoto.setVisibility(View.GONE);
-        }
-        else
-        {
-            billPhoto.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.i(TAG, "image clicked");
+        billPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "image clicked");
 
-                    // allow to the user the choose his profile image
-                    Intent intent = new Intent();
-                    // Show only images, no videos or anything else
-                    intent.setType("image/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    // Always show the chooser (if there are multiple options available)
-                    startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_BILL_PHOTO_REQUEST);
-                    // now see onActivityResult
-                }
-            });
-        }
+                // allow to the user the choose his profile image
+                Intent intent = new Intent();
+                // Show only images, no videos or anything else
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                // Always show the chooser (if there are multiple options available)
+                startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_BILL_PHOTO_REQUEST);
+                // now see onActivityResult
+            }
+        });
     }
 
     @Override
@@ -196,6 +203,22 @@ public class NewExpenseActivity extends AppCompatActivity {
             }
             BILL_CHANGED = true;
         }
+
+        if (requestCode == PICK_SPLIT_REQUEST && resultCode == RESULT_OK)
+        {
+            Log.d (TAG, "Returned well");
+            members = (HashMap<String, Double>) data.getSerializableExtra("amountsList");
+            totalSplit = data.getDoubleExtra("totalSplit", 0d);
+            groupID = data.getStringExtra("groupID");
+            Log.d (TAG, "Now i'm back with: ");
+            for (Map.Entry<String, Double> entry : members.entrySet())
+            {
+                Log.d (TAG, entry.getKey() + " " + entry.getValue());
+            }
+
+            Log.d (TAG, "Ok");
+
+        }
     }
 
     @Override
@@ -227,95 +250,12 @@ public class NewExpenseActivity extends AppCompatActivity {
 
             Log.d(TAG, "Before first access to firebase");
 
-            groupRef = databaseReference.child("groups");
-            groupRef.child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot membersSnapshot) {
+            if (equalSplit)
+                addEqualExpense(newExpense, groupID);
+            else
+                addUnequalExpense(newExpense, groupID, members);
 
-                    int participantsCount = 0;
 
-                    //Attenzione! Non contare i membri eliminati tra i partecipanti alla spesa
-                    for (DataSnapshot memberSnap : membersSnapshot.getChildren())
-                    {
-                        if (!memberSnap.child("deleted").getValue(Boolean.class))
-                        {
-                            participantsCount++;
-                        }
-                    }
-
-                    Double amountPerMember = 1 / (double) participantsCount;
-
-                    for(DataSnapshot member : membersSnapshot.getChildren())
-                    {
-                        //Aggiungo alla spesa solo i membri non eliminati dal gruppo
-                        if (!member.child("deleted").getValue(Boolean.class))
-                        {
-                            newExpense.getParticipants().put(member.getKey(), amountPerMember);
-                        }
-                    }
-
-                    String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-                    newExpense.setTimestamp(timeStamp);
-
-                    if(!newExpensePhoto)
-                        expensePhoto = null;
-                    if(!newBillPhoto)
-                        billPhoto = null;
-
-                    //Aggiungo una pending expense
-                    if (callingActivity.equals("ChooseGroupActivity"))
-                    {
-                        newExpense.setGroupName(groupName);
-                        if (groupImage != null)
-                            newExpense.setGroupImage(groupImage);
-
-                        FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
-                        //todo qui
-                        Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
-                        myIntent.putExtra("UID", MainActivity.getCurrentUID());
-                        myIntent.putExtra("currentFragment", 2);
-                        startActivity(myIntent);
-
-                        // add event for PENDING_EXPENSE_ADD
-                        User currentUser = MainActivity.getCurrentUser();
-                        Event event = new Event(
-                                groupID,
-                                Event.EventType.PENDING_EXPENSE_ADD,
-                                currentUser.getName() + " " + currentUser.getSurname(),
-                                newExpense.getDescription(),
-                                newExpense.getAmount()
-                        );
-                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
-                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                        FirebaseUtils.getInstance().addEvent(event);
-
-                    }
-                    //Aggiungo una spesa normale
-                    else
-                    {
-                        FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto, getApplicationContext());
-
-                        // add event for EXPENSE_ADD
-                        User currentUser = MainActivity.getCurrentUser();
-                        Event event = new Event(
-                                newExpense.getGroupID(),
-                                Event.EventType.EXPENSE_ADD,
-                                currentUser.getName() + " " + currentUser.getSurname(),
-                                newExpense.getDescription(),
-                                newExpense.getAmount()
-                        );
-                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
-                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                        FirebaseUtils.getInstance().addEvent(event);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w(TAG, "Failed to read value.", error.toException());
-                }
-            });
         }
         this.finish();
 
@@ -339,38 +279,7 @@ public class NewExpenseActivity extends AppCompatActivity {
         return super.dispatchTouchEvent( event );
     }
 
-   /* riky: probabilmente non più necessaria
-   // resize loaded image to avoid OutOfMemory errors
-    private Bitmap decodeUri(Uri selectedImage) throws FileNotFoundException {
-
-        // Decode image size
-        BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o);
-
-        // The new size we want to scale to
-        final int REQUIRED_SIZE = 140;
-
-        // Find the correct scale value. It should be the power of 2.
-        int width_tmp = o.outWidth, height_tmp = o.outHeight;
-        int scale = 1;
-        while (true) {
-            if (width_tmp / 2 < REQUIRED_SIZE
-                    || height_tmp / 2 < REQUIRED_SIZE) {
-                break;
-            }
-            width_tmp /= 2;
-            height_tmp /= 2;
-            scale *= 2;
-        }
-
-        // Decode with inSampleSize
-        BitmapFactory.Options o2 = new BitmapFactory.Options();
-        o2.inSampleSize = scale;
-        return BitmapFactory.decodeStream(getContentResolver().openInputStream(selectedImage), null, o2);
-
-    }*/
-
+    // check if both email and password form are filled
     private boolean validateForm() {
         Log.i(TAG, "validateForm");
 
@@ -392,5 +301,205 @@ public class NewExpenseActivity extends AppCompatActivity {
             amount.setError(null);
         }
         return valid;
+    }
+
+
+    public void addListenerOnUnequalSplit() {
+
+        unequalCheckBox = (CheckBox) findViewById(R.id.check_unequal);
+
+        if (callingActivity.equals("ChooseGroupActivity"))
+        {
+            unequalCheckBox.setVisibility(View.GONE);
+            splitButton.setVisibility(View.GONE);
+        }
+
+        unequalCheckBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //is chkIos checked?
+                if (((CheckBox) v).isChecked()) {
+                    Log.d (TAG, "Unequal isChecked");
+                    equalSplit = false;
+                    splitButton.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+                    splitButton.setClickable(true);
+
+
+                }
+                else
+                {
+                    Log.d (TAG, "Unequal isNotChecked");
+                    equalSplit = true;
+                    splitButton.setBackgroundColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    splitButton.setClickable(false);
+
+                }
+
+            }
+        });
+
+    }
+
+    void addUnequalExpense (final Expense newExpense, String groupID, HashMap<String, Double> participants)
+    {
+        //participants.value is the AMOUNT that the user will pay
+        //getParticipants.value is the FRACTION that the user will pay
+        for (Map.Entry<String, Double> entry : participants.entrySet())
+        {
+            Double fraction = entry.getValue() / newExpense.getAmount();
+            newExpense.getParticipants().put(entry.getKey(), fraction);
+        }
+
+
+        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        newExpense.setTimestamp(timeStamp);
+
+        if(!newExpensePhoto)
+            expensePhoto = null;
+        if(!newBillPhoto)
+            billPhoto = null;
+
+        //Aggiungo una pending expense
+        if (callingActivity.equals("ChooseGroupActivity"))
+        {
+            newExpense.setGroupName(groupName);
+            if (groupImage != null)
+                newExpense.setGroupImage(groupImage);
+
+
+            FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
+            //todo qui
+            Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
+            myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+            myIntent.putExtra("currentFragment", 2);
+            startActivity(myIntent);
+
+            // add event for PENDING_EXPENSE_ADD
+            User currentUser = MainActivity.getCurrentUser();
+            Event event = new Event(
+                    groupID,
+                    Event.EventType.PENDING_EXPENSE_ADD,
+                    currentUser.getName() + " " + currentUser.getSurname(),
+                    newExpense.getDescription(),
+                    newExpense.getAmount()
+            );
+            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+            FirebaseUtils.getInstance().addEvent(event);
+
+        }
+        //Aggiungo una spesa normale
+        else
+        {
+            FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto, getApplicationContext());
+
+            // add event for EXPENSE_ADD
+            User currentUser = MainActivity.getCurrentUser();
+            Event event = new Event(
+                    newExpense.getGroupID(),
+                    Event.EventType.EXPENSE_ADD,
+                    currentUser.getName() + " " + currentUser.getSurname(),
+                    newExpense.getDescription(),
+                    newExpense.getAmount()
+            );
+            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+            FirebaseUtils.getInstance().addEvent(event);
+        }
+    }
+
+    void addEqualExpense (final Expense newExpense, final String groupID)
+    {
+        DatabaseReference groupRef = databaseReference.child("groups");
+        groupRef.child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot membersSnapshot) {
+
+                int participantsCount = 0;
+
+                //Attenzione! Non contare i membri eliminati tra i partecipanti alla spesa
+                for (DataSnapshot memberSnap : membersSnapshot.getChildren())
+                {
+                    if (!memberSnap.child("deleted").getValue(Boolean.class))
+                    {
+                        participantsCount++;
+                    }
+                }
+
+                Double amountPerMember = 1 / (double) participantsCount;
+
+                for(DataSnapshot member : membersSnapshot.getChildren())
+                {
+                    //Aggiungo alla spesa solo i membri non eliminati dal gruppo
+                    if (!member.child("deleted").getValue(Boolean.class))
+                    {
+                        newExpense.getParticipants().put(member.getKey(), amountPerMember);
+                    }
+                }
+
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                newExpense.setTimestamp(timeStamp);
+
+                if(!newExpensePhoto)
+                    expensePhoto = null;
+                if(!newBillPhoto)
+                    billPhoto = null;
+
+                //Aggiungo una pending expense
+                if (callingActivity.equals("ChooseGroupActivity"))
+                {
+                    newExpense.setGroupName(groupName);
+                    if (groupImage != null)
+                        newExpense.setGroupImage(groupImage);
+
+
+                    FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
+                    //todo qui
+                    Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
+                    myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+                    myIntent.putExtra("currentFragment", 2);
+                    startActivity(myIntent);
+
+                    // add event for PENDING_EXPENSE_ADD
+                    User currentUser = MainActivity.getCurrentUser();
+                    Event event = new Event(
+                            groupID,
+                            Event.EventType.PENDING_EXPENSE_ADD,
+                            currentUser.getName() + " " + currentUser.getSurname(),
+                            newExpense.getDescription(),
+                            newExpense.getAmount()
+                    );
+                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                    FirebaseUtils.getInstance().addEvent(event);
+
+                }
+                //Aggiungo una spesa normale
+                else
+                {
+                    FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto, getApplicationContext());
+
+                    // add event for EXPENSE_ADD
+                    User currentUser = MainActivity.getCurrentUser();
+                    Event event = new Event(
+                            newExpense.getGroupID(),
+                            Event.EventType.EXPENSE_ADD,
+                            currentUser.getName() + " " + currentUser.getSurname(),
+                            newExpense.getDescription(),
+                            newExpense.getAmount()
+                    );
+                    event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                    event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                    FirebaseUtils.getInstance().addEvent(event);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
     }
 }

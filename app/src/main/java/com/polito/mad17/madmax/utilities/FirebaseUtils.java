@@ -155,19 +155,25 @@ public class FirebaseUtils {
 
     public Integer leaveGroupFirebase (String userID, final String groupID)
     {
+
         Group g = GroupsFragment.groups.get(groupID);
         if (g != null)
         {
-            Log.d (TAG, "Bilancio attuale col gruppo: " + g.getBalance());
-            if (g.getBalance() > 0)
+            HashMap<String, Double> balances = g.getCurrencyBalances();
+
+            Boolean debt = false;
+            Log.d (TAG, g.getName() + " contains those balances: ");
+            for (Map.Entry<String, Double> entry : balances.entrySet())
             {
-                Log.d (TAG, "Hai un credito verso questo gruppo. Abbandonare comunque?");
-                return 0;
+                Log.d (TAG, entry.getKey() + " " + entry.getValue());
+                if (entry.getValue() < 0)
+                    debt = true;
             }
-            else if (g.getBalance() < 0)
+
+            if (debt)
             {
-                Log.d (TAG, "Hai un debito verso questo gruppo. Prima salda il debito poi puoi abbandonare");
-                return 1;
+                Log.d (TAG, "Cannot leave group");
+                return 0;
             }
             else
             {
@@ -289,10 +295,6 @@ public class FirebaseUtils {
                     Toast.makeText(context,context.getString(R.string.error_not_admin),Toast.LENGTH_SHORT).show();
 
                 }
-
-                /*Intent intent = new Intent(context, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);*/
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -340,6 +342,9 @@ public class FirebaseUtils {
 
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
         databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
+        //timestamp già settato prima
+        //String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+        //databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
         //databaseReference.child("expenses").child(eID).child("deleted").setValue(false);
 
         Bitmap bitmap;
