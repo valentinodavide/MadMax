@@ -169,8 +169,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                     return;
 
                 }
-
-
             }
         });
 

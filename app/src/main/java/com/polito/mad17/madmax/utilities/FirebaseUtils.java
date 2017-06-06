@@ -9,8 +9,10 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -73,7 +75,7 @@ public class FirebaseUtils {
             firstStart = false;
         }
 
-        Log.d("FIrebaseUtils", "prima di getReference()");
+        Log.d("FirebaseUtils", "prima di getReference()");
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
 
@@ -490,8 +492,6 @@ public class FirebaseUtils {
                         expense.setDescription(dataSnapshot.child("description").getValue(String.class));
                         expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
                         expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
-                        expense.setExpensePhoto(dataSnapshot.child("expensePhoto").getValue(String.class));
-                        expense.setBillPhoto(dataSnapshot.child("billPhoto").getValue(String.class));
                         expense.setBalance(expenseBalance);
 
                         expensesMap.put(id, expense);
@@ -885,6 +885,19 @@ public class FirebaseUtils {
         });
     }
 
+    public void removeFromFriends(final String userID, final String friendID)
+    {
+        DatabaseReference friendReference = databaseReference.child("users").child(userID).child("friends").child(friendID);
+        Task<Void> task = friendReference.child("deleted").setValue(true);
+
+        task.addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                Log.d(TAG, "task " + task.toString() + task.getResult());
+            }
+        });
+    }
+
     public void getParticipantName(final String id, final HashMap<String, User> participants, final ParticipantsViewAdapter participantsViewAdapter, final User u)
     {
         databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
@@ -897,7 +910,6 @@ public class FirebaseUtils {
                 participants.put(id, u);
                 participantsViewAdapter.update(participants);
                 participantsViewAdapter.notifyDataSetChanged();
-
             }
 
             @Override

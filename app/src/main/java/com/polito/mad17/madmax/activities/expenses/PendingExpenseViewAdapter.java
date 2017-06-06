@@ -323,11 +323,11 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             holder.amountTextView.setText(df.format(amount) + " " + expense.getCurrency());
 
             if (expense.getMyVote().equals("yes")) {
-                holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_blue);
+                holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_teal);
                 holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);
             } else if (expense.getMyVote().equals("no")) {
                 holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
-                holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_blue);
+                holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_amber);
             } else if (expense.getMyVote().equals("null")) {
                 holder.thumbUpButton.setBackgroundResource(R.drawable.thumb_up_black);
                 holder.thumbDownButton.setBackgroundResource(R.drawable.thumb_down_black);

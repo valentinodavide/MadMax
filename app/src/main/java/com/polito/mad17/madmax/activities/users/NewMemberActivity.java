@@ -200,10 +200,13 @@ public class NewMemberActivity extends AppCompatActivity {
     //When I click SAVE
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int itemThatWasClickedId = item.getItemId();
 
-        if (itemThatWasClickedId == R.id.action_save) {
-            for(User newMemeber : alreadySelected.values()) {
+        if (itemThatWasClickedId == R.id.action_save)
+        {
+            for(User newMemeber : alreadySelected.values())
+            {
                 FirebaseUtils.getInstance().joinGroupFirebase(newMemeber.getID(), groupID);
 
                 // add event for GROUP_MEMBER_ADD
@@ -243,6 +246,7 @@ public class NewMemberActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Friends added to group", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+
             finish();
 
             return true;

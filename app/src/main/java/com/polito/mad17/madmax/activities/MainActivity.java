@@ -501,7 +501,9 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+
+                        FirebaseUtils.getInstance().removeFromFriends(currentUID, itemID);
+                        Toast.makeText(MainActivity.this, "Friend removed" + item.getTitle(),Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
@@ -520,7 +522,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 two = popup.getMenu().findItem(R.id.two);
                 two.setTitle("Remove this Group");
                 popup.getMenu().findItem(R.id.three).setVisible(false);
-
 
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
