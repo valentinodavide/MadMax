@@ -64,6 +64,7 @@ public class ExpenseEdit extends AppCompatActivity {
     //private ProgressDialog progressDialog;
 
     private Event.EventType EXPENSE_TYPE;
+    private String expense_type;
     private Expense expense;
 
     @Override @TargetApi(23)
@@ -87,9 +88,17 @@ public class ExpenseEdit extends AppCompatActivity {
 
         Intent intent = getIntent();
         String expenseID = intent.getStringExtra("expenseID");
-        EXPENSE_TYPE = intent.getStringExtra("EXPENSE_TYPE").equals("EXPENSE_EDIT") ? Event.EventType.EXPENSE_EDIT : Event.EventType.PENDING_EXPENSE_EDIT;
+        if (intent.getStringExtra("EXPENSE_TYPE").equals("EXPENSE_EDIT")) {
+            EXPENSE_TYPE = Event.EventType.EXPENSE_EDIT;
+            expense_type = "expenses";
+        }
+        else {
+            EXPENSE_TYPE = Event.EventType.PENDING_EXPENSE_EDIT;
+            expense_type = "proposedExpenses";
+        }
 
-        databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+
+        databaseReference.child(expense_type).child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 expense = new Expense();
@@ -123,11 +132,12 @@ public class ExpenseEdit extends AppCompatActivity {
                 }
                 else {
                     // Loading image
-                    Glide.with(getApplicationContext()).load(R.drawable.add_photo)
+                    expenseImageView.setImageResource(R.drawable.add_photo);
+                    /* Glide.with(getApplicationContext()).load(R.drawable.add_photo)
                             .centerCrop()
                             //.bitmapTransform(new CropCircleTransformation(this))
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(expenseImageView);
+                            .into(expenseImageView);*/
                 }
                 expenseImageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -163,11 +173,12 @@ public class ExpenseEdit extends AppCompatActivity {
                 }
                 else {
                     // Loading image
-                    Glide.with(getApplicationContext()).load(R.drawable.add_photo)
+                    expenseImageView.setImageResource(R.drawable.add_photo);
+                    /*Glide.with(getApplicationContext()).load(R.drawable.add_photo)
                             .centerCrop()
                             //.bitmapTransform(new CropCircleTransformation(this))
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(expenseBillView);
+                            .into(expenseBillView);*/
                 }
                 expenseBillView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -197,10 +208,19 @@ public class ExpenseEdit extends AppCompatActivity {
                         Log.i(TAG, "save clicked");
                         if (updateExpense(expense)) {
                             Toast.makeText(ExpenseEdit.this, "Saved", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), GroupDetailActivity.class);
-                            i.putExtra("groupID", groupID);
-                            i.putExtra("userID", MainActivity.getCurrentUser().getID());
-                            startActivity(i);
+
+                            Intent intent;
+                            if (EXPENSE_TYPE.equals(Event.EventType.EXPENSE_EDIT)) {
+                                intent = new Intent(getApplicationContext(), ExpenseDetailActivity.class);
+                                intent.putExtra("groupID", expense.getGroupID());
+                                intent.putExtra("expenseID", expense.getID());
+                                intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                            }
+                            else {
+                                intent = new Intent(getApplicationContext(), MainActivity.class);
+                                intent.putExtra("currentFragment", 2);
+                            }
+                            startActivity(intent);
                             finish();
                         }
                     }
@@ -254,22 +274,22 @@ public class ExpenseEdit extends AppCompatActivity {
 
         if (!newDescription.isEmpty() && (expense.getDescription() == null || !expense.getDescription().equals(newDescription))) {
             expense.setDescription(newDescription);
-            databaseReference.child("expenses").child(expense.getID()).child("description").setValue(expense.getDescription());
+            databaseReference.child(expense_type).child(expense.getID()).child("description").setValue(expense.getDescription());
         }
 
         if (!newAmount.isNaN() && (expense.getAmount() == null || !expense.getAmount().equals(newAmount))) {
             expense.setAmount(newAmount);
-            databaseReference.child("expenses").child(expense.getID()).child("amount").setValue(expense.getAmount());
+            databaseReference.child(expense_type).child(expense.getID()).child("amount").setValue(expense.getAmount());
         }
 
         if (!newCurrency.isEmpty() && (expense.getCurrency() == null || !expense.getCurrency().equals(newCurrency))) {
             expense.setCurrency(newCurrency);
-            databaseReference.child("expenses").child(expense.getID()).child("currency").setValue(expense.getCurrency());
+            databaseReference.child(expense_type).child(expense.getID()).child("currency").setValue(expense.getCurrency());
         }
 
         if (IMAGE_CHANGED) {
             // for saving image
-            StorageReference uExpenseImageImageFilenameRef = storageReference.child("expenses").child(expense.getID()).child(expense.getID() + "_expensePhoto.jpg");
+            StorageReference uExpenseImageImageFilenameRef = storageReference.child(expense_type).child(expense.getID()).child(expense.getID() + "_expensePhoto.jpg");
 
             // Get the data from an ImageView as bytes
             expenseImageView.setDrawingCacheEnabled(true);
@@ -295,14 +315,14 @@ public class ExpenseEdit extends AppCompatActivity {
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                             expense.setExpensePhoto(taskSnapshot.getMetadata().getDownloadUrl().toString());
 
-                            databaseReference.child("expenses").child(expense.getID()).child("expensePhoto").setValue(expense.getExpensePhoto());
+                            databaseReference.child(expense_type).child(expense.getID()).child("expensePhoto").setValue(expense.getExpensePhoto());
                         }
                     });
         }
 
         if (BILL_CHANGED) {
             // for saving image
-            StorageReference uExpenseBillImageFilenameRef = storageReference.child("expenses").child(expense.getID()).child(expense.getID() + "billPhoto.jpg");
+            StorageReference uExpenseBillImageFilenameRef = storageReference.child(expense_type).child(expense.getID()).child(expense.getID() + "billPhoto.jpg");
 
             // Get the data from an ImageView as bytes
             expenseBillView.setDrawingCacheEnabled(true);
@@ -328,13 +348,13 @@ public class ExpenseEdit extends AppCompatActivity {
                             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                             expense.setBillPhoto(taskSnapshot.getMetadata().getDownloadUrl().toString());
 
-                            databaseReference.child("expenses").child(expense.getID()).child("billPhoto").setValue(expense.getExpensePhoto());
+                            databaseReference.child(expense_type).child(expense.getID()).child("billPhoto").setValue(expense.getExpensePhoto());
                         }
                     });
         }
 
         // add event for EXPENSE_EDIT / PENDING_EXPENSE_EDIT
-        databaseReference.child("expenses").child(expense.getID())
+        databaseReference.child(expense_type).child(expense.getID())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -390,10 +410,16 @@ public class ExpenseEdit extends AppCompatActivity {
             case android.R.id.home:
                 Log.d (TAG, "upButton clicked");
 
-                intent = new Intent(this, ExpenseDetailActivity.class);
-                intent.putExtra("groupID", expense.getGroupID());
-                intent.putExtra("expenseID", expense.getID());
-                intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                if (EXPENSE_TYPE.equals(Event.EventType.EXPENSE_EDIT)) {
+                    intent = new Intent(this, ExpenseDetailActivity.class);
+                    intent.putExtra("groupID", expense.getGroupID());
+                    intent.putExtra("expenseID", expense.getID());
+                    intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                }
+                else {
+                    intent = new Intent(this, MainActivity.class);
+                    intent.putExtra("currentFragment", 2);
+                }
                 startActivity(intent);
                 finish();
                 return true;

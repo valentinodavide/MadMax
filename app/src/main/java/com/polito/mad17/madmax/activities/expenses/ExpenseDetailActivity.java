@@ -221,26 +221,25 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         switch (item.getItemId()) {
             case R.id.one:
                 Log.d (TAG, "clicked Modify expense");
-
                 intent = new Intent(this, ExpenseEdit.class);
                 intent.putExtra("expenseID", expenseID);
                 intent.putExtra("EXPENSE_TYPE", "EXPENSE_EDIT");
                 startActivity(intent);
+                finish();
                 return true;
 
             case R.id.two:
                 Log.d (TAG, "clicked Remove expense");
                 FirebaseUtils.getInstance().removeExpenseFirebase(expenseID, getApplicationContext());
+                finish();
                 return true;
 
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
-
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", groupID);
                 intent.putExtra("userID", userID);
                 setResult(RESULT_OK, intent);
-
                 finish();
                 return(true);
         }

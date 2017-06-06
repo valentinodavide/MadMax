@@ -271,25 +271,25 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
         switch (item.getItemId()) {
             case R.id.one:
                 Log.d (TAG, "clicked Modify group");
-
                 intent = new Intent(this, GroupEdit.class);
                 intent.putExtra("groupID", groupID);
                 startActivity(intent);
+                finish();
                 return true;
 
             case R.id.two:
                 Log.d (TAG, "clicked Remove group");
                 FirebaseUtils.getInstance().removeGroupFirebase(userID, groupID, getApplicationContext());
+                finish();
                 return true;
 
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on GroupDetailActivity");
-                finish();
-
                 intent = new Intent(this, MainActivity.class);
                 intent.putExtra("UID", MainActivity.getCurrentUser().getID());
                 intent.putExtra("currentFragment", 2);
                 startActivity(intent);
+                finish();
                 return(true);
 
             default:

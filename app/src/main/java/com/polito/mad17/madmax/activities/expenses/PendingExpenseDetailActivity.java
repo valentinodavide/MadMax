@@ -251,25 +251,26 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         switch (item.getItemId()) {
             case R.id.one:
                 Log.d (TAG, "clicked Modify pending expense");
-
                 intent = new Intent(this, ExpenseEdit.class);
                 intent.putExtra("expenseID", expenseID);
                 intent.putExtra("EXPENSE_TYPE", "PENDING_EXPENSE_EDIT");
                 startActivity(intent);
+                finish();
                 return true;
 
             case R.id.two:
                 Log.d (TAG, "clicked Remove pending expense");
                 FirebaseUtils.getInstance().removePendingExpenseFirebase(expenseID, getApplicationContext());
+                finish();
                 return true;
 
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
-                finish();
                 intent = new Intent(PendingExpenseDetailActivity.this, MainActivity.class);
                 intent.putExtra("UID", MainActivity.getCurrentUID());
                 intent.putExtra("currentFragment", 2);
                 startActivity(intent);
+                finish();
                 return(true);
 
             default:

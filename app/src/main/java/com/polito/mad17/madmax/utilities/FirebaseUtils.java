@@ -291,9 +291,9 @@ public class FirebaseUtils {
 
                 }
 
-                Intent intent = new Intent(context, MainActivity.class);
+                /*Intent intent = new Intent(context, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                context.startActivity(intent);*/
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -576,9 +576,11 @@ public class FirebaseUtils {
                             }
                         });
 
-                Intent intent = new Intent(context, MainActivity.class);
+                /*Intent intent = new Intent(context, GroupDetailActivity.class);
+                intent.putExtra("groupID", groupID);
+                intent.putExtra("userID", MainActivity.getCurrentUID());
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                context.startActivity(intent);*/
             }
 
             @Override
@@ -775,11 +777,10 @@ public class FirebaseUtils {
                         }
                     });
 
-                Intent intent = new Intent(context, GroupDetailActivity.class);
-                intent.putExtra("groupID", groupID);
-                intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                /*Intent intent = new Intent(context, MainActivity.class);
+                intent.putExtra("currentFragment", 2);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                context.startActivity(intent);*/
             }
 
             @Override

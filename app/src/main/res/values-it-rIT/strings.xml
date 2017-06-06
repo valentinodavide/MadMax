@@ -90,16 +90,11 @@
     <string name="send_again">Invia di nuovo</string>
     <string name="you_owe">"DEVI RESTITUIRE"</string>
     <string name="propose_expense">In quale gruppo vorresti proporre la nuova spesa?</string>
-
     <string name="edit_group">Modifica gruppo</string>
     <string name="remove_group">Elimina gruppo</string>
-
     <string name="edit_expense">Modifica spesa</string>
     <string name="remove_expense">Rimuovi spesa</string>
-
     <string name="product_image">FOTO DEL PRODOTTO</string>
     <string name="product_bill">SCONTRINO</string>
-
     <string name="move_to_expenses">"SPOSTA NELLE SPESE"</string>
-
 </resources>

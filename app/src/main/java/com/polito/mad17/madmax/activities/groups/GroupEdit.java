@@ -71,8 +71,8 @@ public class GroupEdit extends AppCompatActivity {
         groupImageView = (ImageView) this.findViewById(R.id.group_image);
         saveButton = (Button) this.findViewById(R.id.btn_save);
 
-        Intent intent = getIntent();
-        String groupID = intent.getStringExtra("groupID");
+        final Intent intent = getIntent();
+        final String groupID = intent.getStringExtra("groupID");
 
         Log.d("DAVIDE", "da GroupEdit: " + groupID);
 
@@ -136,7 +136,9 @@ public class GroupEdit extends AppCompatActivity {
                         Log.i(TAG, "save clicked");
                         if (updateGroup(group)) {
                             Toast.makeText(GroupEdit.this, "Saved", Toast.LENGTH_SHORT).show();
-                            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                            Intent i = new Intent(getApplicationContext(), GroupDetailActivity.class);
+                            i.putExtra("groupID", groupID);
+                            i.putExtra("userID", MainActivity.getCurrentUID());
                             startActivity(i);
                             finish();
                         }
@@ -262,10 +264,9 @@ public class GroupEdit extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 Log.d (TAG, "upButton clicked");
-
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", group.getID());
-                intent.putExtra("userID", MainActivity.getCurrentUser().getID());
+                intent.putExtra("userID", MainActivity.getCurrentUID());
                 startActivity(intent);
                 finish();
                 return true;
