@@ -93,7 +93,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(divider);
 
-        friendsViewAdapter = new FriendsViewAdapter(this.getContext(), this, this, friends);
+        friendsViewAdapter = new FriendsViewAdapter(this.getContext(), this, this, friends, TAG);
         recyclerView.setAdapter(friendsViewAdapter);
 
         //Se sono in MainActivity visualizzo lista degli amici
@@ -174,10 +174,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                             {
                                 getUserAndGroupBalance(id, name, surname, profileImage, groupID);
                             }
-
-
-
-
                         }
 
                         @Override

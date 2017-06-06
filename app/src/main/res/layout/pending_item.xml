@@ -33,6 +33,7 @@
                 android:clickable="false"
                 android:textSize="18dp"
                 android:text="PendingExpenseName"
+                android:textColor="@color/colorPrimaryText"
                 android:textStyle="bold"
                 />
 
@@ -179,6 +180,7 @@
                 android:layout_marginTop="7dp"
                 android:layout_marginLeft="10dp"
                 android:background="@drawable/group"
+                android:backgroundTint="@color/colorSecondaryText"
                 />
 
             <TextView

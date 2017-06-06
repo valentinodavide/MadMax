@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static android.R.attr.bitmap;
+import static android.R.attr.data;
 import static com.polito.mad17.madmax.activities.users.NewMemberActivity.alreadySelected;
 
 public class FirebaseUtils {
@@ -122,7 +123,6 @@ public class FirebaseUtils {
             public void onDataChange(DataSnapshot dataSnapshot)
             {
                 final Boolean deleted = dataSnapshot.child("deleted").getValue(Boolean.class);
-
 
                 Group g = new Group();
                 g.setName(dataSnapshot.child("name").getValue(String.class));
@@ -252,7 +252,6 @@ public class FirebaseUtils {
         });
     }
 
-
     public void removeGroupFirebase (final String userID, final String groupID, final Context context)
     {
         databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
@@ -332,6 +331,7 @@ public class FirebaseUtils {
         //Aggiungo spesa a Firebase
         final String eID = databaseReference.child("expenses").push().getKey();
         databaseReference.child("expenses").child(eID).setValue(expense);
+
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
         databaseReference.child("expenses").child(eID).child("timestamp").setValue(timeStamp);
         //databaseReference.child("expenses").child(eID).child("deleted").setValue(false);
@@ -404,9 +404,6 @@ public class FirebaseUtils {
             databaseReference.child("expenses").child(eID).child("billPhoto").setValue(expense.getBillPhoto());
 
         }
-
-
-
 
         Log.d(TAG, "creator expense " + expense.getCreatorID());
 
@@ -665,9 +662,8 @@ public class FirebaseUtils {
                         }
                     }
 
-                    //todo mettere foto
-
                     Expense pendingExpense = new Expense();
+                    pendingExpense.setID(dataSnapshot.getKey());
                     pendingExpense.setDescription(dataSnapshot.child("description").getValue(String.class));
                     pendingExpense.setGroupName(dataSnapshot.child("groupName").getValue(String.class));
                     pendingExpense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
@@ -885,19 +881,6 @@ public class FirebaseUtils {
         });
     }
 
-    public void removeFromFriends(final String userID, final String friendID)
-    {
-        DatabaseReference friendReference = databaseReference.child("users").child(userID).child("friends").child(friendID);
-        Task<Void> task = friendReference.child("deleted").setValue(true);
-
-        task.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                Log.d(TAG, "task " + task.toString() + task.getResult());
-            }
-        });
-    }
-
     public void getParticipantName(final String id, final HashMap<String, User> participants, final ParticipantsViewAdapter participantsViewAdapter, final User u)
     {
         databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
@@ -923,5 +906,18 @@ public class FirebaseUtils {
     public void addFriend(String friendID){
         databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends").child(friendID).child("deleted").setValue(false);
         databaseReference.child("users").child(friendID).child("friends").child(MainActivity.getCurrentUID()).child("deleted").setValue(false);
+    }
+
+    public void removeFromFriends(final String userID, final String friendID)
+    {
+        DatabaseReference friendReference = databaseReference.child("users").child(userID).child("friends").child(friendID);
+        Task<Void> task = friendReference.child("deleted").setValue(true);
+
+        task.addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                Log.d(TAG, "task " + task.toString() + task.getResult());
+            }
+        });
     }
 }
