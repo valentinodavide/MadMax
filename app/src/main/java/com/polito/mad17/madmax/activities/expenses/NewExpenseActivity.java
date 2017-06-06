@@ -69,6 +69,8 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
     private int PICK_BILL_PHOTO_REQUEST = 1;
+    private boolean IMAGE_CHANGED = false;
+    private boolean BILL_CHANGED = false;
     //private int EXPENSE_SAVED = 2;
 
     @Override
@@ -154,6 +156,7 @@ public class NewExpenseActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            IMAGE_CHANGED = true;
         }
 
         // first of all control if is the requested result and if it return something
@@ -171,6 +174,7 @@ public class NewExpenseActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            BILL_CHANGED = true;
         }
     }
 
