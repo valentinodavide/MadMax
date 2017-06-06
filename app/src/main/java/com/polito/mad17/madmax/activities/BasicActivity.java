@@ -116,7 +116,7 @@ public class BasicActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.id.logout:
-                        Toast.makeText(getApplicationContext() , "Logout selected", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext() , getString(R.string.logout_selected), Toast.LENGTH_SHORT).show();
                         auth.signOut();
 
                         intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);

@@ -243,7 +243,7 @@ public class NewMemberActivity extends AppCompatActivity {
             friends.clear();
             alreadySelected.clear();
 
-            Toast.makeText(getApplicationContext(), "Friends added to group", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.member_add), Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
 

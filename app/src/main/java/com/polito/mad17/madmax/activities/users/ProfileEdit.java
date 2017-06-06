@@ -125,7 +125,7 @@ public class ProfileEdit extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i(TAG, "save clicked");
                 if (updateAccount()) {
-                    Toast.makeText(ProfileEdit.this, "Saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileEdit.this, getString(R.string.saved), Toast.LENGTH_SHORT).show();
                     Intent i = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(i);
                     finish();
@@ -156,7 +156,7 @@ public class ProfileEdit extends AppCompatActivity {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(this, "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.invalid_form), Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -164,7 +164,7 @@ public class ProfileEdit extends AppCompatActivity {
         if (user == null) {
             Log.e(TAG, "Error while retriving current user from db");
 
-            Toast.makeText(this, "Error while retriving current user from db",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.error_user_db),Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -251,7 +251,7 @@ public class ProfileEdit extends AppCompatActivity {
             }
             catch(Exception e) {
                 Log.e(TAG, e.getClass().toString() + ", message: " + e.getMessage());
-                Toast.makeText(this, "Can't update password", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.error_password), Toast.LENGTH_LONG).show();
                 return false;
             }
 

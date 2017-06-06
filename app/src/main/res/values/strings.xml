@@ -11,6 +11,8 @@
     <string name="invitation_deep_link" translatable="false">http://www.madmax.com/beeshare</string>
     <string name="logout" translatable="false">Logout</string>
     <string name="home" translatable="false">Home</string>
+    <string name="logout_selected" translatable="false">Logout</string>
+    <string name="BOOT" translatable="false">BOOT</string>
 
     <string name="title_activity_group_expenses">Group expenses</string>
     <string name="title_image_expenses">Image expenses</string>
@@ -43,7 +45,7 @@
     <string name="prompt_name">Name</string>
     <string name="prompt_surname">Surname</string>
     <string name="prompt_registered_user">Already a member? Login</string>
-    <string name="auth_failed">Authentication failed</string>
+    <string name="auth_failed">Authentication failed.\nPlease insert a valid email/password</string>
     <string name="required">This field is required</string>
     <string name="notnull">Field cannot be null</string>
     <string name="emailVerification_text">A verification email has been sent to you.\n\nPlease, click on the link in the email to confirm your registration.</string>
@@ -108,4 +110,47 @@
     <string name="product_image">PRODUCT IMAGE</string>
     <string name="product_bill">PRODUCT BILL</string>
     <string name="move_to_expenses">"MOVE TO EXPENSES"</string>
+    <string name="notifications">Notifications</string>
+    <string name="other">Other</string>
+    <string name="setting_notification_join_group">Invitation to join a new group</string>
+    <string name="setting_notification_new_expense">New expense added</string>
+    <string name="setting_notification_removed_expense">Expense removed</string>
+    <string name="setting_notification_new_proposed_expense">New proposal expense added</string>
+    <string name="setting_notification_comment">Comment on your proposal expenses</string>
+    <string name="setting_notification_vote_proposed_expense">Vote on your proposal expenses</string>
+    <string name="setting_notification_approved_proposed_expense">Proposal expense approved</string>
+    <string name="setting_notification_neglected_proposed_expense">Proposal expense neglected</string>
+    <string name="setting_notification_user_pay">User pay his debts with you</string>
+    <!--string name="setting_notification_user_confirm_payment">User confirm your payment</string-->
+    <string name="setting_default_currency">Select default currency</string>
+
+    <string name="no_debts_to_pay">No debts to pay</string>
+    <string name="no_debts_to_pay_for_expense">No debts for this expense</string>
+    <string name="friend_removed">Friend removed</string>
+    <string name="credit_group">Still credits with this group.\nAre you sure?</string>
+    <string name="debit_group">Still debits with this group.\nBalance it to leave.</string>
+    <string name="leaving">No debts, leaving group...</string>
+    <string name="balance_not_available">Group balance not available.\nTry again later.</string>
+    <string name="not_creator">You\'re not the creatore of the proposal!</string>
+    <string name="new_friend">New friend added!</string>
+    <string name="already_friends">Already friends!</string>
+    <string name="join_group">You join a new group!</string>
+    <string name="already_in_group">Already joined group </string>
+    <string name="invalid_form">Invalid form!</string>
+    <string name="cannot_pay_more">Cannot pay more than your debit!</string>
+    <string name="cannot_pay_more_currency">Cannot pay more than your debit in this currency!</string>
+    <string name="invalid_amount">Invalid amount</string>
+    <string name="paid">Debt paid</string>
+    <string name="only_creator">Only who propose the expense can approve it!</string>
+    <string name="clicked">You clicked on </string>
+    <string name="no_debts_currency">No debts in this currency</string>
+    <string name="no_payment">No payment done</string>
+    <string name="error">An error occurred!</string>
+    <string name="error_user_db">Error while getting current user informations!</string>
+    <string name="member_add">Friend added to group</string>
+    <string name="error_password">Error updating password!</string>
+    <string name="expense_removed">Expense successfully removed</string>
+    <string name="group_removed">Group successfully removed</string>
+    <string name="error_not_admin">You must be admin of the ge group to remove it!</string>
+
 </resources>

@@ -181,7 +181,7 @@ public class BarDetailFragment extends Fragment {
                         //Se non ho debiti in nessuna valuta
                         else
                         {
-                            Toast.makeText(getActivity(),"You have no debts to pay",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),getString(R.string.no_debts_to_pay),Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

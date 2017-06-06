@@ -200,7 +200,7 @@ public class NewExpenseActivity extends AppCompatActivity {
             if(!validateForm())
                 return true;
             //display message if text field is empty
-            Toast.makeText(getBaseContext(), "Saved expense", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getBaseContext(), getString(R.string.expense_saved), Toast.LENGTH_SHORT).show();
 
             final Expense newExpense = new Expense();
             newExpense.setDescription(description.getText().toString());

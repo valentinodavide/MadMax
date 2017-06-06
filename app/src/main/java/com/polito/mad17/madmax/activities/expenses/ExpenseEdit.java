@@ -207,7 +207,7 @@ public class ExpenseEdit extends AppCompatActivity {
                     public void onClick(View v) {
                         Log.i(TAG, "save clicked");
                         if (updateExpense(expense)) {
-                            Toast.makeText(ExpenseEdit.this, "Saved", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ExpenseEdit.this, getString(R.string.saved), Toast.LENGTH_SHORT).show();
 
                             Intent intent;
                             if (EXPENSE_TYPE.equals(Event.EventType.EXPENSE_EDIT)) {
@@ -264,7 +264,7 @@ public class ExpenseEdit extends AppCompatActivity {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(this, "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.invalid_form), Toast.LENGTH_SHORT).show();
             return false;
         }
 

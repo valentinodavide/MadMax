@@ -135,7 +135,7 @@ public class GroupEdit extends AppCompatActivity {
                     public void onClick(View v) {
                         Log.i(TAG, "save clicked");
                         if (updateGroup(group)) {
-                            Toast.makeText(GroupEdit.this, "Saved", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(GroupEdit.this, getString(R.string.saved), Toast.LENGTH_SHORT).show();
                             Intent i = new Intent(getApplicationContext(), GroupDetailActivity.class);
                             i.putExtra("groupID", groupID);
                             i.putExtra("userID", MainActivity.getCurrentUID());
@@ -175,7 +175,7 @@ public class GroupEdit extends AppCompatActivity {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(this, "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.invalid_form), Toast.LENGTH_SHORT).show();
             return false;
         }
 

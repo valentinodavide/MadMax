@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="title_activity_group_expenses">Spese del gruppo</string>
     <string name="title_image_expenses">Immagine della spesa</string>
     <string name="title_activity_group_expenses_add">Aggiunta spesa</string>
@@ -32,7 +31,7 @@
     <string name="prompt_name">Nome</string>
     <string name="prompt_surname">Cognome</string>
     <string name="prompt_registered_user">Già iscritto? Login</string>
-    <string name="auth_failed">Autenticazione fallita</string>
+    <string name="auth_failed">Autenticazione fallita.\nInserisci email e password valide</string>
     <string name="required">Questo campo è obbligatorio</string>
     <string name="notnull">Il campo non può essere vuoto</string>
     <string name="emailVerification_text">Ti abbiamo inviato un email di verifica.\n\nClicca sul link ricevuto nella email per confermare la tua registrazione.</string>
@@ -97,4 +96,46 @@
     <string name="product_image">FOTO DEL PRODOTTO</string>
     <string name="product_bill">SCONTRINO</string>
     <string name="move_to_expenses">"SPOSTA NELLE SPESE"</string>
+    <string name="notifications">Notifiche</string>
+    <string name="other">Altro</string>
+    <string name="setting_notification_join_group">Invito in un nuovo gruppo</string>
+    <string name="setting_notification_new_expense">Nuova spesa aggiunta</string>
+    <string name="setting_notification_removed_expense">Spesa rimossa</string>
+    <string name="setting_notification_new_proposed_expense">Nuova proposta di spesa</string>
+    <string name="setting_notification_comment">Commento su una tua spesa</string>
+    <string name="setting_notification_vote_proposed_expense">Voto su una tua proposta di spesa</string>
+    <string name="setting_notification_approved_proposed_expense">Proposta di spesa approvata</string>
+    <string name="setting_notification_neglected_proposed_expense">Proposta di spesa rimossa</string>
+    <string name="setting_notification_user_pay">Un amico ti paga</string>
+    <!--string name="setting_notification_user_confirm_payment">Un amico conferma il tuo pagamento</string-->
+    <string name="setting_default_currency">Seleziona valuta di default</string>
+
+    <string name="no_debts_to_pay">Nessun debito</string>
+    <string name="no_debts_to_pay_for_expense">Nessun debito per questa spesa</string>
+    <string name="friend_removed">Amico rimosso</string>
+    <string name="credit_group">Sei ancora in credito verso questo gruppo.\nAbbandonare comunque?</string>
+    <string name="debit_group">Sei ancora in debito verso questo gruppo.\nSalda il debito per poter abbandonare.</string>
+    <string name="leaving">Nessuno debito, abbandono in corso...</string>
+    <string name="balance_not_available">Bilancio del gruppo non disponibile.\nRiprova più tardi.</string>
+    <string name="not_creator">Non sei il creatore della proposta!</string>
+    <string name="new_friend">Nuovo amico aggiunto!</string>
+    <string name="already_friends">Siete già amici!</string>
+    <string name="join_group">Sei entrato a far parte di un nuovo gruppo!</string>
+    <string name="already_in_group">Fai già parte del gruppo </string>
+    <string name="invalid_form">Form non valido!</string>
+    <string name="cannot_pay_more">Non puoi pagare una cifra più alta del tuo debito!</string>
+    <string name="cannot_pay_more_currency">Non puoi pagare una cifra più alta del tuo debito in questa valuta!</string>
+    <string name="invalid_amount">Cifra non valida</string>
+    <string name="paid">Debito pagato</string>
+    <string name="only_creator">Solo chi ha proposto la spesa può approvarla!</string>
+    <string name="clicked">Hai cliccato su </string>
+    <string name="no_debts_currency">Nessun debito in questa valuta</string>
+    <string name="no_payment">Nessun pagamento effettuato</string>
+    <string name="error">Si è verificato un errore!</string>
+    <string name="error_user_db">Si è verificato un errore durante il caricamento delle informazioni dell\'utente corrente!</string>
+    <string name="member_add">Amico aggiunto al gruppo</string>
+    <string name="error_password">Si è verificato un errore durante l\'aggiornamento della password!</string>
+    <string name="expense_removed">Spesa rimossa correttamente</string>
+    <string name="group_removed">Gruppo rimosso correttamente</string>
+    <string name="error_not_admin">Devi essere l\'amministratore del gruppo per rimuoverlo!</string>
 </resources>

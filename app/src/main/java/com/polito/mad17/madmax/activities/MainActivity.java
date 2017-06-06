@@ -229,6 +229,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 currentUser.setID(currentUID);
                 currentUser.setName(dataSnapshot.child("name").getValue(String.class));
                 currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
+                currentUser.setUsername(dataSnapshot.child("username").getValue(String.class));
                 currentUser.setProfileImage(dataSnapshot.child("image").getValue(String.class));
                 currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
 
@@ -286,10 +287,10 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     if(!currentUser.getUserFriends().containsKey(inviterID)){
                         FirebaseUtils.getInstance().addFriend(inviterID);
                         inviterID = null;
-                        makeText(MainActivity.this, "Now you have a new friend!", Toast.LENGTH_LONG).show();
+                        makeText(MainActivity.this, getString(R.string.new_friend), Toast.LENGTH_LONG).show();
                     }
                     else
-                        makeText(MainActivity.this, "You and inviter are already friends!", Toast.LENGTH_LONG).show();
+                        makeText(MainActivity.this, getString(R.string.already_friends), Toast.LENGTH_LONG).show();
                 }
 
                 // control if user is already part of requested group
@@ -300,10 +301,10 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         currentUser.getUserGroups().put(groupToBeAddedID, null);
                         FirebaseUtils.getInstance().joinGroupFirebase(currentUID, groupToBeAddedID);
                         groupToBeAddedID = null;
-                        makeText(MainActivity.this, "Now you are part of the group!", Toast.LENGTH_LONG).show();
+                        makeText(MainActivity.this, getString(R.string.join_group), Toast.LENGTH_LONG).show();
                     }
                     else
-                        makeText(MainActivity.this, "You are already part of "+currentUser.getUserGroups().get(groupToBeAddedID).getName(), Toast.LENGTH_LONG).show();
+                        makeText(MainActivity.this, getString(R.string.already_in_group) + "\""+currentUser.getUserGroups().get(groupToBeAddedID).getName()+"\"", Toast.LENGTH_LONG).show();
                 }
 
                 if(startingIntent.hasExtra("notificationTitle")){
@@ -359,7 +360,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 Log.d(TAG, "onAuthStateChanged");
 
                 currentFirebaseUser = firebaseAuth.getCurrentUser();
-                if(currentFirebaseUser != null){
+                if(currentFirebaseUser != null && currentFirebaseUser.isEmailVerified()){
                     // getting reference to the user from db
                     currentUID = currentFirebaseUser.getUid();
                     currentUserRef = usersRef.child(currentUID);
@@ -505,7 +506,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     public boolean onMenuItemClick(MenuItem item) {
 
                         FirebaseUtils.getInstance().removeFromFriends(currentUID, itemID);
-                        Toast.makeText(MainActivity.this, "Friend removed" + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.friend_removed) + item.getTitle(),Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
@@ -538,20 +539,20 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                                 if(returnValue == 0)
                                 {
-                                    Toast toast = Toast.makeText(getApplicationContext(), "Hai un credito verso questo gruppo.\nAbbandonare comunque?", Toast.LENGTH_LONG);
+                                    Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.credit_group), Toast.LENGTH_LONG);
                                     toast.show();
                                 }
                                 else if(returnValue == 1)
                                 {
-                                    makeText(getApplicationContext(), "Hai un debito verso questo gruppo.\nSalda il debito per poter abbandonare.", Toast.LENGTH_LONG).show();
+                                    makeText(getApplicationContext(), getString(R.string.debit_group), Toast.LENGTH_LONG).show();
                                 }
                                 else if(returnValue == 2)
                                 {
-                                    makeText(getApplicationContext(), "Nessuno debito, abbandono in corso.", Toast.LENGTH_LONG).show();
+                                    makeText(getApplicationContext(), getString(R.string.leaving), Toast.LENGTH_LONG).show();
                                 }
                                 else if(returnValue == null)
                                 {
-                                    makeText(getApplicationContext(), "Bilancio del gruppo: non disponibile adesso.\nRiprovare.", Toast.LENGTH_LONG).show();
+                                    makeText(getApplicationContext(), getString(R.string.balance_not_available), Toast.LENGTH_LONG).show();
                                 }
 
                                 break;
@@ -608,7 +609,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                                             );
                                 }
                                 else
-                                    Toast.makeText(MainActivity.this,"You are not the proposal creator",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this,getString(R.string.not_creator),Toast.LENGTH_SHORT).show();
                             }
 
                             @Override

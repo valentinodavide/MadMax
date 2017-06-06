@@ -130,7 +130,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 Log.d (TAG, "Clicked payButton");
                 if (expenseBalance >= 0)
                 {
-                    Toast.makeText(ExpenseDetailActivity.this, "You have no debts to pay for this expense", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ExpenseDetailActivity.this, getString(R.string.no_debts_to_pay_for_expense), Toast.LENGTH_SHORT).show();
                 }
                 else
                 {

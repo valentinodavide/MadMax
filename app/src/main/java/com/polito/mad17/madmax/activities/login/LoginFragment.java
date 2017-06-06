@@ -164,7 +164,7 @@ public class LoginFragment extends Fragment {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(getContext(), "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.invalid_form), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -180,7 +180,7 @@ public class LoginFragment extends Fragment {
                         progressDialog.dismiss();
 
                     Log.i(TAG, "authentication failed, exception: " + e.toString());
-                    Toast.makeText(getContext(), "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.auth_failed),Toast.LENGTH_LONG).show();
                 }
             });
     }

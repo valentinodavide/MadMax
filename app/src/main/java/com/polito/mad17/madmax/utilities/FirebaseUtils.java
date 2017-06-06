@@ -281,12 +281,12 @@ public class FirebaseUtils {
                     //Segno il group come eliminato nei groups
                     databaseReference.child("groups").child(groupID).child("deleted").setValue(true);
 
-                    Toast.makeText(context,"Group successfully removed",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,context.getString(R.string.group_removed),Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
                     Log.d (TAG, "Non sono admin, non posso eliminare il gruppo");
-                    Toast.makeText(context,"You must be admin to remove this group",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context,context.getString(R.string.error_not_admin),Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -548,7 +548,7 @@ public class FirebaseUtils {
                 databaseReference.child("comments").child(groupID).removeValue();
                 //Elimino spesa
                 databaseReference.child("expenses").child(expenseID).child("deleted").setValue(true);
-                Toast.makeText(context,"Expense successfully removed",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,context.getString(R.string.expense_removed),Toast.LENGTH_SHORT).show();
 
                 // add event for EXPENSE_REMOVE
                 databaseReference.child("expenses").child(expenseID)
@@ -750,7 +750,7 @@ public class FirebaseUtils {
 
                 //Elimino spesa pending
                 databaseReference.child("proposedExpenses").child(expenseID).child("deleted").setValue(true);
-                Toast.makeText(context, "Expense successfully removed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.expense_removed), Toast.LENGTH_SHORT).show();
 
                 // add event for PENDING_EXPENSE_REMOVE
                 databaseReference.child("proposedExpenses").child(expenseID)

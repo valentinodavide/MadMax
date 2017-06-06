@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.polito.mad17.madmax.R;
+
 /*Create a BroadcastReceiver that will receive the ACTION_BOOT_COMPLETED intent.
         When we boot up our device this class will “catch” the event and start the FirebaseService service*/
 public class BroadcastReceiverOnBootComplete extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context,"BOOT",Toast.LENGTH_LONG).show();
+        Toast.makeText(context,context.getString(R.string.BOOT),Toast.LENGTH_LONG).show();
         if (intent.getAction().equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED)) {
             Log.d("Receiver","ACTION_BOOT_COMPLETED");
             Intent serviceIntent = new Intent(context, FirebaseServiceMessage.class);

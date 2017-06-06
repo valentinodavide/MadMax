@@ -139,7 +139,7 @@ public class PayGroupActivity extends AppCompatActivity {
                 //If you have no debts in that currency
                 if (debt == null || debt >= 0)
                 {
-                    Toast.makeText(PayGroupActivity.this,"You have no debt in this currency",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PayGroupActivity.this,getString(R.string.no_debts_currency),Toast.LENGTH_SHORT).show();
                     return  true;
                 }
                 debt = abs(Math.floor(debt * 100) / 100);
@@ -149,12 +149,12 @@ public class PayGroupActivity extends AppCompatActivity {
                     Log.d(TAG, "payed " + money);
                     if (money > debt)
                     {
-                        Toast.makeText(PayGroupActivity.this,"You can't pay more than what you due in this currency",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayGroupActivity.this,getString(R.string.cannot_pay_more_currency),Toast.LENGTH_SHORT).show();
                         return  true;
                     }
                     else if (money <= 0)
                     {
-                        Toast.makeText(PayGroupActivity.this,"Nessun pagamento effettuato",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayGroupActivity.this,getString(R.string.no_payment),Toast.LENGTH_SHORT).show();
                         return true;
                     }
                     else

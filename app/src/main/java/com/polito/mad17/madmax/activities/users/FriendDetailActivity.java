@@ -125,7 +125,7 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
         Log.d (TAG, "Clicked item: " + item.getItemId());
         switch (item.getItemId()) {
             case R.id.one:
-                Toast.makeText(this, "Friend removed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.friend_removed), Toast.LENGTH_SHORT).show();
                 return true;
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");

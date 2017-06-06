@@ -123,16 +123,16 @@ public class PayExpenseActivity extends AppCompatActivity {
                 {
                     if (money > debt)
                     {
-                        Toast.makeText(PayExpenseActivity.this, "You cannot pay more than what you due", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayExpenseActivity.this, getString(R.string.cannot_pay_more), Toast.LENGTH_SHORT).show();
                         return  true;
                     }
                     else if (money <= 0) {
-                        Toast.makeText(PayExpenseActivity.this, "Invalid amount", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayExpenseActivity.this, getString(R.string.invalid_amount), Toast.LENGTH_SHORT).show();
                         return  true;
                     }
                     else
                     {
-                        Toast.makeText(PayExpenseActivity.this, "Debt payed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PayExpenseActivity.this, getString(R.string.paid), Toast.LENGTH_SHORT).show();
                         payDebtForExpense(userID, expenseID, money);
                         // todo add event for USER_PAY
                         intent = new Intent(this, ExpenseDetailActivity.class);

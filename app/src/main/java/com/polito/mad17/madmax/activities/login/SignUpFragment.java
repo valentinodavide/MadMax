@@ -189,7 +189,7 @@ public class SignUpFragment extends Fragment {
         if(!validateForm()) {
             Log.i(TAG, "submitted form is not valid");
 
-            Toast.makeText(getContext(), "Invalid form!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.invalid_form), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -221,7 +221,7 @@ public class SignUpFragment extends Fragment {
                     }
                     catch(Exception e) {
                         Log.e(TAG, e.getClass().toString() + ", message: " + e.getMessage());
-                        Toast.makeText(getContext(), "An error occured", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.error), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Log.d(TAG,"account creation succeded.");
@@ -239,7 +239,7 @@ public class SignUpFragment extends Fragment {
         if (user == null) {
             Log.e(TAG, "Error while retriving current user from db");
 
-            Toast.makeText(getContext(), "Error while retriving current user from db",Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.error_user_db),Toast.LENGTH_LONG).show();
             return;
         }
 

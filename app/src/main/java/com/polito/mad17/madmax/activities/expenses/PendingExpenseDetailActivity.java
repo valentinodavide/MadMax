@@ -163,7 +163,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
                 else
                 {
-                    Toast.makeText(PendingExpenseDetailActivity.this,"Only the proposer can move it to expenses",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PendingExpenseDetailActivity.this,getString(R.string.only_creator),Toast.LENGTH_SHORT).show();
                     return;
 
                 }

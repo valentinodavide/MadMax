@@ -187,7 +187,7 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(GroupDetailActivity.this, getString(R.string.clicked) + " " + item.getTitle(),Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
