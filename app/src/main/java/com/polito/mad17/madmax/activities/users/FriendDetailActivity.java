@@ -23,9 +23,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.BarDetailFragment;
+import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.DetailFragment;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
+import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
@@ -34,7 +36,7 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 import java.util.Collections;
 import java.util.TreeMap;
 
-public class FriendDetailActivity extends AppCompatActivity implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener {
+public class FriendDetailActivity extends BasicActivity implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener, OnItemClickInterface {
     private static final String TAG = FriendDetailActivity.class.getSimpleName();
     private DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
 
@@ -42,12 +44,6 @@ public class FriendDetailActivity extends AppCompatActivity implements GroupsVie
     private String userID;
 
     private TreeMap<String, Group> groups = new TreeMap<>(Collections.reverseOrder());
-
-    private ImageView imageView;
-    private TextView nameTextView;
-    private TextView balanceTextView;
-    private TextView balanceTextTextView;
-    private Button payButton;
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -67,58 +63,14 @@ public class FriendDetailActivity extends AppCompatActivity implements GroupsVie
         friendID = intent.getStringExtra("friendID");
         userID = intent.getStringExtra("userID");
 
-        toolbar = (Toolbar) findViewById(R.id.fd_toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(0x0000FF00);
-
+//        toolbar = (Toolbar) findViewById(R.id.fd_toolbar);
+//        setSupportActionBar(toolbar);
+//        toolbar.setBackgroundColor(0x0000FF00);
 
         // Get a support ActionBar corresponding to this toolbar
-        ActionBar ab = getSupportActionBar();
+//        ActionBar ab = getSupportActionBar();
         // Enable the Up button
-        ab.setDisplayHomeAsUpEnabled(true);
-
-        //Set data of upper part of Activity
-        imageView = (ImageView) findViewById(R.id.img_photo);
-        nameTextView = (TextView) findViewById(R.id.tv_friend_name);
-        balanceTextView = (TextView) findViewById(R.id.tv_balance);
-        balanceTextTextView = (TextView) findViewById(R.id.tv_balance_text);
-
-        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getApplicationContext())
-                .orientation(InsetDivider.VERTICAL_LIST)
-                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(ContextCompat.getColor(getApplicationContext(), R.color.colorDivider))
-                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
-                .overlay(true)
-                .build();
-
-        recyclerView = (RecyclerView) findViewById(R.id.rv_skeleton);
-        layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(divider);
-
-        groupsViewAdapter = new GroupsViewAdapter(getApplicationContext(), this, this, groups, FriendDetailActivity.TAG);
-        recyclerView.setAdapter(groupsViewAdapter);
-
-        //Show data of friend
-        databaseReference.child("users").child(friendID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                String name = dataSnapshot.child("name").getValue(String.class);
-                String surname = dataSnapshot.child("surname").getValue(String.class);
-                nameTextView.setText(name + " " + surname);
-
-                if(!dataSnapshot.child("image").getValue(String.class).equals("")) {
-
-//                    imageView.setImageURI(dataSnapshot.child("image").getValue(String.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+//        ab.setDisplayHomeAsUpEnabled(true);
 
         Log.d(TAG, "Populated all the above data");
 
@@ -201,5 +153,10 @@ public class FriendDetailActivity extends AppCompatActivity implements GroupsVie
     @Override
     public boolean onListItemLongClick(String clickedItemIndex, View v) {
         return false;
+    }
+
+    @Override
+    public void itemClicked(String fragmentName, String itemID) {
+        Log.d(TAG, "itemClicked " + itemID);
     }
 }

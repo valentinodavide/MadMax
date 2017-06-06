@@ -46,6 +46,7 @@
             android:layout_gravity="bottom"
             android:textSize="25sp"
             android:textColor="@color/colorPrimaryLight"
+            android:paddingTop="5dp"
             tools:text="Pending Expense Name"
             android:ellipsize="end"
             android:maxLines="1"

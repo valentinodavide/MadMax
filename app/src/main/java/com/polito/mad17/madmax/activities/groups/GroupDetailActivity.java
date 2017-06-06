@@ -98,7 +98,6 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
                     .replace(R.id.main, detailFragment)
                     .commit();
         }
-
     }
 
     @Override

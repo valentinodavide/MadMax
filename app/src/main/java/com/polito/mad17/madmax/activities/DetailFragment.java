@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,8 +64,6 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
     private TreeMap<String, Group> groups = new TreeMap<>();    //gruppi condivisi tra me e friend
     private FloatingActionButton fab;
 
-
-
     public DetailFragment() {
         // Required empty public constructor
     }
@@ -93,13 +92,15 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         if(activityName.equals("FriendDetailActivity")){
 
+            Log.d(TAG, "FriendDetailActivity per RecylerView");
+
             // Inflate the layout for this fragment
-            mainView = inflater.inflate(R.layout.shared_groups_list, container, false);
+            mainView = inflater.inflate(R.layout.skeleton_list, container, false);
 
             RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
                     .orientation(InsetDivider.VERTICAL_LIST)
                     .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                    .color(getResources().getColor(R.color.colorDivider))
+                    .color(ContextCompat.getColor(getContext(), R.color.colorDivider))
                     .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
                     .overlay(true)
                     .build();
@@ -196,35 +197,6 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
         Log.d(TAG, "clickedItemIndex " + itemID);
         onClickGroupInterface.itemClicked(getClass().getSimpleName(), itemID);
     }
-
-    /*
-    //todo metodo ripetuto in diverse activity, correggere
-    public void getGroup(final String id)
-    {
-        databaseReference.child("groups").child(id).addValueEventListener(new ValueEventListener()
-        {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                Group g = new Group();
-                groupName = dataSnapshot.child("name").getValue(String.class);
-                g.setName(groupName);
-                groups.put(id, g);
-                groupsViewAdapter.update(groups);
-                groupsViewAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
-
-            }
-        });
-    }
-    */
-
 
     private void updateFab(int position){
         switch(position){

@@ -4,14 +4,16 @@ package com.polito.mad17.madmax.utilities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.expenses.ExpenseCommentsViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.ExpensesViewAdapter;
@@ -44,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static android.R.attr.bitmap;
 import static com.polito.mad17.madmax.activities.users.NewMemberActivity.alreadySelected;
 
 public class FirebaseUtils {
@@ -73,7 +77,7 @@ public class FirebaseUtils {
             firstStart = false;
         }
 
-        Log.d("FIrebaseUtils", "prima di getReference()");
+        Log.d("FirebaseUtils", "prima di getReference()");
         databaseReference = firebaseDatabase.getReference();
         auth = FirebaseAuth.getInstance();
 
@@ -328,7 +332,7 @@ public class FirebaseUtils {
         deleteSharedGroup(memberID, groupID);
     }
 
-    public String addExpenseFirebase(final Expense expense, ImageView expensePhoto, ImageView billPhoto) {
+    public String addExpenseFirebase(final Expense expense, ImageView expensePhoto, ImageView billPhoto, Context context) {
         Log.d(TAG, "addExpenseFirebase");
 
         //Aggiungo spesa a Firebase
@@ -343,12 +347,16 @@ public class FirebaseUtils {
         byte[] data;
         UploadTask uploadTask;
 
+        StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID + "_expensePhoto.jpg");
         // Get the data from an ImageView as bytes
         if (expensePhoto != null) {
-            StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID + "_expensePhoto.jpg");
             expensePhoto.setDrawingCacheEnabled(true);
             expensePhoto.buildDrawingCache();
             bitmap = expensePhoto.getDrawingCache();
+        }
+        else{
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.expense_default);
+        }
             baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             data = baos.toByteArray();
@@ -368,13 +376,6 @@ public class FirebaseUtils {
                     databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
                 }
             });
-
-        }
-        else if (expense.getExpensePhoto() != null)
-        {
-            databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(expense.getExpensePhoto());
-
-        }
 
         if (billPhoto != null)
         {
@@ -588,7 +589,7 @@ public class FirebaseUtils {
 
     }
 
-    public void addPendingExpenseFirebase (Expense expense, ImageView expensePhoto, ImageView billPhoto)
+    public void addPendingExpenseFirebase (Expense expense, ImageView expensePhoto, Context context)
     {
         Log.d(TAG, "addPendingExpenseFirebase");
 
@@ -599,10 +600,16 @@ public class FirebaseUtils {
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("proposedExpenses").child(eID).child(eID+"_expensePhoto.jpg");
 
+        Bitmap bitmap;
+        if (expensePhoto != null) {
+            expensePhoto.setDrawingCacheEnabled(true);
+            expensePhoto.buildDrawingCache();
+            bitmap = expensePhoto.getDrawingCache();
+        }
+        else{
+            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.expense_default);
+        }
         // Get the data from an ImageView as bytes
-        expensePhoto.setDrawingCacheEnabled(true);
-        expensePhoto.buildDrawingCache();
-        Bitmap bitmap = expensePhoto.getDrawingCache();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
@@ -938,6 +945,19 @@ public class FirebaseUtils {
         });
     }
 
+    public void removeFromFriends(final String userID, final String friendID)
+    {
+        DatabaseReference friendReference = databaseReference.child("users").child(userID).child("friends").child(friendID);
+        Task<Void> task = friendReference.child("deleted").setValue(true);
+
+        task.addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                Log.d(TAG, "task " + task.toString() + task.getResult());
+            }
+        });
+    }
+
     public void getParticipantName(final String id, final HashMap<String, User> participants, final ParticipantsViewAdapter participantsViewAdapter, final User u)
     {
         databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
@@ -950,7 +970,6 @@ public class FirebaseUtils {
                 participants.put(id, u);
                 participantsViewAdapter.update(participants);
                 participantsViewAdapter.notifyDataSetChanged();
-
             }
 
             @Override

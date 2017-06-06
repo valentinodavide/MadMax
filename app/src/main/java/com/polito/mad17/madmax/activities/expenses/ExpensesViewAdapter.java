@@ -151,26 +151,26 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         }
         else {
             Expense expense = getItem(position).getValue();
-            if (expense.getExpensePhoto() != null)
-            {
-                String photo = expense.getExpensePhoto();
-                int photoUserId = Integer.parseInt(photo);
-                expensesViewHolder.imageView.setImageResource(photoUserId);
+//            if (expense.getExpensePhoto() != null)
+//            {
+//                String photo = expense.getExpensePhoto();
+//                int photoUserId = Integer.parseInt(photo);
+//                expensesViewHolder.imageView.setImageResource(photoUserId);
 
-                Glide.with(layoutInflater.getContext()).load(photo)
+                Glide.with(layoutInflater.getContext()).load(expense.getExpensePhoto()).placeholder(R.drawable.expense_default)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensesViewHolder.imageView);
-            }
-            else
-            {
-                Glide.with(layoutInflater.getContext()).load(R.drawable.expense_default)
-                        .centerCrop()
-                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(expensesViewHolder.imageView);
-            }
+//            }
+//            else
+//            {
+//                Glide.with(layoutInflater.getContext()).load(R.drawable.expense_default)
+//                        .centerCrop()
+//                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+//                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                        .into(expensesViewHolder.imageView);
+//            }
 
             expensesViewHolder.nameTextView.setText(expense.getDescription());
 

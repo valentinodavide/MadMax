@@ -65,6 +65,7 @@ public class NewExpenseActivity extends AppCompatActivity {
     private String callingActivity;
     private String groupName;
     private String groupImage;
+    private Boolean newExpensePhoto, newBillPhoto;
     //private Integer numberMembers = null;
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
@@ -80,6 +81,9 @@ public class NewExpenseActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
+
+        newExpensePhoto = false;
+        newBillPhoto = false;
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");
@@ -153,6 +157,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensePhoto);
+                newExpensePhoto = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -171,6 +176,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(billPhoto);
+                newBillPhoto = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -237,6 +243,11 @@ public class NewExpenseActivity extends AppCompatActivity {
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                     newExpense.setTimestamp(timeStamp);
 
+                    if(!newExpensePhoto)
+                        expensePhoto = null;
+                    if(!newBillPhoto)
+                        billPhoto = null;
+
                     //Aggiungo una pending expense
                     if (callingActivity.equals("ChooseGroupActivity"))
                     {
@@ -244,8 +255,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                         if (groupImage != null)
                             newExpense.setGroupImage(groupImage);
 
-
-                        FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, billPhoto);
+                        FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
                         //todo qui
                         Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
                         myIntent.putExtra("UID", MainActivity.getCurrentUID());
@@ -269,7 +279,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                     //Aggiungo una spesa normale
                     else
                     {
-                        FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto);
+                        FirebaseUtils.getInstance().addExpenseFirebase(newExpense, expensePhoto, billPhoto, getApplicationContext());
 
                         // add event for EXPENSE_ADD
                         User currentUser = MainActivity.getCurrentUser();

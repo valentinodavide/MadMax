@@ -159,6 +159,156 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
         return true;
     }
 
+
+/*    void getGroupAndBalance (final String userID, final String groupID)
+    {
+
+        //final HashMap <String, Double> totalBalance = new HashMap<>();
+        final HashMap <String, Expense> groupExpenses = new HashMap<>();
+        //totalBalance.put(userID,0d);
+        //totBalance = 0d;
+        final HashMap <String, Double> totBalances = new HashMap<>();
+        totBalances.clear();
+
+        groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(final DataSnapshot groupDataSnapshot) {
+
+                //totalBalance.put(userID,0d);
+                totBalances.clear();
+                if (!listenedGroups.contains(groupID))
+                    listenedGroups.add(groupID);
+
+                final Boolean deleted = groupDataSnapshot.child("deleted").getValue(Boolean.class);
+
+                if (deleted != null)
+                {
+                    for (DataSnapshot groupExpenseSnapshot: groupDataSnapshot.child("expenses").getChildren())
+                    {
+                        //Contribuiscono al bilancio solo le spese non eliminate dal gruppo
+                        if (groupExpenseSnapshot.getValue(Boolean.class) == true)
+                        {
+                            //Adesso sono sicuro che la spesa non è stata eliminata
+                            //Ascolto la singola spesa del gruppo
+                            String expenseID = groupExpenseSnapshot.getKey();
+                            databaseReference.child("expenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                    Boolean involved = false; //dice se user contribuisce o no a quella spesa
+
+                                    for (DataSnapshot participantSnapshot: dataSnapshot.child("participants").getChildren())
+                                    {
+                                        //todo poi gestire caso in cui utente viene tolto dai participant alla spesa
+                                        if (participantSnapshot.getKey().equals(userID))
+                                            involved = true;
+                                    }
+
+                                    //se user ha partecipato alla spesa
+                                    if (involved)
+                                    {
+                                        //alreadyPaid = soldi già messi dallo user per quella spesa
+                                        //dueImport = quota che user deve mettere per quella spesa
+                                        //balance = credito/debito dello user per quella spesa
+                                        for (DataSnapshot d : dataSnapshot.child("participants").getChildren())
+                                        {
+                                            Log.d (TAG, "PartCampo " + d.getKey() + ": " + d.getValue() );
+                                        }
+                                        Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
+
+                                        Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
+
+                                        Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
+                                        if (alreadyPaid != null && dueImport != null)
+                                        {
+                                            Double balance = alreadyPaid - dueImport;
+                                            String currency = dataSnapshot.child("currency").getValue(String.class);
+                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+
+                                            //current balance for that currency
+                                            Double temp = totBalances.get(currency);
+                                            //update balance for that currency
+                                            if (temp != null)
+                                            {
+                                                totBalances.put(currency, temp + balance);
+                                             //   Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                            }
+                                            else
+                                            {
+                                                totBalances.put(currency, balance);
+                                             //   Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+
+                                            }
+                                            //Double currentBalance = totalBalance.get(userID);
+                                            //totalBalance.put(userID, currentBalance+balance);
+                                            //totBalance += balance;
+
+                                            Expense expense = new Expense();
+                                            expense.setID(dataSnapshot.getKey());
+                                            expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
+                                            expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+
+                                            groupExpenses.put(dataSnapshot.getKey(), expense);
+
+                                            Log.d(TAG, "added expense " + dataSnapshot.getKey());
+                                        }
+                                        else
+                                        {
+                                            Log.d (TAG, "Qui sarebbe crashato");
+                                        }
+
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    Group group = new Group();
+                    group.setName(groupDataSnapshot.child("name").getValue(String.class));
+                    group.setImage(groupDataSnapshot.child("image").getValue(String.class));
+                    group.setDeleted(deleted);
+                    group.setBalance(0d);
+                    group.setCurrencyBalances(totBalances);
+                    group.setExpenses(groupExpenses);
+
+                    if (!deleted &&
+                            groupDataSnapshot.child("members").hasChild(MainActivity.getCurrentUID()) &&
+                            !groupDataSnapshot.child("members").child(MainActivity.getCurrentUID()).child("deleted").getValue(Boolean.class)) {
+                        groups.put(groupID, group);
+                    }
+                    else
+                    {
+                        groups.remove(groupID);
+                    }
+
+//                    Group nullGroup = new Group();
+//                    nullGroup.setID(groupID + 1);
+//                    groups.put(nullGroup.getID(), nullGroup);
+
+                    groupsViewAdapter.update(groups);
+                    groupsViewAdapter.notifyDataSetChanged();
+                    //totBalance = 0d;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+        return ;
+    }*/
+
+
+    // versione di ale
     ///versione più complessa dell getGroup. Quest'ultima non verrà più usata.
     //oltre al nome gruppo, prende anche il bilancio dello user col gruppo
     void getGroupAndBalance (final String userID, final String groupID)
@@ -269,6 +419,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                                     g.setCurrencyBalances(totBalances);
                                     g.setExpenses(groupExpenses);
                                     g.setDeleted(deleted);
+                                    g.setImage(groupDataSnapshot.child("image").getValue(String.class));
                                     //g.setBalance(totBalance);
                                     //se il gruppo non è deleted e io faccio ancora parte del gruppo
                                     if (!deleted &&
@@ -301,6 +452,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
                     //{
                     Group g = new Group();
                     g.setName(groupName);
+                    g.setImage(groupDataSnapshot.child("image").getValue(String.class));
                     g.setBalance(0d);
                     g.setDeleted(deleted);
                     if (!deleted &&
@@ -331,6 +483,7 @@ public class GroupsFragment extends Fragment implements GroupsViewAdapter.ListIt
 
         return ;
     }
+
 
     @Override
     public void onStop() {
