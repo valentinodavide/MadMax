@@ -109,7 +109,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        ExpenseDetailPagerAdapter adapter = new ExpenseDetailPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), expenseID);
+        ExpenseDetailPagerAdapter adapter = new ExpenseDetailPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), expenseID, TAG);
 
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(0);
@@ -270,6 +270,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                         arguments.putString("groupID", groupID);
                         arguments.putString("expenseID", expenseID);
                         arguments.putString("expenseName", expenseName);
+                        arguments.putBoolean("isExpense", true);
 
                         NewCommentDialogFragment commentDialogFragment = new NewCommentDialogFragment();
                         commentDialogFragment.setArguments(arguments);

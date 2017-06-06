@@ -94,10 +94,6 @@
                 android:textColor="@color/colorPrimaryLight"
                 />
 
-
-
-
-
         </RelativeLayout>
 
         <TextView
@@ -110,9 +106,8 @@
             android:text="For this expense you should receive: "
             android:textSize="12dp"
             android:textColor="@color/colorPrimaryLight"
-            android:textAlignment="textEnd"
             android:textAllCaps="true"
-            android:gravity="bottom"
+            android:gravity="right"
             />
 
         <TextView
@@ -147,7 +142,6 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/nameline"
         android:layout_marginTop="60dp">
-
 
     </RelativeLayout>
 

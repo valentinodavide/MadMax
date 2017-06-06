@@ -36,6 +36,7 @@ public class NewCommentDialogFragment extends DialogFragment {
         final String groupID = arguments.getString("groupID");
         final String expenseID = arguments.getString("expenseID");
         final String expenseName = arguments.getString("expenseName");
+        final Boolean isExpense = arguments.getBoolean("isExpense");
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -56,7 +57,8 @@ public class NewCommentDialogFragment extends DialogFragment {
                     );
                     comment.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
                     comment.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                    FirebaseUtils.getInstance().addComment(comment);
+
+                    FirebaseUtils.getInstance().addComment(comment, isExpense);
 
                     // add event for USER_COMMENT_ADD
                     Event event = new Event(

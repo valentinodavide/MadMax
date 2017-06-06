@@ -110,6 +110,8 @@
     <string name="product_image">PRODUCT IMAGE</string>
     <string name="product_bill">PRODUCT BILL</string>
     <string name="move_to_expenses">"MOVE TO EXPENSES"</string>
+    <string name="expense">Expense</string>
+    <string name="group">Group</string>
     <string name="notifications">Notifications</string>
     <string name="other">Other</string>
     <string name="setting_notification_join_group">Invitation to join a new group</string>
@@ -152,5 +154,4 @@
     <string name="expense_removed">Expense successfully removed</string>
     <string name="group_removed">Group successfully removed</string>
     <string name="error_not_admin">You must be admin of the ge group to remove it!</string>
-
 </resources>

@@ -51,8 +51,8 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private ArrayList<String> listenedGroups = new ArrayList<>();
     private Boolean listenedFriends = false;
     private ValueEventListener groupListener;
-    Boolean listenedGroup = false;
     private Double totBalance;
+    private Boolean deleted = true;
 
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickFriendInterface = onItemClickInterface;
@@ -121,7 +121,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
 
                 for (final DataSnapshot friendSnapshot : externalDataSnapshot.getChildren()) {
                         //getFriend(friendSnapshot.getKey());
-                    Boolean deleted = true;
                     if(activityName.equals("MainActivity")){
                         Log.d(TAG, "key: "+friendSnapshot.getKey());
                         Log.d(TAG, "value: "+friendSnapshot.getValue());
@@ -145,7 +144,6 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                         }
 
                     final String id = friendSnapshot.getKey();
-                    final Boolean finalDeleted = deleted;
                     databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
 
                         @Override
@@ -162,7 +160,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                                 u.setName(name);
                                 u.setSurname(surname);
                                 u.setProfileImage(profileImage);
-                                if (!finalDeleted)
+                                if (!deleted)
                                     friends.put(id, u);
                                 else
                                     friends.remove(id);

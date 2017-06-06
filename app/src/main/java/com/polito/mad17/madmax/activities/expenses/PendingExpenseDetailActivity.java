@@ -2,7 +2,11 @@ package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
@@ -38,16 +43,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeMap;
 
-public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener {
+import static com.polito.mad17.madmax.R.id.fab;
+
+public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener, NewCommentDialogFragment.NewCommentDialogListener{
 
     private static final String TAG = PendingExpenseDetailActivity.class.getSimpleName();
     private OnItemClickInterface onClickGroupInterface;
-    private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private VotersViewAdapter votersViewAdapter;
-    private TreeMap<String, User> voters = new TreeMap<>(Collections.reverseOrder());    //gruppi condivisi tra me e friend
+    private String groupID;
     private String expenseID;
     private String userID;
+    private String expenseName;
     private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
     private ImageView imageView;
@@ -57,8 +62,9 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
     private TextView groupTextView;
     private Button moveExpenseButton;
     private Toolbar toolbar;
-    String creatorID;
-
+    private String creatorID;
+    private ViewPager viewPager;
+    private FloatingActionButton fab;
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
@@ -70,19 +76,52 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         Log.d (TAG, "OnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pending_expense_detail);
-        //setInterface((OnItemClickInterface) this);
 
         Intent intent = getIntent();
         expenseID = intent.getStringExtra("expenseID");
         userID = MainActivity.getCurrentUID(); // intent.getStringExtra("userID");
 
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        updateFab(0);
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(0x0000FF00);
+
         // Get a support ActionBar corresponding to this toolbar
         ActionBar ab = getSupportActionBar();
         // Enable the Up button
         ab.setDisplayHomeAsUpEnabled(true);
+
+        // insert tabs and current fragment in the main layout
+        //mainView.addView(getLayoutInflater().inflate(R.layout.activity_expense_detail, null));
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.expense_detail));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.comments));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        viewPager = (ViewPager) findViewById(R.id.expense_detail_view_pager);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                Log.d(TAG, String.valueOf(tab.getPosition()));
+                updateFab(tab.getPosition());
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) { }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) { }
+        });
+
+        ExpenseDetailPagerAdapter adapter = new ExpenseDetailPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), expenseID, TAG);
+
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(0);
 
         imageView = (ImageView) findViewById(R.id.img_photo);
         amountTextView = (TextView) findViewById(R.id.tv_amount);
@@ -90,6 +129,40 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         groupTextView = (TextView) findViewById(R.id.tv_group_name);
         expenseNameTextView = (TextView) findViewById(R.id.tv_pending_name);
         moveExpenseButton = (Button) findViewById(R.id.btn_move_expense);
+
+        //Retrieve data of this pending expense
+        databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                expenseName = dataSnapshot.child("description").getValue(String.class);
+                String groupName = dataSnapshot.child("groupName").getValue(String.class);
+                Double amount = dataSnapshot.child("amount").getValue(Double.class);
+                expenseNameTextView.setText(expenseName);
+                groupTextView.setText(groupName);
+                amountTextView.setText(amount.toString());
+                creatorID = dataSnapshot.child("creatorID").getValue(String.class);
+                groupID = dataSnapshot.child("groupID").getValue(String.class);
+                databaseReference.child("users").child(creatorID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot creatorSnapshot) {
+                        creatorNameTextView.setText(creatorSnapshot.child("name").getValue(String.class)+" "+creatorSnapshot.child("surname").getValue(String.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                DecimalFormat df = new DecimalFormat("#.##");
+
+                amountTextView.setText(df.format(amount) + " €");
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
 
         //Click on button to move from pending to real expense
         moveExpenseButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +177,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
                             ArrayList<String> participants = new ArrayList<String>();
-                            String expenseName = dataSnapshot.child("description").getValue(String.class);
+                            expenseName = dataSnapshot.child("description").getValue(String.class);
                             String groupID = dataSnapshot.child("groupID").getValue(String.class);
                             Double amount = dataSnapshot.child("amount").getValue(Double.class);
                             String currency = dataSnapshot.child("currency").getValue(String.class);
@@ -143,8 +216,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                             databaseReference.child("groups").child(groupID).child("proposedExpenses").child(expenseID).setValue(false);
 
 
-
-
                             Intent myIntent = new Intent(PendingExpenseDetailActivity.this, GroupDetailActivity.class);
                             myIntent.putExtra("groupID", groupID);
                             myIntent.putExtra("userID", userID);
@@ -158,7 +229,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
                         }
                     });
-
                 }
 
                 else
@@ -168,63 +238,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
                 }
             }
-        });
-
-
-        RecyclerView.ItemDecoration divider = new InsetDivider.Builder(this)
-                .orientation(InsetDivider.VERTICAL_LIST)
-                .dividerHeight(getResources().getDimensionPixelSize(R.dimen.divider_height))
-                .color(ContextCompat.getColor(getApplicationContext(), R.color.colorDivider))
-                .insets(getResources().getDimensionPixelSize(R.dimen.divider_inset), 0)
-                .overlay(true)
-                .build();
-
-        recyclerView = (RecyclerView) findViewById(R.id.rv_skeleton);
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(divider);
-
-        //todo mettere a posto
-        votersViewAdapter = new VotersViewAdapter(voters, this);
-        recyclerView.setAdapter(votersViewAdapter);
-
-        //Retrieve data of this pending expense
-        databaseReference.child("proposedExpenses").child(expenseID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String expenseName = dataSnapshot.child("description").getValue(String.class);
-                String groupName = dataSnapshot.child("groupName").getValue(String.class);
-                Double amount = dataSnapshot.child("amount").getValue(Double.class);
-                expenseNameTextView.setText(expenseName);
-                groupTextView.setText(groupName);
-                amountTextView.setText(amount.toString());
-                creatorID = dataSnapshot.child("creatorID").getValue(String.class);
-                databaseReference.child("users").child(creatorID).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot creatorSnapshot) {
-                        creatorNameTextView.setText(creatorSnapshot.child("name").getValue(String.class)+" "+creatorSnapshot.child("surname").getValue(String.class));
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                DecimalFormat df = new DecimalFormat("#.##");
-
-                amountTextView.setText(df.format(amount) + " €");
-
-                //Show list of voters for this pending expense
-                for (DataSnapshot voterSnap : dataSnapshot.child("participants").getChildren())
-                {
-                    String vote = voterSnap.child("vote").getValue(String.class);
-                    FirebaseUtils.getInstance().getVoter(voterSnap.getKey(), vote, voters, votersViewAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
         });
     }
 
@@ -292,4 +305,42 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
         startActivity(myIntent);
     }
 
+    private void updateFab(int position){
+        switch(position){
+            case 0:
+                // expense detail fragment
+                Log.d(TAG, "fab 0");
+                fab.setVisibility(View.GONE);
+                break;
+            case 1:
+                // comments fragment
+                Log.d(TAG, "fab 1");
+                fab.setVisibility(View.VISIBLE);
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "add a comment");
+                        Bundle arguments = new Bundle();
+                        arguments.putString("groupID", groupID);
+                        arguments.putString("expenseID", expenseID);
+                        arguments.putString("expenseName", expenseName);
+                        arguments.putBoolean("isExpense", false);
+
+                        NewCommentDialogFragment commentDialogFragment = new NewCommentDialogFragment();
+                        commentDialogFragment.setArguments(arguments);
+                        commentDialogFragment.show(getSupportFragmentManager(), "NewComment");
+                    }
+                });
+                break;
+        }
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+        Toast.makeText(this,getString(R.string.saved),Toast.LENGTH_SHORT).show();
+    }
 }

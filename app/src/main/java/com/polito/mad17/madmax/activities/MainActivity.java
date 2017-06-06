@@ -570,12 +570,15 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 break;
             case "PendingExpensesFragment":
+
                 popup = new PopupMenu(MainActivity.this, v, Gravity.RIGHT);
                 popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
+
                 one = popup.getMenu().findItem(R.id.one);
                 one.setTitle("Remove Pending");
                 popup.getMenu().findItem(R.id.two).setVisible(false);
                 popup.getMenu().findItem(R.id.three).setVisible(false);
+
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
@@ -638,30 +641,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
     public static String getCurrentUID() {
         return currentUID ;
     }
-
-    /*
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Log.i(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
-
-        if(requestCode == MainActivity.REQUEST_INVITE){
-            if(resultCode == RESULT_OK){
-                // Get the invitation IDs of all sent messages
-                String[] ids = AppInviteInvitation.getInvitationIds(resultCode, data);
-                for (String id : ids) {
-                    Log.i(TAG, "onActivityResult: sent invitation " + id);
-                }
-            } else {
-                // Sending failed or it was canceled, show failure message to the user
-                Log.e(TAG, "onActivityResult: failed sent");
-
-                makeText(getApplicationContext(), "Unable to send invitation", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-    */
 
     /* in this way calls to getIntent() will return the latest intent that was used to start this activity
      * rather than the first intent */

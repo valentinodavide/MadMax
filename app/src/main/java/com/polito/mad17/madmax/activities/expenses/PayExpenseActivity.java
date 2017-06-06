@@ -8,10 +8,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,15 +25,13 @@ import com.polito.mad17.madmax.activities.DecimalDigitsInputFilter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 
 import static java.lang.Math.abs;
 
-/**
- * Created by alessandro on 02/06/17.
- */
 
 public class PayExpenseActivity extends AppCompatActivity {
 
@@ -46,12 +47,16 @@ public class PayExpenseActivity extends AppCompatActivity {
     EditText amountEditText;
     TextView expenseNameTextView;
     TextView currencyTextView;
+    ImageView userImage;
+    ImageView expenseImage;
+
+    String userImageURL;
+    String expenseImageURL;
 
     DecimalFormat df = new DecimalFormat("#.##");
     private FirebaseDatabase firebaseDatabase = FirebaseUtils.getFirebaseDatabase();
     private DatabaseReference databaseReference = firebaseDatabase.getReference();
-    Double myMoney;
-
+    private Double myMoney;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,10 +66,12 @@ public class PayExpenseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
+        userImageURL = intent.getStringExtra("userImage");
+        groupID = intent.getStringExtra("groupID");
         expenseID = intent.getStringExtra("expenseID");
         expenseName = intent.getStringExtra("expenseName");
+        expenseImageURL = intent.getStringExtra("expenseImage");
 
         debt = intent.getDoubleExtra("debt", 0);
         debt = abs(Math.floor(debt * 100) / 100);
@@ -81,6 +88,13 @@ public class PayExpenseActivity extends AppCompatActivity {
 
         currencyTextView = (TextView) findViewById(R.id.currency);
         currencyTextView.setText(currency);
+
+        userImage = (ImageView) findViewById(R.id.sender_photo);
+        Glide.with(getLayoutInflater().getContext()).load(userImageURL)
+                .centerCrop()
+                .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(userImage);
     }
 
     @Override

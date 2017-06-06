@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/titles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_photo"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        >
+
+        <TextView
+            android:id="@+id/tv_shared_groups_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.85"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="Member"
+            android:textSize="16dp"
+            android:textColor="@color/colorPrimaryText"
+            />
+        <TextView
+            android:id="@+id/vote_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.15"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:text="Vote"
+            android:textSize="16dp"
+            android:textColor="@color/colorPrimaryText"
+            />
+
+
+    </LinearLayout>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/voterslist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:layout_below="@+id/titles"
+        >
+
+        <include layout="@layout/skeleton_list"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

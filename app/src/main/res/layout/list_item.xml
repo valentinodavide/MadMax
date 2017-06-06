@@ -10,8 +10,7 @@
         android:id="@+id/img_photo"
         android:layout_width="62dp"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        />
+        android:layout_margin="8dp" />
 
     <TextView
         android:id="@+id/tv_sender"

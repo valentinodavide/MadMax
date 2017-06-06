@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="title_activity_group_expenses">Spese del gruppo</string>
     <string name="title_image_expenses">Immagine della spesa</string>
     <string name="title_activity_group_expenses_add">Aggiunta spesa</string>
@@ -31,7 +32,7 @@
     <string name="prompt_name">Nome</string>
     <string name="prompt_surname">Cognome</string>
     <string name="prompt_registered_user">Già iscritto? Login</string>
-    <string name="auth_failed">Autenticazione fallita.\nInserisci email e password valide</string>
+    <string name="auth_failed">Autenticazione fallita</string>
     <string name="required">Questo campo è obbligatorio</string>
     <string name="notnull">Il campo non può essere vuoto</string>
     <string name="emailVerification_text">Ti abbiamo inviato un email di verifica.\n\nClicca sul link ricevuto nella email per confermare la tua registrazione.</string>
@@ -138,4 +139,6 @@
     <string name="expense_removed">Spesa rimossa correttamente</string>
     <string name="group_removed">Gruppo rimosso correttamente</string>
     <string name="error_not_admin">Devi essere l\'amministratore del gruppo per rimuoverlo!</string>
+    <string name="expense">Spesa</string>
+    <string name="group">Group</string>
 </resources>

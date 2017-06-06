@@ -845,15 +845,22 @@ public class FirebaseUtils {
     /*
         COMMENT
      */
-    public String addComment (Comment comment) {
+    public String addComment (Comment comment, Boolean expense) {
         Log.d(TAG, "addComment");
 
         final String ID = databaseReference.child("comments").push().getKey();
         DatabaseReference commentReference = databaseReference.child("comments").child(ID);
-        DatabaseReference expenseReference = databaseReference.child("expenses").child(comment.getExpenseID());
-
         commentReference.setValue(comment);
-        expenseReference.child("comments").child(ID).setValue(true);
+
+        if(expense) {
+            DatabaseReference expenseReference = databaseReference.child("expenses").child(comment.getExpenseID());
+            expenseReference.child("comments").child(ID).setValue(true);
+        }
+        else
+        {
+            DatabaseReference proposedExpensesReference = databaseReference.child("proposedExpenses").child(comment.getExpenseID());
+            proposedExpensesReference.child("comments").child(ID).setValue(true);
+        }
 
         return ID;
     }
@@ -882,6 +889,7 @@ public class FirebaseUtils {
                 commentsMap.put(ID, comment);
                 expenseCommentsViewAdapter.update(commentsMap);
                 expenseCommentsViewAdapter.notifyDataSetChanged();
+
             }
 
             @Override
