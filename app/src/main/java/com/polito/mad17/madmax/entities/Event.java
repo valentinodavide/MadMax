@@ -2,14 +2,15 @@ package com.polito.mad17.madmax.entities;
 
 public class Event {
     public enum EventType {
-        GROUP_ADD, /*GROUP_REMOVE,*/ GROUP_EDIT /*TODO to implement*/,
+        GROUP_ADD, /*GROUP_REMOVE,*/ GROUP_EDIT,
 
         GROUP_MEMBER_ADD, GROUP_MEMBER_REMOVE /*TODO to implementf*/,
 
-        EXPENSE_ADD, EXPENSE_REMOVE, EXPENSE_EDIT /*TODO to implement*/,
+        EXPENSE_ADD, EXPENSE_REMOVE, EXPENSE_EDIT,
 
-        PENDING_EXPENSE_ADD, PENDING_EXPENSE_REMOVE, PENDING_EXPENSE_EDIT /*TODO to implement*/,
-        PENDING_EXPENSE_VOTE_UP, PENDING_EXPENSE_VOTE_DOWN, PENDING_EXPENSE_APPROVED /*TODO to implement*/, PENDING_EXPENSE_NEGLECTED /*TODO to implement*/,
+        PENDING_EXPENSE_ADD, PENDING_EXPENSE_REMOVE, PENDING_EXPENSE_EDIT,
+        PENDING_EXPENSE_VOTE_UP, PENDING_EXPENSE_VOTE_DOWN,
+        PENDING_EXPENSE_APPROVED /*TODO to implement*/, PENDING_EXPENSE_NEGLECTED /*TODO to implement*/,
 
         /*FRIEND_INVITE, todo se abbiamo tempo di fare anche lo storico per utente*/ FRIEND_GROUP_INVITE,
 

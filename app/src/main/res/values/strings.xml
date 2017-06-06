@@ -101,7 +101,11 @@
     <string name="send_again">Send again</string>
     <string name="you_owe">"YOU OWE"</string>
     <string name="propose_expense">In which group do you want to\npropose a new expense?</string>
+    <string name="edit_group">Edit group</string>
+    <string name="remove_group">Delete group</string>
+    <string name="edit_expense">Edit expense</string>
+    <string name="remove_expense">Delete expense</string>
+    <string name="product_image">PRODUCT IMAGE</string>
+    <string name="product_bill">PRODUCT BILL</string>
     <string name="move_to_expenses">"MOVE TO EXPENSES"</string>
-
-
 </resources>

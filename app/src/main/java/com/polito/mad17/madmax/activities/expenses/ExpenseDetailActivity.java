@@ -206,8 +206,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         });
     }
 
-
-    //Per creare overflow button
+    //overflow button
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.expense_menu, menu);
@@ -216,11 +215,28 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+
+        Log.d (TAG, "Clicked item: " + item.getItemId());
         switch (item.getItemId()) {
+            case R.id.one:
+                Log.d (TAG, "clicked Modify expense");
+                intent = new Intent(this, ExpenseEdit.class);
+                intent.putExtra("expenseID", expenseID);
+                intent.putExtra("EXPENSE_TYPE", "EXPENSE_EDIT");
+                startActivity(intent);
+                finish();
+                return true;
+
+            case R.id.two:
+                Log.d (TAG, "clicked Remove expense");
+                FirebaseUtils.getInstance().removeExpenseFirebase(expenseID, getApplicationContext());
+                finish();
+                return true;
+
             case android.R.id.home:
-                // do something useful
-                Log.d (TAG, "Clicked up button");
-                Intent intent = new Intent(this, GroupDetailActivity.class);
+                Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
+                intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", groupID);
                 intent.putExtra("userID", userID);
                 setResult(RESULT_OK, intent);

@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.utilities;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
@@ -30,6 +31,7 @@ import com.polito.mad17.madmax.activities.expenses.ParticipantsViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseViewAdapter;
 import com.polito.mad17.madmax.activities.expenses.VotersViewAdapter;
 import com.polito.mad17.madmax.activities.groups.EventsViewAdapter;
+import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsFragment;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.activities.users.HashMapFriendsAdapter;
@@ -287,6 +289,10 @@ public class FirebaseUtils {
                     Toast.makeText(context,"You must be admin to remove this group",Toast.LENGTH_SHORT).show();
 
                 }
+
+                /*Intent intent = new Intent(context, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);*/
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
@@ -544,6 +550,34 @@ public class FirebaseUtils {
                 databaseReference.child("expenses").child(expenseID).child("deleted").setValue(true);
                 Toast.makeText(context,"Expense successfully removed",Toast.LENGTH_SHORT).show();
 
+                // add event for EXPENSE_REMOVE
+                databaseReference.child("expenses").child(expenseID)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                User currentUser = MainActivity.getCurrentUser();
+                                Event event = new Event(
+                                        dataSnapshot.child("groupID").getValue(String.class),
+                                        Event.EventType.EXPENSE_REMOVE,
+                                        currentUser.getName() + " " + currentUser.getSurname(),
+                                        dataSnapshot.child("description").getValue(String.class)
+                                );
+                                event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                                event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                                FirebaseUtils.getInstance().addEvent(event);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.w(TAG, databaseError.toException());
+                            }
+                        });
+
+                /*Intent intent = new Intent(context, GroupDetailActivity.class);
+                intent.putExtra("groupID", groupID);
+                intent.putExtra("userID", MainActivity.getCurrentUID());
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);*/
             }
 
             @Override
@@ -700,7 +734,6 @@ public class FirebaseUtils {
         databaseReference.child("proposedExpenses").child(expenseID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 String groupID = dataSnapshot.child("groupID").getValue(String.class);
 
                 //Elimino spesa pending dal gruppo
@@ -719,12 +752,40 @@ public class FirebaseUtils {
                 databaseReference.child("proposedExpenses").child(expenseID).child("deleted").setValue(true);
                 Toast.makeText(context, "Expense successfully removed", Toast.LENGTH_SHORT).show();
 
+                // add event for PENDING_EXPENSE_REMOVE
+                databaseReference.child("proposedExpenses").child(expenseID)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User currentUser = MainActivity.getCurrentUser();
+                            Event event = new Event(
+                                    dataSnapshot.child("groupID").getValue(String.class),
+                                    Event.EventType.PENDING_EXPENSE_REMOVE,
+                                    currentUser.getName() + " " + currentUser.getSurname(),
+                                    dataSnapshot.child("description").getValue(String.class)
+                            );
+                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                            FirebaseUtils.getInstance().addEvent(event);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.w(TAG, databaseError.toException());
+                        }
+                    });
+
+                /*Intent intent = new Intent(context, MainActivity.class);
+                intent.putExtra("currentFragment", 2);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);*/
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
+            public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
     }
 
     /*

@@ -1,9 +1,8 @@
-package com.polito.mad17.madmax.activities;
+package com.polito.mad17.madmax.activities.users;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.entities.CropCircleTransformation;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
@@ -59,7 +58,7 @@ public class ProfileEdit extends AppCompatActivity {
     @Override @TargetApi(23)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_edit);
+        setContentView(R.layout.edit_profile);
 
         nameView = (EditText) this.findViewById(R.id.name);
         nameView.setText(currentUser.getName());
