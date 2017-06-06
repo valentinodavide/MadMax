@@ -28,7 +28,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
@@ -137,6 +136,7 @@ public class LoginFragment extends Fragment {
                             // Showing Alert Message
                             alertDialog.show();
                         }
+                        SignUpFragment.CREATING_ACCOUNT = false;
                     }
                     else{
                         // if the user has done the logout
@@ -172,16 +172,17 @@ public class LoginFragment extends Fragment {
         progressDialog.show();
 
         // user authentication
-        auth.signInWithEmailAndPassword(email, password).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                if(progressDialog.isShowing())
-                    progressDialog.dismiss();
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if(progressDialog.isShowing())
+                        progressDialog.dismiss();
 
-                Log.i(TAG, "authentication failed, exception: " + e.toString());
-                Toast.makeText(getContext(), "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
-            }
-        });
+                    Log.i(TAG, "authentication failed, exception: " + e.toString());
+                    Toast.makeText(getContext(), "Authentication failed.\nPlease insert a valid email/password",Toast.LENGTH_LONG).show();
+                }
+            });
     }
 
     // check if both email and password form are filled

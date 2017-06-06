@@ -149,7 +149,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         currentFragment = startingIntent.getIntExtra("currentFragment", 1);
 
 
-        if((auth.getCurrentUser() == null) ||(!auth.getCurrentUser().isEmailVerified())){
+        if(auth.getCurrentUser() == null || !auth.getCurrentUser().isEmailVerified()){
             if (auth.getCurrentUser() != null) {
                 auth.signOut();
             }
@@ -165,7 +165,9 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             finish();
         }
 
-        currentUID = auth.getCurrentUser().getUid();
+        if (auth.getCurrentUser() != null) {
+            currentUID = auth.getCurrentUser().getUid();
+        }
 
         // in the main we don't want an expansible bar
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
@@ -227,7 +229,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 currentUser.setID(currentUID);
                 currentUser.setName(dataSnapshot.child("name").getValue(String.class));
                 currentUser.setSurname(dataSnapshot.child("surname").getValue(String.class));
-                currentUser.setProfileImage(dataSnapshot.child("image").getValue().toString());
+                currentUser.setProfileImage(dataSnapshot.child("image").getValue(String.class));
                 currentUser.setEmail(dataSnapshot.child("email").getValue(String.class));
 
                 Log.d(TAG, "taken basic data of currentUser " +  currentUser.toString());
