@@ -382,6 +382,12 @@ public class NewExpenseActivity extends AppCompatActivity {
 
         unequalCheckBox = (CheckBox) findViewById(R.id.check_unequal);
 
+        if (callingActivity.equals("ChooseGroupActivity"))
+        {
+            unequalCheckBox.setVisibility(View.GONE);
+            splitButton.setVisibility(View.GONE);
+        }
+
         unequalCheckBox.setOnClickListener(new View.OnClickListener() {
 
             @Override
