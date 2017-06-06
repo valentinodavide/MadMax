@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,7 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.BarDetailFragment;
-import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.DetailFragment;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
@@ -39,7 +39,7 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.SimpleDateFormat;
 
-public class GroupDetailActivity extends BasicActivity implements OnItemClickInterface, OnItemLongClickInterface {
+public class GroupDetailActivity extends AppCompatActivity implements OnItemClickInterface, OnItemLongClickInterface {
 
     private static final String TAG = GroupDetailActivity.class.getSimpleName();
 
@@ -64,9 +64,9 @@ public class GroupDetailActivity extends BasicActivity implements OnItemClickInt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+        setContentView(R.layout.app_bar_main);
 
-        loadNavHeader();
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         groupID = intent.getStringExtra("groupID");

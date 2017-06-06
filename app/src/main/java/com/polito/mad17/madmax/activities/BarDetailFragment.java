@@ -8,13 +8,14 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -92,8 +93,6 @@ public class BarDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        setInterface((OnItemClickInterface) getActivity());
-
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_bar_detail, container, false);
 
@@ -146,6 +145,8 @@ public class BarDetailFragment extends Fragment {
                 //Extract data from bundle
                 groupID = bundle.getString("groupID");
                 userID = bundle.getString("userID");
+
+                setInterface((OnItemClickInterface) getActivity());
 
                 payButton.setOnClickListener( new View.OnClickListener() {
 
@@ -422,12 +423,17 @@ public class BarDetailFragment extends Fragment {
 
     // Initializing collapsing toolbar: it will show and hide the toolbar title on scroll
     private void initCollapsingToolbar() {
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         final CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout)((BasicActivity)getActivity()).findViewById(R.id.collapsingToolbar);
+                (CollapsingToolbarLayout)((AppCompatActivity)getActivity()).findViewById(R.id.collapsingToolbar);
 
         collapsingToolbar.setTitle(" ");
 
-        AppBarLayout appBarLayout = (AppBarLayout) ((BasicActivity)getActivity()).findViewById(R.id.app_bar);
+        AppBarLayout appBarLayout = (AppBarLayout) ((AppCompatActivity)getActivity()).findViewById(R.id.app_bar);
         appBarLayout.setExpanded(true);
 
         // hiding & showing the title when toolbar expanded & collapsed
@@ -437,6 +443,7 @@ public class BarDetailFragment extends Fragment {
 
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+
                 if (scrollRange == -1) {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }

@@ -93,11 +93,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         nameGroup = (EditText) findViewById(R.id.et_name_group);
         descriptionGroup = (EditText) findViewById(R.id.et_description_group);
         imageGroup = (ImageView) findViewById(R.id.group_image);
-        Glide.with(this).load(R.drawable.group_default)
-                .centerCrop()
-                //.bitmapTransform(new CropCircleTransformation(this))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(imageGroup);
 
         imageGroup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,70 +149,48 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
             final Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
 
             // for saving image
-            if (imageSetted) {
-                StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id + "_profileImage.jpg");
+            StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id + "_profileImage.jpg");
 
-                // Get the data from an ImageView as bytes
-                imageGroup.setDrawingCacheEnabled(true);
-                imageGroup.buildDrawingCache();
-                Bitmap bitmap = imageGroup.getDrawingCache();
+            // Get the data from an ImageView as bytes
+            imageGroup.setDrawingCacheEnabled(true);
+            imageGroup.buildDrawingCache();
+            Bitmap bitmap = imageGroup.getDrawingCache();
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] imageData = baos.toByteArray();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] imageData = baos.toByteArray();
 
-                UploadTask uploadTask = uProfileImageFilenameRef.putBytes(imageData);
+            UploadTask uploadTask = uProfileImageFilenameRef.putBytes(imageData);
 
-                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
 
-                        if (task.isSuccessful()) {
-                            newGroup.setImage(task.getResult().getDownloadUrl().toString());
-                            Log.d(TAG, "group img url: " + newGroup.getImage());
+                    if (task.isSuccessful()) {
+                        newGroup.setImage(task.getResult().getDownloadUrl().toString());
+                        Log.d(TAG, "group img url: " + newGroup.getImage());
 
-                            databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-                            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-                            databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-                            databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                            FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
-                            Log.d(TAG, "group " + newgroup_id + " created");
+                        databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
+                        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                        databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
+                        databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
+                        FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
+                        Log.d(TAG, "group " + newgroup_id + " created");
 
-                            // add event for GROUP_ADD
-                            User currentUser = MainActivity.getCurrentUser();
-                            Event event = new Event(
-                                    newgroup_id,
-                                    Event.EventType.GROUP_ADD,
-                                    currentUser.getName() + " " + currentUser.getSurname(),
-                                    newGroup.getName()
-                            );
-                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
-                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                            FirebaseUtils.getInstance().addEvent(event);
-                        }
+                        // add event for GROUP_ADD
+                        User currentUser = MainActivity.getCurrentUser();
+                        Event event = new Event(
+                                newgroup_id,
+                                Event.EventType.GROUP_ADD,
+                                currentUser.getName() + " " + currentUser.getSurname(),
+                                newGroup.getName()
+                        );
+                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                        FirebaseUtils.getInstance().addEvent(event);
                     }
-                });
-            }
-            else {
-                databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-                databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-                databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
-                Log.d(TAG, "group " + newgroup_id + " created");
-
-                // add event for GROUP_ADD
-                User currentUser = MainActivity.getCurrentUser();
-                Event event = new Event(
-                        newgroup_id,
-                        Event.EventType.GROUP_ADD,
-                        currentUser.getName() + " " + currentUser.getSurname(),
-                        newGroup.getName()
-                );
-                event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
-                event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
-                FirebaseUtils.getInstance().addEvent(event);
-            }
+                }
+            });
 
             Intent intent = new Intent(getApplicationContext(), NewMemberActivity.class);
             intent.putExtra("groupID", newgroup_id);
@@ -251,22 +224,18 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
 
         // control if is the requested result and if it return something
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Log.d(TAG, "onActivityResult PICK_IMAGE_REQUEST");
-            ImageUri = data.getData();
-            Bitmap bitmap = null;
+            Uri uri = data.getData();
+
             try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), ImageUri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                // Log.d(TAG, String.valueOf(bitmap));
+                Glide.with(this).load(data.getData()) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(imageGroup);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            imageGroup.setImageBitmap(bitmap);
-            imageSetted = true;
-
-            /*// Log.d(TAG, String.valueOf(bitmap));
-            Glide.with(this).load(ImageUri)
-                    .placeholder(R.drawable.group_default)
-                    .centerCrop()
-                    .into(imageGroup);*/
         }
         else {
             // control if is the requested result and if it return something

@@ -23,7 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.BarDetailFragment;
-import com.polito.mad17.madmax.activities.BasicActivity;
 import com.polito.mad17.madmax.activities.DetailFragment;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
@@ -36,7 +35,7 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 import java.util.Collections;
 import java.util.TreeMap;
 
-public class FriendDetailActivity extends BasicActivity implements GroupsViewAdapter.ListItemClickListener, GroupsViewAdapter.ListItemLongClickListener, OnItemClickInterface {
+public class FriendDetailActivity extends AppCompatActivity implements OnItemClickInterface {
     private static final String TAG = FriendDetailActivity.class.getSimpleName();
     private DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
 
@@ -44,6 +43,12 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
     private String userID;
 
     private TreeMap<String, Group> groups = new TreeMap<>(Collections.reverseOrder());
+
+    private ImageView imageView;
+    private TextView nameTextView;
+    private TextView balanceTextView;
+    private TextView balanceTextTextView;
+    private Button payButton;
 
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -54,7 +59,7 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend_detail);
+        setContentView(R.layout.app_bar_main);
 
         Log.d(TAG, "onCreate di FriendDetailActivity");
 
@@ -63,18 +68,7 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
         friendID = intent.getStringExtra("friendID");
         userID = intent.getStringExtra("userID");
 
-//        toolbar = (Toolbar) findViewById(R.id.fd_toolbar);
-//        setSupportActionBar(toolbar);
-//        toolbar.setBackgroundColor(0x0000FF00);
-
-        // Get a support ActionBar corresponding to this toolbar
-//        ActionBar ab = getSupportActionBar();
-        // Enable the Up button
-//        ab.setDisplayHomeAsUpEnabled(true);
-
-        Log.d(TAG, "Populated all the above data");
-
-        if(findViewById(R.id.collapsed_content) != null)
+         if(findViewById(R.id.collapsed_content) != null)
         {
             Bundle bundle = new Bundle();
             bundle.putString("friendID", friendID);
@@ -93,23 +87,6 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
                     .replace(R.id.main, detailFragment)
                     .commit();
         }
-
-        //Show shared groups
-        databaseReference.child("users").child(MainActivity.getCurrentUID()).child("friends").child(friendID).child("sharedGroups").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot sharedGroupSnapshot : dataSnapshot.getChildren())
-                {
-                    FirebaseUtils.getInstance().getGroup(sharedGroupSnapshot.getKey(), groups, groupsViewAdapter);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, databaseError.toException());
-            }
-        });
     }
 
     //Per creare overflow button
@@ -141,7 +118,7 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
         }
     }
 
-    @Override
+ /*   @Override
     public void onListItemClick(String clickedItemIndex)
     {
         Intent intent = new Intent(this, GroupDetailActivity.class);
@@ -153,10 +130,13 @@ public class FriendDetailActivity extends BasicActivity implements GroupsViewAda
     @Override
     public boolean onListItemLongClick(String clickedItemIndex, View v) {
         return false;
-    }
+    }*/
 
     @Override
     public void itemClicked(String fragmentName, String itemID) {
-        Log.d(TAG, "itemClicked " + itemID);
+        Intent intent = new Intent(this, GroupDetailActivity.class);
+        intent.putExtra("groupID", itemID);
+        intent.putExtra("userID", userID);
+        startActivity(intent);
     }
 }
