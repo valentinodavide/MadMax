@@ -45,7 +45,8 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.groups.GroupDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".activities.groups.NewGroupActivity"
             android:parentActivityName=".activities.MainActivity" />

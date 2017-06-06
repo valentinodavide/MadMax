@@ -935,6 +935,7 @@ public class FirebaseUtils {
                 u.setSurname(dataSnapshot.child("surname").getValue(String.class));
                 u.setID(dataSnapshot.getKey());
                 u.setIsInGroupForInvite(groupID);
+                u.setProfileImage(dataSnapshot.child("image").getValue(String.class));
 
                 //se l'amico letto da db non è già stato scelto, lo metto nella lista di quelli
                 //che saranno stampati

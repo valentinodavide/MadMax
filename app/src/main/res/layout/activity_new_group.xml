@@ -23,7 +23,8 @@
                 android:layout_height="140dp"
                 android:layout_marginBottom="24dp"
                 android:layout_gravity="center_horizontal"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:src="@drawable/group_default"/>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"

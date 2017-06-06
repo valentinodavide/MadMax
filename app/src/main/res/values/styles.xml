@@ -20,4 +20,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <style name="AppTheme.Toolbar" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorControlNormal">@color/colorPrimary</item>
+    </style>
 </resources>
