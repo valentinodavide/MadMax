@@ -154,4 +154,10 @@
     <string name="expense_removed">Expense successfully removed</string>
     <string name="group_removed">Group successfully removed</string>
     <string name="error_not_admin">You must be admin of the ge group to remove it!</string>
+    <string name="split_by_exact">Split by exact import</string>
+    <string name="split_by_percentage">Split by percentage</string>
+    <string name="split_desire">Do you desire to split this expense in a specific way?</string>
+    <string name="cannot_leave_group">You have a debit. Break even before leaving</string>
+    <string name="leaving_group">Leaving group...</string>
+
 </resources>

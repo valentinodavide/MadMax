@@ -287,7 +287,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                 Log.d (TAG, "Clicked up button on GroupDetailActivity");
                 intent = new Intent(this, MainActivity.class);
                 intent.putExtra("UID", MainActivity.getCurrentUser().getID());
-                intent.putExtra("currentFragment", 2);
+                intent.putExtra("currentFragment", 1);
                 startActivity(intent);
                 finish();
                 return(true);

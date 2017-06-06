@@ -57,12 +57,10 @@
         <activity
             android:name=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter android:label="MadMaxInvitiationFilter">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -109,6 +107,9 @@
         <activity
             android:name=".activities.groups.BalancesActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"/>
+        <activity
+            android:name=".activities.expenses.SplitPolicyActivity"
+            android:parentActivityName=".activities.expenses.NewExpenseActivity"/>
 
         <service
             android:name=".services.FirebaseServiceMessage">

@@ -97,7 +97,7 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/tv_shared_groups_text"
+        android:id="@+id/tv_split_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/img_photo"
@@ -115,7 +115,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="horizontal"
-        android:layout_below="@+id/tv_shared_groups_text"
+        android:layout_below="@+id/tv_split_text"
         >
 
         <include layout="@layout/skeleton_list"/>
