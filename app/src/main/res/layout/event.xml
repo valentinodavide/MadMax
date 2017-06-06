@@ -9,8 +9,7 @@
         android:id="@+id/event_photo"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="3dp"
+        android:layout_margin="8dp"
         android:src="@drawable/event_default"
         />
 
@@ -47,7 +46,7 @@
             android:textSize="12sp"
             android:textStyle="italic"
             android:text="@string/datetime"
-            android:textColor="@color/colorPrimaryText"
+            android:textColor="@color/colorSecondaryText"
             />
 
     </LinearLayout>

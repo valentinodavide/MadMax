@@ -212,6 +212,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                         myIntent.putExtra("groupID", groupID);
                         myIntent.putExtra("userID", MainActivity.getCurrentUID());
                         myIntent.putExtra("callingActivity", "DetailFragment");
+                        myIntent.putExtra("newPending", false);
                         startActivity(myIntent);
                     }
                 });
@@ -262,7 +263,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 case 0:
                     Log.d(TAG, "here in case 0");
                     ExpensesFragment expensesFragment = new ExpensesFragment();
-                    //riga qui sotto aggiunta da Ale...prima il bundle veniva caricato nella OnDataChange quindi
+                    //todo riga qui sotto aggiunta da Ale...prima il bundle veniva caricato nella OnDataChange quindi
                     //qui era ancora null e mi crashava, non so come potesse funzionare prima...
                     //in generale non usare i dati settati nella OnDataChange fuori dalla OnDataChange
                     bundle.putString("groupID", groupID);
@@ -271,6 +272,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
                 case 1:
                     Log.d(TAG, "here in case 1");
                     FriendsFragment membersFragment = new FriendsFragment();
+                    membersFragment.setGroupDetail(true);
                     Bundle b = new Bundle();
                     b.putString("groupID", groupID);
                     membersFragment.setArguments(b);

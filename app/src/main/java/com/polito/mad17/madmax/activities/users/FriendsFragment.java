@@ -53,10 +53,15 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
     private ValueEventListener groupListener;
     private Double totBalance;
     private Boolean deleted = true;
+    private Boolean groupDetail = false;
 
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
         onClickFriendInterface = onItemClickInterface;
         onLongClickFriendInterface = onItemLongClickInterface;
+    }
+
+    public void setGroupDetail(Boolean groupDetail){
+        this.groupDetail = groupDetail;
     }
 
     public FriendsFragment() {}
@@ -93,7 +98,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(divider);
 
-        friendsViewAdapter = new FriendsViewAdapter(this.getContext(), this, this, friends, TAG);
+        friendsViewAdapter = new FriendsViewAdapter(this.getContext(), this, this, friends, groupDetail);
         recyclerView.setAdapter(friendsViewAdapter);
 
         //Se sono in MainActivity visualizzo lista degli amici

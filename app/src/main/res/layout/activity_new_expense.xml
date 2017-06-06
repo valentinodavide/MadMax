@@ -74,6 +74,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:text="@string/product_image"
                 android:textAllCaps="true"
@@ -91,6 +92,7 @@
                 android:src="@drawable/add_photo" />
 
             <TextView
+                android:id="@+id/tv_bill_expense"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

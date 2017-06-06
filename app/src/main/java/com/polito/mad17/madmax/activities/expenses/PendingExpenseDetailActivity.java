@@ -108,6 +108,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
             public void onTabSelected(TabLayout.Tab tab) {
                 Log.d(TAG, String.valueOf(tab.getPosition()));
                 updateFab(tab.getPosition());
+                Log.d(TAG, "tab.getPosition() " + tab.getPosition());
                 viewPager.setCurrentItem(tab.getPosition());
             }
 
@@ -178,7 +179,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
 
                             ArrayList<String> participants = new ArrayList<String>();
                             expenseName = dataSnapshot.child("description").getValue(String.class);
-                            String groupID = dataSnapshot.child("groupID").getValue(String.class);
+                            groupID = dataSnapshot.child("groupID").getValue(String.class);
                             Double amount = dataSnapshot.child("amount").getValue(Double.class);
                             String currency = dataSnapshot.child("currency").getValue(String.class);
                             String creatorID = dataSnapshot.child("creatorID").getValue(String.class);
@@ -326,6 +327,7 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                         arguments.putString("expenseName", expenseName);
                         arguments.putBoolean("isExpense", false);
 
+                        Log.d(TAG, "arguments.getString(\"groupID\")" + arguments.getString("groupID"));
                         NewCommentDialogFragment commentDialogFragment = new NewCommentDialogFragment();
                         commentDialogFragment.setArguments(arguments);
                         commentDialogFragment.show(getSupportFragmentManager(), "NewComment");

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.polito.mad17.madmax.activities.expenses.ExpenseCommentsFragment;
 import com.polito.mad17.madmax.activities.expenses.ExpenseDetailFragment;
 import com.polito.mad17.madmax.activities.expenses.PendingExpenseDetailFragment;
+import com.polito.mad17.madmax.activities.expenses.ProposedExpenseCommentsFragment;
 
 
 public class ExpenseDetailPagerAdapter extends FragmentPagerAdapter {
@@ -24,6 +25,7 @@ public class ExpenseDetailPagerAdapter extends FragmentPagerAdapter {
     private ExpenseDetailFragment expenseDetailFragment = null;
     private PendingExpenseDetailFragment pendingExpenseDetailFragment = null;
     private ExpenseCommentsFragment expenseCommentsFragment = null;
+    private ProposedExpenseCommentsFragment proposedExpenseCommentsFragment = null;
 
     public ExpenseDetailPagerAdapter(FragmentManager fragmentManager, int numberOfTabs, String expenseID, String fragmentName) {
         super(fragmentManager);
@@ -58,10 +60,19 @@ public class ExpenseDetailPagerAdapter extends FragmentPagerAdapter {
                     return pendingExpenseDetailFragment;
                 }
             case 1:
-                Log.i(TAG, "here in case 1: ExpenseCommentsFragment");
-                expenseCommentsFragment = new ExpenseCommentsFragment();
-                expenseCommentsFragment.setArguments(bundle);
-                return expenseCommentsFragment;
+                if(fragmentName.equals("ExpenseDetailActivity")) {
+                    Log.i(TAG, "here in case 1: ExpenseCommentsFragment");
+                    expenseCommentsFragment = new ExpenseCommentsFragment();
+                    expenseCommentsFragment.setArguments(bundle);
+                    return expenseCommentsFragment;
+                }
+                else
+                {
+                    Log.i(TAG, "here in case 0: PendingExpenseDetailFragment");
+                    proposedExpenseCommentsFragment = new ProposedExpenseCommentsFragment();
+                    proposedExpenseCommentsFragment.setArguments(bundle);
+                    return proposedExpenseCommentsFragment;
+                }
             default:
                 return null;
         }

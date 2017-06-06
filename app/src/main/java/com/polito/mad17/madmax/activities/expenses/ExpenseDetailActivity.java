@@ -235,7 +235,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 return true;
 
             case android.R.id.home:
-                Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
+                Log.d (TAG, "Clicked up button on ExpenseDetailActivity");
                 intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", groupID);
                 intent.putExtra("userID", userID);

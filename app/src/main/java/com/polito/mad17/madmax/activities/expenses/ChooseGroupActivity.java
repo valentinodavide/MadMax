@@ -21,6 +21,7 @@ import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
+import java.util.Collections;
 import java.util.TreeMap;
 
 public class ChooseGroupActivity extends AppCompatActivity implements GroupsViewAdapter.ListItemClickListener {
@@ -31,11 +32,8 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private GroupsViewAdapter groupsViewAdapter;
-    public static TreeMap<String, Group> groups = new TreeMap<>();
+    public static TreeMap<String, Group> groups = new TreeMap<>(Collections.reverseOrder());
     private OnItemClickInterface onClickGroupInterface;
-
-
-    //todo RIFARE USANDO GroupsFragment
 
     public void setInterface(OnItemClickInterface onItemClickInterface) {
         onClickGroupInterface = onItemClickInterface;
@@ -104,6 +102,7 @@ public class ChooseGroupActivity extends AppCompatActivity implements GroupsView
         myIntent.putExtra("callingActivity", "ChooseGroupActivity");
         myIntent.putExtra("groupName", groups.get(groupID).getName());
         myIntent.putExtra("groupImage", groups.get(groupID).getImage());
+        myIntent.putExtra("newPending", true);
 
         Log.d(TAG, "groupImage" + groups.get(groupID).getImage());
         startActivity(myIntent);

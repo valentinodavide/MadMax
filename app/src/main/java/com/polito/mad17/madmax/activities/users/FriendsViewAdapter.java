@@ -41,7 +41,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     private Context context;
     private LayoutInflater layoutInflater;
 
-    private String callingActivity;
+    private Boolean isGroupDetail = false;
 
     private DecimalFormat df = new DecimalFormat("#.##");
 
@@ -72,10 +72,9 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public FriendsViewAdapter(Context context, ListItemClickListener listener, Map<String, User> map, String callingActivity) {
+    public FriendsViewAdapter(Context context, ListItemClickListener listener, Map<String, User> map) {
         this.context = context;
         itemClickListener = listener;
-        this.callingActivity = callingActivity;
 
         mData = new ArrayList();
         mData.addAll(map.entrySet());
@@ -83,11 +82,11 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     }
 
     public FriendsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map,
-                              String callingActivity) {
+                              Boolean isGroupDetail) {
         this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
-        this.callingActivity = callingActivity;
+        this.isGroupDetail = isGroupDetail;
 
         mData = new ArrayList();
         mData.addAll(map.entrySet());
@@ -106,7 +105,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         private TextView nameTextView;
         private TextView balanceTextTextView;
         private TextView balanceTextView;
-        private String ID;
 
         public ItemFriendsViewHolder(View itemView) {
             super(itemView);
@@ -171,6 +169,8 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     public void onBindViewHolder(final ItemFriendsViewHolder holder, int position) {
 
 
+        Log.d(TAG, "isGroupDetail " + isGroupDetail);
+
         if (position == (mData.size() - 1)) {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
             holder.nameTextView.setText("");
@@ -214,7 +214,6 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             Double shownBal;
             String shownCurr;
 
-
             if (totBalances != null && !totBalances.isEmpty()) {
 
                 if (!totBalances.isEmpty()) {
@@ -239,7 +238,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
                     //Print balance
                     if (shownBal > 0) {
 
-                        if(callingActivity.equals("GroupDetailActivity"))
+                        if(isGroupDetail)
                         {
                             holder.balanceTextTextView.setText(R.string.should_receive_from_the_group);
                         }
@@ -260,7 +259,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
                     }
                     else if (shownBal < 0)
                     {
-                        if(callingActivity.equals("GroupDetailActivity"))
+                        if(isGroupDetail)
                         {
                             holder.balanceTextTextView.setText(R.string.owes_to_the_group);
                         }
