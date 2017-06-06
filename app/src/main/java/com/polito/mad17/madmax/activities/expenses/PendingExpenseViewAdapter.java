@@ -288,6 +288,7 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
             Log.d(TAG, "item ID " + expense.getID() + " item name " + expense.getDescription());
 
             String p = expense.getGroupImage();
+            Log.d(TAG, "groupImage " + p);
             if (p != null && !p.equals("noImage"))
             {
                 Log.d(TAG, "Image not null " + p);

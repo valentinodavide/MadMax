@@ -558,7 +558,6 @@ public class FirebaseUtils {
     {
         Log.d(TAG, "addPendingExpenseFirebase");
 
-
         //Aggiungo pending expense a Firebase
         final String eID = databaseReference.child("proposedExpenses").push().getKey();
         databaseReference.child("proposedExpenses").child(eID).setValue(expense);
@@ -574,6 +573,7 @@ public class FirebaseUtils {
         else{
             bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.expense_default);
         }
+
         // Get the data from an ImageView as bytes
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -658,16 +658,18 @@ public class FirebaseUtils {
                                         myvote = "no";
                                 }
                             }
-
                         }
                     }
 
                     Expense pendingExpense = new Expense();
                     pendingExpense.setID(dataSnapshot.getKey());
                     pendingExpense.setDescription(dataSnapshot.child("description").getValue(String.class));
-                    pendingExpense.setGroupName(dataSnapshot.child("groupName").getValue(String.class));
                     pendingExpense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+                    pendingExpense.setGroupName(dataSnapshot.child("groupName").getValue(String.class));
                     pendingExpense.setGroupImage(dataSnapshot.child("groupImage").getValue(String.class));
+
+                    Log.d(TAG, pendingExpense.getDescription() + " pendingExpense.getGroupImage()" + pendingExpense.getGroupImage());
+
                     pendingExpense.setExpensePhoto(dataSnapshot.child("expensePhoto").getValue(String.class));
                     pendingExpense.setParticipantsCount(participantsCount);
                     pendingExpense.setYes(yes);

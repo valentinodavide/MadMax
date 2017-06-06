@@ -79,7 +79,6 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
         pendingExpenseViewAdapter = new PendingExpenseViewAdapter(this.getContext() ,this, this, pendingExpensesMap);
         recyclerView.setAdapter(pendingExpenseViewAdapter);
 
-
         //Ascolto le pending expenses dello user
         databaseReference.child("users").child(MainActivity.getCurrentUID()).child("proposedExpenses").addValueEventListener(new ValueEventListener() {
             @Override
