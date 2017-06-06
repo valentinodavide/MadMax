@@ -110,15 +110,21 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
             Map.Entry<String, User> item = getItem(position);
 
             String photo = item.getValue().getProfileImage();
-            if (photo != null) {
-                Glide.with(context).load(photo)
-                        .placeholder(R.drawable.user_default)
+            if (photo != null && !photo.equals(""))
+            {
+                Glide.with(layoutInflater.getContext()).load(photo)
                         .centerCrop()
-                        .bitmapTransform(new CropCircleTransformation(context))
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
-              /*  int photoUserId = Integer.parseInt(photo);
-                holder.imageView.setImageResource(photoUserId);*/
+            }
+            else
+            {
+                Glide.with(layoutInflater.getContext()).load(R.drawable.user_default)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(holder.imageView);
             }
 
             holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
@@ -127,10 +133,10 @@ public class VotersViewAdapter extends RecyclerView.Adapter<VotersViewAdapter.It
 
             if (item.getValue().getVote().equals("yes")) {
                 holder.voteTextView.setVisibility(View.VISIBLE);
-                holder.voteTextView.setBackgroundResource(R.drawable.thumb_up_black);
+                holder.voteTextView.setBackgroundResource(R.drawable.thumb_up_teal);
             } else if (item.getValue().getVote().equals("no")) {
                 holder.voteTextView.setVisibility(View.VISIBLE);
-                holder.voteTextView.setBackgroundResource(R.drawable.thumb_down_black);
+                holder.voteTextView.setBackgroundResource(R.drawable.thumb_down_amber);
             } else if (item.getValue().getVote().equals("null")) {
                 holder.voteTextView.setVisibility(View.GONE);
             }

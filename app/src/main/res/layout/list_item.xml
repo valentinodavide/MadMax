@@ -46,8 +46,8 @@
             android:layout_centerHorizontal="true"
             android:layout_alignParentRight="true"
 
-            android:gravity="center"
-            tools:text="@string/owes_you"
+            android:gravity="end"
+            tools:text="@string/you_should_receive"
             android:textColor="@color/colorPrimaryText"
 
             android:textSize="12sp" />

@@ -33,6 +33,7 @@
                 android:clickable="false"
                 android:textSize="18dp"
                 android:text="PendingExpenseName"
+                android:textColor="@color/colorPrimaryText"
                 android:textStyle="bold"
                 />
 
@@ -43,10 +44,10 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:layout_marginTop="12dp"
-                android:layout_toRightOf="@+id/tv_pending"
-                android:layout_toEndOf="@+id/tv_pending"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
                 android:clickable="false"
-                android:textSize="18dp"
+                android:textSize="20dp"
                 android:text="3000"
                 android:textAlignment="textEnd"
                 android:gravity="end"
@@ -179,6 +180,7 @@
                 android:layout_marginTop="7dp"
                 android:layout_marginLeft="10dp"
                 android:background="@drawable/group"
+                android:backgroundTint="@color/colorSecondaryText"
                 />
 
             <TextView

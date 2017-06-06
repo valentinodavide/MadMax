@@ -57,13 +57,6 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        /*getSupportFragmentManager().beginTransaction()
-                .add(detailFragment, "detail")
-                // Add this transaction to the back stack
-                .addToBackStack()
-                .commit();*/
-
-
         Log.d (TAG, "onCreateView");
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
@@ -85,7 +78,6 @@ public class PendingExpensesFragment extends Fragment implements PendingExpenseV
 
         pendingExpenseViewAdapter = new PendingExpenseViewAdapter(this.getContext() ,this, this, pendingExpensesMap);
         recyclerView.setAdapter(pendingExpenseViewAdapter);
-
 
         //Ascolto le pending expenses dello user
         databaseReference.child("users").child(MainActivity.getCurrentUID()).child("proposedExpenses").addValueEventListener(new ValueEventListener() {

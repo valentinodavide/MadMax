@@ -142,24 +142,18 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.imageView);
         }
-        else if (photo != null && !photo.equals(""))
+        else
         {
             Glide.with(layoutInflater.getContext()).load(photo)
                     .centerCrop()
                     .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.imageView);
-           /* int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);*/
         }
 
         holder.nameTextView.setText(item.getValue().getName() + " " + item.getValue().getSurname());
 
         DecimalFormat df = new DecimalFormat("#.##");
-
-        //todo mettere getCurrency
-        //String share = df.format(Math.abs(item.getValue().getDueImport())) + " " + "€";
-        //holder.shareTextView.setText(share);
         Double dueImport = item.getValue().getDueImport();
 
         if (dueImport > 0)
@@ -172,7 +166,6 @@ public class ParticipantsViewAdapter extends RecyclerView.Adapter<ParticipantsVi
 
             holder.toPayTextView.setText(balance);
             holder.toPayTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
-
         }
         else
         {

@@ -151,8 +151,6 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                             finish();
                             startActivity(myIntent);
 
-
-
                         }
 
                         @Override

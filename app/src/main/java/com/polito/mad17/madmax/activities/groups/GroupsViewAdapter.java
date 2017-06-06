@@ -34,7 +34,7 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private ListItemLongClickListener itemLongClickListener = null;
     private Context context;
 
-    private String activityName;
+    private String callingActivity;
 
     private LayoutInflater layoutInflater;
     DecimalFormat df = new DecimalFormat("#.##");
@@ -66,20 +66,21 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public GroupsViewAdapter(Context context, ListItemClickListener listener, Map<String, Group> map, String activityName) {
+    public GroupsViewAdapter(Context context, ListItemClickListener listener, Map<String, Group> map, String callingActivity) {
         this.context = context;
         itemClickListener = listener;
-        this.activityName = activityName;
+        this.callingActivity = callingActivity;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);
     }
 
-    public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map, String activityName) {
+    public GroupsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, Group> map,
+                             String callingActivity) {
         this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
-        this.activityName = activityName;
+        this.callingActivity = callingActivity;
         mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);
@@ -163,13 +164,14 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
         else {
 
-            Log.d(TAG, "item ID " + item.getKey());
+            Log.d(TAG, "item ID " + item.getKey() + " item name " + item.getValue().getName());
 
             //String p = groups.get(String.valueOf(position)).getImage();
             groupViewHolder.imageView.setVisibility(View.VISIBLE);
             String p = item.getValue().getImage();
-            if (p != null) {
-                Log.d(TAG, "Image not null");
+            if (p != null && !p.equals("noImage"))
+            {
+                Log.d(TAG, "Image not null " + p);
                 Glide.with(layoutInflater.getContext()).load(p)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
@@ -181,7 +183,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(groupViewHolder.imageView);            }
+                        .into(groupViewHolder.imageView);
+            }
 
             groupViewHolder.nameTextView.setText(item.getValue().getName());
 
@@ -203,7 +206,9 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 Log.d(TAG, "sii");
             }
 
-            if(!activityName.equals("FriendDetailActivity")) {
+            Log.d(TAG, "callingActivity " + callingActivity);
+
+            if(!callingActivity.equals("FriendDetailActivity") && !callingActivity.equals("ChooseGroupActivity")) {
                 if (totBalances != null) {
                     for (Map.Entry<String, Double> entry : totBalances.entrySet()) {
                         Log.d(TAG, "Bilancio in " + groupname + " : " + entry.getValue() + " " + entry.getKey());

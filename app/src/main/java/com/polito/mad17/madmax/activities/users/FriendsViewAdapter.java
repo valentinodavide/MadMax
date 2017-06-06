@@ -41,6 +41,8 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
     private Context context;
     private LayoutInflater layoutInflater;
 
+    private String callingActivity;
+
     private DecimalFormat df = new DecimalFormat("#.##");
 
     Map.Entry<String, Group> nullEntry = new Map.Entry<String, Group>() {
@@ -70,19 +72,22 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         boolean onListItemLongClick(String clickedItemIndex, View v);
     }
 
-    public FriendsViewAdapter(Context context, ListItemClickListener listener, Map<String, User> map) {
+    public FriendsViewAdapter(Context context, ListItemClickListener listener, Map<String, User> map, String callingActivity) {
         this.context = context;
         itemClickListener = listener;
-        mData = new ArrayList();
+        this.callingActivity = callingActivity;
 
+        mData = new ArrayList();
         mData.addAll(map.entrySet());
         mData.add(nullEntry);
     }
 
-    public FriendsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map) {
+    public FriendsViewAdapter(Context context, ListItemClickListener listener, ListItemLongClickListener longListener, Map<String, User> map,
+                              String callingActivity) {
         this.context = context;
         itemClickListener = listener;
         itemLongClickListener = longListener;
+        this.callingActivity = callingActivity;
 
         mData = new ArrayList();
         mData.addAll(map.entrySet());
@@ -186,7 +191,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
             }
-            else if(photo == null || photo.equals(""))
+            else
             {
                 Glide.with(layoutInflater.getContext()).load(R.drawable.user_default)
                         .centerCrop()
@@ -233,7 +238,15 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
                     //Print balance
                     if (shownBal > 0) {
-                        holder.balanceTextTextView.setText(R.string.you_should_receive);
+
+                        if(callingActivity.equals("GroupDetailActivity"))
+                        {
+                            holder.balanceTextTextView.setText(R.string.should_receive_from_the_group);
+                        }
+                        else
+                        {
+                            holder.balanceTextTextView.setText(R.string.you_should_receive);
+                        }
                         holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
 
@@ -244,8 +257,17 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
 
                         holder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
 
-                    } else if (shownBal < 0) {
-                        holder.balanceTextTextView.setText(R.string.you_owe);
+                    }
+                    else if (shownBal < 0)
+                    {
+                        if(callingActivity.equals("GroupDetailActivity"))
+                        {
+                            holder.balanceTextTextView.setText(R.string.owes_to_the_group);
+                        }
+                        else
+                        {
+                            holder.balanceTextTextView.setText(R.string.you_owe);
+                        }
                         holder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
 
 

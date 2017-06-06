@@ -87,7 +87,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         private TextView nameTextView;
         private TextView balanceTextTextView;
         private TextView balanceTextView;
-        //private String ID;
 
         ItemExpensesViewHolder(View itemView) {
             super(itemView);
@@ -144,33 +143,40 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
         if(position == (expenses.size() - 1))
         {
             Log.d(TAG, "item.getKey().equals(\"nullGroup\")");
+            expensesViewHolder.imageView.setVisibility(View.INVISIBLE);
             expensesViewHolder.nameTextView.setText("");
             expensesViewHolder.balanceTextTextView.setText("");
             expensesViewHolder.balanceTextView.setText("");
-            //expensesViewHolder.itemView.setOnClickListener(null);
         }
         else {
-            Expense expense = getItem(position).getValue();
-//            if (expense.getExpensePhoto() != null)
-//            {
-//                String photo = expense.getExpensePhoto();
-//                int photoUserId = Integer.parseInt(photo);
-//                expensesViewHolder.imageView.setImageResource(photoUserId);
 
-                Glide.with(layoutInflater.getContext()).load(expense.getExpensePhoto()).placeholder(R.drawable.expense_default)
+            Expense expense = getItem(position).getValue();
+
+            Log.d(TAG, "item ID " + expense.getID() + " image " + expense.getExpensePhoto());
+
+
+            expensesViewHolder.imageView.setVisibility(View.VISIBLE);
+            if (expense.getExpensePhoto() != null && !expense.getExpensePhoto().equals("noImage"))
+            {
+                Log.d(TAG, "Image not null");
+                String photo = expense.getExpensePhoto();
+                int photoUserId = Integer.parseInt(photo);
+                expensesViewHolder.imageView.setImageResource(photoUserId);
+
+                Glide.with(layoutInflater.getContext()).load(expense.getExpensePhoto())
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensesViewHolder.imageView);
-//            }
-//            else
-//            {
-//                Glide.with(layoutInflater.getContext()).load(R.drawable.expense_default)
-//                        .centerCrop()
-//                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
-//                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                        .into(expensesViewHolder.imageView);
-//            }
+            }
+            else
+            {
+                Glide.with(layoutInflater.getContext()).load(R.drawable.expense_default)
+                        .centerCrop()
+                        .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(expensesViewHolder.imageView);
+            }
 
             expensesViewHolder.nameTextView.setText(expense.getDescription());
 

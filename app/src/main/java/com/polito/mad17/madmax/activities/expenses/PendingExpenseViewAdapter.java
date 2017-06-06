@@ -285,26 +285,25 @@ public class PendingExpenseViewAdapter extends RecyclerView.Adapter<PendingExpen
         else {
             Expense expense = getItem(position).getValue();
 
+            Log.d(TAG, "item ID " + expense.getID() + " item name " + expense.getDescription());
+
             String p = expense.getGroupImage();
-
-            if (p != null) {
-                //int photoUserId = Integer.parseInt(p);
-                //holder.imageView.setImageResource(photoUserId);
-
+            Log.d(TAG, "groupImage " + p);
+            if (p != null && !p.equals("noImage"))
+            {
+                Log.d(TAG, "Image not null " + p);
                 Glide.with(layoutInflater.getContext()).load(p)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
-            }
-            else
-            {
+            } else {
+
                 Glide.with(layoutInflater.getContext()).load(R.drawable.group_default)
                         .centerCrop()
                         .bitmapTransform(new CropCircleTransformation(layoutInflater.getContext()))
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(holder.imageView);
-
             }
 
             holder.nameTextView.setText(expense.getDescription());
