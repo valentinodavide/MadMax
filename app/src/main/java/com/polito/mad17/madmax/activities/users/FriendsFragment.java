@@ -133,11 +133,13 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                             listenedFriends = true;
                    //     Log.d(TAG,  friendSnapshot.child("deleted").getValue() + " ");
                         deleted = friendSnapshot.child("deleted").getValue(Boolean.class);
+
                         if (deleted == null)
                         {
                             deleted  = true;
                         }
-
+                        if(deleted)
+                            Log.d(TAG, friendSnapshot.getKey()+" is cancelled");
                     }
                     else
                         if(activityName.equals("GroupDetailActivity"))

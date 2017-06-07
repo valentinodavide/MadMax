@@ -985,14 +985,8 @@ public class FirebaseUtils {
 
     public void removeFromFriends(final String userID, final String friendID)
     {
-        DatabaseReference friendReference = databaseReference.child("users").child(userID).child("friends").child(friendID);
-        Task<Void> task = friendReference.child("deleted").setValue(true);
+        databaseReference.child("users").child(userID).child("friends").child(friendID).child("deleted").setValue(true);
+        databaseReference.child("users").child(friendID).child("friends").child(userID).child("deleted").setValue(true);
 
-        task.addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                Log.d(TAG, "task " + task.toString() + task.getResult());
-            }
-        });
     }
 }

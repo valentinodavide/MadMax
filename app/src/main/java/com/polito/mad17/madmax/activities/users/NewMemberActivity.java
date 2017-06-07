@@ -143,7 +143,7 @@ public class NewMemberActivity extends AppCompatActivity {
 
                 Uri.Builder builder = Uri.parse(getString(R.string.invitation_deep_link)).buildUpon()
                     .appendQueryParameter("groupToBeAddedID", groupID)
-                    .appendQueryParameter("inviterUID", MainActivity.getCurrentUID());
+                    .appendQueryParameter("inviterID", MainActivity.getCurrentUID());
 
                 Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invitation_title))
                         .setDeepLink(builder.build())

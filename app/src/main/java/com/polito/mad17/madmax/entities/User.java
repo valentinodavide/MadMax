@@ -1,13 +1,9 @@
 package com.polito.mad17.madmax.entities;
 
-import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,8 +11,6 @@ import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.polito.mad17.madmax.R;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.security.MessageDigest;
@@ -460,7 +454,7 @@ public class User implements Parcelable {
         });
     }
 
-    public void joinGroup (String groupID, String inviterUID) {
+    public void joinGroup (String groupID, String inviterID) {
         final DatabaseReference databaseReference = FirebaseUtils.getDatabaseReference();
         final String currentUID = this.getID();
 
@@ -480,8 +474,8 @@ public class User implements Parcelable {
         databaseReference.child("groups").child(groupID).child("members").child(currentUID).child("deleted").setValue(false);
 
         // aggiungo l'invitante agli amici se non lo è già
-        if(!userFriends.containsKey(inviterUID)){
-            addFriend(inviterUID);//todo aggiungere l'invitato tra gli amici dell'invitante
+        if(!userFriends.containsKey(inviterID)){
+            addFriend(inviterID);//todo aggiungere l'invitato tra gli amici dell'invitante
         }
 
         //Incremento il numero di partecipanti

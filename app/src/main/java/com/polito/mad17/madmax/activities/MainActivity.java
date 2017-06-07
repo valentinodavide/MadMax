@@ -216,14 +216,17 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 Log.d(TAG, "taken basic data of currentUser " +  currentUser.toString());
                 // get user friends's IDs
-                for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
-                    currentUser.getUserFriends().put(friend.getKey(),null);
-                }
+                if(dataSnapshot.child("friends").hasChildren())
+                    for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
+                        if(!friend.child("deleted").getValue(Boolean.class))
+                            currentUser.getUserFriends().put(friend.getKey(),null);
+                    }
                 // get user groups's IDs
-                for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
-                    currentUser.getUserGroups().put(group.getKey(), null);
-                }
-                //todo mettere altri dati in myself?
+                if(dataSnapshot.child("groups").hasChildren())
+                    for(DataSnapshot group : dataSnapshot.child("groups").getChildren()){
+                        if(group.getValue(Boolean.class))
+                            currentUser.getUserGroups().put(group.getKey(), null);
+                    }
 
                 Log.d(TAG, "Taken friends and groups, now creating the adapter");
 
@@ -284,8 +287,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         groupToBeAddedID = null;
                         makeText(MainActivity.this, getString(R.string.join_group), Toast.LENGTH_LONG).show();
                     }
-                    else
-                        makeText(MainActivity.this, getString(R.string.already_in_group) + "\""+currentUser.getUserGroups().get(groupToBeAddedID).getName()+"\"", Toast.LENGTH_LONG).show();
+//                    else
+//                        makeText(MainActivity.this, getString(R.string.already_in_group) + "\""+currentUser.getUserGroups().get(groupToBeAddedID).getName()+"\"", Toast.LENGTH_LONG).show();
                 }
 
                 if(startingIntent.hasExtra("notificationTitle")){
