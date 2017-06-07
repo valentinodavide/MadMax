@@ -99,27 +99,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
         usersRef = databaseReference.child("users");
         groupRef = databaseReference.child("groups");
         auth = FirebaseAuth.getInstance();
-        /*
-        // getting Intent from invitation
-        Intent intent = getIntent();
 
-        String action = intent.getAction();
-        Log.d(TAG, "action " + action);
-
-        // retrieving data from the intent inviterUID & groupToBeAddedID as the group ID where to add the current user
-        Uri data = intent.getData();
-        if(data != null) {
-            // to be used to set the current user as friend of the inviter
-            Log.d(TAG, "there is an invite");
-            inviterUID = data.getQueryParameter("inviterUID");
-            groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
-        }
-        else {
-            inviterUID = null;
-            groupToBeAddedID = null;
-            Log.d(TAG, "there is not an invite");
-        }*/
-        // getting currentUID from Intent (from LoginSignUpActivity or EmailVerificationActivity)
+        // get data from firebase invite, if present
         startingIntent = getIntent();
         Uri data = startingIntent.getData();
         if(data != null){
@@ -127,7 +108,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
             groupToBeAddedID = data.getQueryParameter("groupToBeAddedID");
         }
         else{
-            // retrieving data from the intent inviterID & groupToBeAddedID as the group ID where to add the current user
+            // nretrieving data from the intent inviterID & groupToBeAddedID as the group ID where to add the current user
             if(startingIntent.hasExtra("inviterID")) {
                 // to be used to set the current user as friend of the inviter
                 Log.d(TAG, "there is an invite");
@@ -570,15 +551,12 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
 
                 break;
             case "PendingExpensesFragment":
-
                 popup = new PopupMenu(MainActivity.this, v, Gravity.RIGHT);
                 popup.getMenuInflater().inflate(R.menu.longclick_popup_menu, popup.getMenu());
-
                 one = popup.getMenu().findItem(R.id.one);
                 one.setTitle("Remove Pending");
                 popup.getMenu().findItem(R.id.two).setVisible(false);
                 popup.getMenu().findItem(R.id.three).setVisible(false);
-
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {

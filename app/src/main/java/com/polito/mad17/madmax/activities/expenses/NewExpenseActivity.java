@@ -46,7 +46,6 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,7 +74,7 @@ public class NewExpenseActivity extends AppCompatActivity {
     private String callingActivity;
     private String groupName;
     private String groupImage;
-    private Boolean newExpensePhoto, newBillPhoto, isNewPending;
+    private Boolean isNewPending;
     //private Integer numberMembers = null;
     private Context context;
 
@@ -87,8 +86,8 @@ public class NewExpenseActivity extends AppCompatActivity {
 
     private int PICK_EXPENSE_PHOTO_REQUEST = 0;
     private int PICK_BILL_PHOTO_REQUEST = 1;
-    private boolean IMAGE_CHANGED = false;
-    private boolean BILL_CHANGED = false;
+    private boolean IMAGE_CHANGED;
+    private boolean BILL_CHANGED;
     //private int EXPENSE_SAVED = 2;
     private int PICK_SPLIT_REQUEST = 2;
 
@@ -105,8 +104,8 @@ public class NewExpenseActivity extends AppCompatActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String defaultCurrency = sharedPref.getString(SettingsFragment.DEFAULT_CURRENCY, "");
 
-        newExpensePhoto = false;
-        newBillPhoto = false;
+        IMAGE_CHANGED = false;
+        BILL_CHANGED = false;
 
         Intent intent = getIntent();
         if (groupID == null)
@@ -194,7 +193,6 @@ public class NewExpenseActivity extends AppCompatActivity {
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(expensePhoto);
-                newExpensePhoto = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -213,7 +211,6 @@ public class NewExpenseActivity extends AppCompatActivity {
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(billPhoto);
-                newBillPhoto = true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -371,9 +368,9 @@ public class NewExpenseActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
         newExpense.setTimestamp(timeStamp);
 
-        if(!newExpensePhoto)
+        if(!IMAGE_CHANGED)
             expensePhoto = null;
-        if(!newBillPhoto)
+        if(!BILL_CHANGED)
             billPhoto = null;
 
         //Aggiungo una pending expense
@@ -457,10 +454,10 @@ public class NewExpenseActivity extends AppCompatActivity {
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
                 newExpense.setTimestamp(timeStamp);
 
-                if(!newExpensePhoto)
-                    expensePhoto = null;
-                if(!newBillPhoto)
-                    billPhoto = null;
+                    if(!IMAGE_CHANGED)
+                        expensePhoto = null;
+                    if(!BILL_CHANGED)
+                        billPhoto = null;
 
                 //Aggiungo una pending expense
                 if (callingActivity.equals("ChooseGroupActivity"))
@@ -469,13 +466,12 @@ public class NewExpenseActivity extends AppCompatActivity {
                     if (groupImage != null)
                         newExpense.setGroupImage(groupImage);
 
-
-                    FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
-                    //todo qui
-                    Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
-                    myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
-                    myIntent.putExtra("currentFragment", 2);
-                    startActivity(myIntent);
+                        FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
+                        //todo qui
+                        Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
+                        myIntent.putExtra("UID", MainActivity.getCurrentUID());
+                        myIntent.putExtra("currentFragment", 2);
+                        startActivity(myIntent);
 
                     // add event for PENDING_EXPENSE_ADD
                     User currentUser = MainActivity.getCurrentUser();

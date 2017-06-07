@@ -1,11 +1,9 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,24 +14,16 @@ import android.view.ViewGroup;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.InsetDivider;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.OnItemLongClickInterface;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.TreeMap;
-
-import static com.polito.mad17.madmax.activities.groups.GroupExpensesActivity.expenses;
-import static com.polito.mad17.madmax.activities.groups.NewGroupActivity.groups;
 
 public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.ListItemClickListener, ExpensesViewAdapter.ListItemLongClickListener {
 
@@ -41,6 +31,8 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
     private OnItemClickInterface onClickFriendInterface;
     private OnItemLongClickInterface onLongClickGroupInterface;
+    private ValueEventListener groupListener;
+    private String groupID;
 
 
     public void setInterface(OnItemClickInterface onItemClickInterface, OnItemLongClickInterface onItemLongClickInterface) {
@@ -67,7 +59,6 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         RecyclerView recyclerView;
         RecyclerView.LayoutManager layoutManager;
-        String groupID;
 
         setInterface((OnItemClickInterface) getActivity(), (OnItemLongClickInterface) getActivity());
 
@@ -96,7 +87,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
         Log.d(TAG, groupID);
         // retrieving group details for current group
-        groupRef.child(groupID).child("expenses").addValueEventListener(new ValueEventListener() {
+        groupListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot expensesSnapshot) {
 
@@ -114,7 +105,9 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
-        });
+        };
+
+        groupRef.child(groupID).child("expenses").addValueEventListener(groupListener);
 
         return view;
     }
@@ -127,6 +120,12 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        groupRef.child(groupID).child("expenses").removeEventListener(groupListener);
     }
 
     @Override

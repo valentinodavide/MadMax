@@ -133,9 +133,9 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                             listenedFriends = true;
                    //     Log.d(TAG,  friendSnapshot.child("deleted").getValue() + " ");
                         deleted = friendSnapshot.child("deleted").getValue(Boolean.class);
-                        if (deleted != null)
+                        if (deleted == null)
                         {
-                            //deleted  = friendSnapshot.child("deleted").getValue().equals(true);
+                            deleted  = true;
                         }
 
                     }

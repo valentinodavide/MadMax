@@ -159,9 +159,6 @@ public class ExpensesViewAdapter extends RecyclerView.Adapter<ExpensesViewAdapte
             if (expense.getExpensePhoto() != null && !expense.getExpensePhoto().equals("noImage"))
             {
                 Log.d(TAG, "Image not null");
-                String photo = expense.getExpensePhoto();
-                int photoUserId = Integer.parseInt(photo);
-                expensesViewHolder.imageView.setImageResource(photoUserId);
 
                 Glide.with(layoutInflater.getContext()).load(expense.getExpensePhoto())
                         .centerCrop()

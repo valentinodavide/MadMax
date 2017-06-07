@@ -232,7 +232,7 @@ public class FirebaseUtils {
 
     public void addSharedGroup(final String userID, final String groupID)
     {
-        databaseReference.child("groups").child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.child("groups").child(groupID).child("members").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -603,15 +603,12 @@ public class FirebaseUtils {
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("proposedExpenses").child(eID).child(eID+"_expensePhoto.jpg");
 
-        Bitmap bitmap;
         if (expensePhoto != null) {
+            Bitmap bitmap;
             expensePhoto.setDrawingCacheEnabled(true);
             expensePhoto.buildDrawingCache();
             bitmap = expensePhoto.getDrawingCache();
-        }
-        else{
-            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.expense_default);
-        }
+
 
         // Get the data from an ImageView as bytes
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -633,6 +630,7 @@ public class FirebaseUtils {
                 databaseReference.child("proposedExpenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
             }
         });
+        }
 
 
         Log.d(TAG, "creator expense " + expense.getCreatorID());
@@ -932,7 +930,7 @@ public class FirebaseUtils {
     }
 
     public void getFriendInviteToGroup(final String userID, final String groupID, final  TreeMap<String, User> friends, final HashMapFriendsAdapter adapter ) {
-        databaseReference.child("users").child(userID).addValueEventListener(new ValueEventListener() {
+        databaseReference.child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User u = new User();

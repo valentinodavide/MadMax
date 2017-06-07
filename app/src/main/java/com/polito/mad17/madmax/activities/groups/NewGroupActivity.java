@@ -204,13 +204,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
         return super.onOptionsItemSelected(item);
     }
 
-    public String BitMapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b=baos.toByteArray();
-        return Base64.encodeToString(b, Base64.DEFAULT);
-    }
-
     @Override
     public void onListItemClick(String friendID) {
         //Log.d("clickedItemIndex " + friendID);
@@ -246,46 +239,6 @@ public class NewGroupActivity extends AppCompatActivity implements FriendsViewAd
                 for (String id : ids) {
                     Log.d(TAG, "sent invitation " + id);
                 }
-
-                //Integer newID = groups.size();
-                /*String name = nameGroup.getText().toString();
-                String description = descriptionGroup.getText().toString();
-
-                final Group newGroup = new Group("0", name, "noImage", description, 1);  //id is useless
-
-                // for saving image
-                StorageReference uProfileImageFilenameRef = storageReference.child("groups").child(newgroup_id).child(newgroup_id + "_profileImage.jpg");
-
-                // Get the data from an ImageView as bytes
-                imageGroup.setDrawingCacheEnabled(true);
-                imageGroup.buildDrawingCache();
-                Bitmap bitmap = imageGroup.getDrawingCache();
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                byte[] imageData = baos.toByteArray();
-
-                UploadTask uploadTask = uProfileImageFilenameRef.putBytes(imageData);
-
-                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
-                        if (task.isSuccessful()) {
-                            newGroup.setImage(task.getResult().getDownloadUrl().toString());
-                            Log.d(TAG, "group img url: " + newGroup.getImage());
-                        }
-                        databaseReference.child("groups").child(newgroup_id).setValue(newGroup);
-                        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
-                        databaseReference.child("groups").child(newgroup_id).child("timestamp").setValue(timeStamp);
-                        databaseReference.child("groups").child(newgroup_id).child("numberMembers").setValue(1);
-                        FirebaseUtils.getInstance().joinGroupFirebase(MainActivity.getCurrentUID(), newgroup_id);
-
-
-                        Log.d(TAG, "group " + newgroup_id + " created");
-                        finish();
-                    }
-                });*/
             }
         }
     }
