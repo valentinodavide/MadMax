@@ -501,6 +501,7 @@ public class FirebaseUtils {
                         expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
                         expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
                         expense.setBalance(expenseBalance);
+                        expense.setExpensePhoto(dataSnapshot.child("expensePhoto").getValue(String.class));
 
                         expensesMap.put(id, expense);
                         expensesViewAdapter.update(expensesMap);

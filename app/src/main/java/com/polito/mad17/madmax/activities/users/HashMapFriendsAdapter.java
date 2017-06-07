@@ -75,6 +75,7 @@ public class HashMapFriendsAdapter extends BaseAdapter {
 
         // Loading profile image
         Glide.with(parent.getContext()).load(item.getValue().getProfileImage())
+                .placeholder(R.drawable.user_default)
                 .centerCrop()
                 .bitmapTransform(new CropCircleTransformation(parent.getContext()))
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
