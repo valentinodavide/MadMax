@@ -95,7 +95,7 @@ public class DetailFragment extends Fragment implements GroupsViewAdapter.ListIt
             Log.d(TAG, "FriendDetailActivity per RecylerView");
 
             // Inflate the layout for this fragment
-            mainView = inflater.inflate(R.layout.skeleton_list, container, false);
+            mainView = inflater.inflate(R.layout.skeleton_list_friend, container, false);
 
             RecyclerView.ItemDecoration divider = new InsetDivider.Builder(getContext())
                     .orientation(InsetDivider.VERTICAL_LIST)

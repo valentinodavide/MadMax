@@ -163,12 +163,16 @@ public class FirebaseUtils {
 
             Boolean debt = false;
             Log.d (TAG, g.getName() + " contains those balances: ");
-            for (Map.Entry<String, Double> entry : balances.entrySet())
+            if (balances != null)
             {
-                Log.d (TAG, entry.getKey() + " " + entry.getValue());
-                if (entry.getValue() < 0)
-                    debt = true;
+                for (Map.Entry<String, Double> entry : balances.entrySet())
+                {
+                    Log.d (TAG, entry.getKey() + " " + entry.getValue());
+                    if (entry.getValue() < 0)
+                        debt = true;
+                }
             }
+
 
             if (debt)
             {
