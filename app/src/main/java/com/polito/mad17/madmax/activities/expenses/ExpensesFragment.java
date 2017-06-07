@@ -87,7 +87,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
 
         Log.d(TAG, groupID);
         // retrieving group details for current group
-        groupListener = new ValueEventListener() {
+        groupRef.child(groupID).child("expenses").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot expensesSnapshot) {
 
@@ -105,9 +105,7 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
-        };
-
-        groupRef.child(groupID).child("expenses").addValueEventListener(groupListener);
+        });
 
         return view;
     }
@@ -125,7 +123,6 @@ public class ExpensesFragment extends Fragment implements ExpensesViewAdapter.Li
     @Override
     public void onStop() {
         super.onStop();
-        groupRef.child(groupID).child("expenses").removeEventListener(groupListener);
     }
 
     @Override

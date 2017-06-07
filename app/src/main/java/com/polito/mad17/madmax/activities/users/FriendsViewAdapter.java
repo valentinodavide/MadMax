@@ -1,7 +1,6 @@
 package com.polito.mad17.madmax.activities.users;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -11,13 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.SettingsFragment;
-import com.polito.mad17.madmax.activities.groups.BalancesActivity;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Group;
 import com.polito.mad17.madmax.entities.User;
@@ -105,6 +104,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
         private TextView nameTextView;
         private TextView balanceTextTextView;
         private TextView balanceTextView;
+        private RelativeLayout balanceLayout;
 
         public ItemFriendsViewHolder(View itemView) {
             super(itemView);
@@ -113,6 +113,7 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             balanceTextTextView = (TextView) itemView.findViewById(R.id.tv_balance_text);
             //balanceTextTextView.setVisibility(View.INVISIBLE);
             balanceTextView = (TextView) itemView.findViewById(R.id.tv_balance);
+            balanceLayout = (RelativeLayout) itemView.findViewById(R.id.balance_layout);
             //balanceTextView.setVisibility(View.INVISIBLE);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
@@ -181,6 +182,12 @@ public class FriendsViewAdapter extends RecyclerView.Adapter<FriendsViewAdapter.
             Map.Entry<String, User> item = getItem(position);
 
             Log.d(TAG, item.getKey() + " " + item.getValue().getName() + " " + item.getValue().getProfileImage());
+
+            if(isGroupDetail)
+                holder.balanceLayout.setVisibility(View.VISIBLE);
+            else
+                holder.balanceLayout.setVisibility(View.GONE);
+
 
             String photo = item.getValue().getProfileImage();
             if (photo != null && !photo.equals(""))
