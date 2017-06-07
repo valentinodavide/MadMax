@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
+import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
@@ -160,11 +161,11 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 currency = dataSnapshot.child("currency").getValue(String.class);
                 expensePhoto = dataSnapshot.child("expensePhoto").getValue(String.class);
                 expenseNameTextView.setText(expenseName);
-                Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
+                /*Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
                         .placeholder(R.color.colorPrimary)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(imageView);
+                        .into(imageView);*/
 
                 DecimalFormat df = new DecimalFormat("#.##");
                 amountTextView.setText(df.format(amount) + " " + currency);

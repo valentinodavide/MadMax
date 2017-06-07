@@ -136,11 +136,11 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 creatorID = dataSnapshot.child("creatorID").getValue(String.class);
                 groupID = dataSnapshot.child("groupID").getValue(String.class);
 
-                Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
+                /*Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
                         .placeholder(R.color.colorPrimary)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(imageView);
+                        .into(imageView);*/
 
                 databaseReference.child("users").child(creatorID).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
