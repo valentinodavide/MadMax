@@ -90,12 +90,12 @@ public class PayExpenseActivity extends AppCompatActivity {
         currencyTextView.setText(currency);
 
         userImage = (ImageView) findViewById(R.id.sender_photo);
-        Glide.with(getLayoutInflater().getContext()).load(userImageURL)
-                .centerCrop()
-                .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(userImage);
-    }
+            Glide.with(getLayoutInflater().getContext()).load(userImageURL)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(userImage);
+        }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

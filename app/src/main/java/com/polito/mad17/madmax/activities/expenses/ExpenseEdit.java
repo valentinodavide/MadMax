@@ -104,7 +104,6 @@ public class ExpenseEdit extends AppCompatActivity {
                 expense = new Expense();
                 expense.setID(dataSnapshot.getKey());
                 expense.setDescription(dataSnapshot.child("description").getValue(String.class));
-                expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
                 expense.setCurrency(dataSnapshot.child("currency").getValue(String.class));
                 expense.setExpensePhoto(dataSnapshot.child("expensePhoto").getValue(String.class));
                 expense.setBillPhoto(dataSnapshot.child("billPhoto").getValue(String.class));
@@ -112,7 +111,11 @@ public class ExpenseEdit extends AppCompatActivity {
                 final String groupID = dataSnapshot.child("groupID").getValue(String.class);
 
                 expenseDescriptionView.setText(expense.getDescription());
-                expenseAmountView.setText(String.valueOf(expense.getAmount()));
+
+                if (EXPENSE_TYPE.equals(Event.EventType.PENDING_EXPENSE_EDIT)) {
+                    expense.setAmount(dataSnapshot.child("amount").getValue(Double.class));
+                    expenseAmountView.setText(String.valueOf(expense.getAmount()));
+                }
 
                 // set the defaultCurrency value for the spinner based on the user preferences
                 int spinnerPosition = adapter.getPosition(expense.getCurrency());
@@ -269,7 +272,6 @@ public class ExpenseEdit extends AppCompatActivity {
         }
 
         String newDescription = expenseDescriptionView.getText().toString();
-        Double newAmount = Double.valueOf(expenseAmountView.getText().toString());
         String newCurrency = expenseCurrencyView.getSelectedItem().toString();
 
         if (!newDescription.isEmpty() && (expense.getDescription() == null || !expense.getDescription().equals(newDescription))) {
@@ -277,9 +279,13 @@ public class ExpenseEdit extends AppCompatActivity {
             databaseReference.child(expense_type).child(expense.getID()).child("description").setValue(expense.getDescription());
         }
 
-        if (!newAmount.isNaN() && (expense.getAmount() == null || !expense.getAmount().equals(newAmount))) {
-            expense.setAmount(newAmount);
-            databaseReference.child(expense_type).child(expense.getID()).child("amount").setValue(expense.getAmount());
+        if (EXPENSE_TYPE.equals(Event.EventType.PENDING_EXPENSE_EDIT)) {
+            Double newAmount = Double.valueOf(expenseAmountView.getText().toString());
+
+            if (!newAmount.isNaN() && (expense.getAmount() == null || !expense.getAmount().equals(newAmount))) {
+                expense.setAmount(newAmount);
+                databaseReference.child(expense_type).child(expense.getID()).child("amount").setValue(expense.getAmount());
+            }
         }
 
         if (!newCurrency.isEmpty() && (expense.getCurrency() == null || !expense.getCurrency().equals(newCurrency))) {
@@ -391,12 +397,14 @@ public class ExpenseEdit extends AppCompatActivity {
             expenseDescriptionView.setError(null);
         }
 
-        String amount = expenseAmountView.getText().toString();
-        if (TextUtils.isEmpty(amount)) {
-            expenseAmountView.setError(getString(R.string.required));
-            valid = false;
-        } else {
-            expenseAmountView.setError(null);
+        if (EXPENSE_TYPE.equals(Event.EventType.PENDING_EXPENSE_EDIT)) {
+            String amount = expenseAmountView.getText().toString();
+            if (TextUtils.isEmpty(amount)) {
+                expenseAmountView.setError(getString(R.string.required));
+                valid = false;
+            } else {
+                expenseAmountView.setError(null);
+            }
         }
         return valid;
     }
