@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="56dp"
+    android:paddingTop="24dp"
     android:paddingLeft="24dp"
     android:paddingRight="24dp"
     android:clickable="true"
     android:focusableInTouchMode="true">
 
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <!-- Email Label -->
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
@@ -68,5 +71,6 @@
             android:text="@string/prompt_create_account"
             android:gravity="center"
             android:textSize="16sp" />
+    </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

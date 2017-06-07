@@ -29,7 +29,7 @@
             android:orientation="vertical"
             android:scaleType="centerInside"
             android:src="@mipmap/beeshareicon_noback"
-            android:layout_marginTop="62dp"
+            android:layout_marginTop="22dp"
             android:layout_marginRight="10dp"
             android:rotation="45"
             />
@@ -37,7 +37,7 @@
         <TextView android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="65dp"
+            android:layout_marginTop="25dp"
             android:textSize="36sp"
             android:textColor="@color/colorPrimaryText"
             android:text="@string/app_name"

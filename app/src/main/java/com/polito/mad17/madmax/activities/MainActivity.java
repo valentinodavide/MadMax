@@ -126,7 +126,6 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 groupToBeAddedID = null;
         }
 
-        //todo a cosa serve? A settare il fragment in cui ritorni dopo aver premuto up button
         currentFragment = startingIntent.getIntExtra("currentFragment", 1);
 
 
