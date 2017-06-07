@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.activities.groups;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,10 +12,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +28,7 @@ import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.DecimalDigitsInputFilter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
@@ -43,6 +48,8 @@ public class PayGroupActivity extends AppCompatActivity {
     private Double debt;
     private EditText amountEditText;
     private TextView groupNameTextView;
+    private ImageView userImage;
+    private ImageView groupImage;
     private Spinner currency;
 
     DecimalFormat df = new DecimalFormat("#.##");
@@ -53,6 +60,9 @@ public class PayGroupActivity extends AppCompatActivity {
     //value = balance for that currency
     private HashMap<String, Double> totBalances = new HashMap<>();
     private String shownCurrency;
+
+    String userImageURL;
+    String groupImageURL;
 
 
 
@@ -70,6 +80,7 @@ public class PayGroupActivity extends AppCompatActivity {
         groupID = intent.getStringExtra("groupID");
         userID = intent.getStringExtra("userID");
         groupName = intent.getStringExtra("groupName");
+        groupImageURL = intent.getStringExtra("groupImage");
         totBalances = (HashMap<String, Double>) intent.getSerializableExtra("totBalances");
         shownCurrency = intent.getStringExtra("shownCurrency");
 
@@ -94,12 +105,48 @@ public class PayGroupActivity extends AppCompatActivity {
         // set the defaultCurrency value for the spinner based on the user preferences
         int spinnerPosition = adapter.getPosition(shownCurrency);
         currency.setSelection(spinnerPosition);
+
+        userImage = (ImageView) findViewById(R.id.sender_photo);
+        groupImage = (ImageView) findViewById(R.id.receiver_photo);
+
+        userImageURL = MainActivity.getCurrentUser().getProfileImage();
+        userImage = (ImageView) findViewById(R.id.sender_photo);
+        if (userImageURL != null) {
+            Glide.with(getLayoutInflater().getContext()).load(userImageURL)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(userImage);
+        }
+        else {
+            Glide.with(getLayoutInflater().getContext()).load(R.drawable.user_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(userImage);
+        }
+
+        groupImage = (ImageView) findViewById(R.id.receiver_photo);
+        if (groupImageURL != null) {
+            Glide.with(getLayoutInflater().getContext()).load(groupImageURL)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(groupImage);
+        }
+        else {
+            Glide.with(getLayoutInflater().getContext()).load(R.drawable.group_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(groupImage);
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.save_menu, menu);
-        menu.findItem(R.id.action_save).setTitle("PAY");
+        menu.findItem(R.id.action_save).setTitle(R.string.pay);
         return true;
     }
 

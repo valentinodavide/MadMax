@@ -161,5 +161,6 @@
     <string name="prompt_currency">Choose your currency</string>
     <string name="no_data_available">No data available</string>
     <string name="no_friends">No friends yet</string>
-
+    <string name="pay">PAY</string>
+    <string name="me">Me</string>
 </resources>

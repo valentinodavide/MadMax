@@ -140,4 +140,6 @@
     <string name="cannot_leave_group">Hai un debito verso questo gruppo. Pareggia i conti prima di lasciare</string>
     <string name="leaving_group">Abbandono gruppo in corso</string>
     <string name="prompt_currency">Scegli la tua valuta</string>
+    <string name="pay">PAGA</string>
+    <string name="me">Io</string>
 </resources>

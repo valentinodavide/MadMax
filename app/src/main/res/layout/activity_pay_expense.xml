@@ -23,8 +23,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Me"
-        android:textSize="22sp"
+        android:text="@string/me"
+        android:textSize="20sp"
         android:layout_centerHorizontal="true"/>
 
     <ImageView
@@ -77,8 +77,7 @@
         android:id="@+id/group_relative"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@id/center_relative"
         android:layout_marginRight="32dp"
         android:layout_marginEnd="32dp"
 
@@ -89,9 +88,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:text="@string/expense"
             android:layout_centerHorizontal="true"
-            android:textSize="22sp"/>
+            android:textSize="20sp"/>
 
         <ImageView
             android:id="@+id/receiver_photo"

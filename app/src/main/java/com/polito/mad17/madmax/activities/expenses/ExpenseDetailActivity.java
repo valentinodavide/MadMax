@@ -61,6 +61,8 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
     private FloatingActionButton fab;
     private Double expenseBalance;
     private String currency;
+    private String expensePhoto;
+    private String userImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +125,8 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
         balanceTextView = (TextView) findViewById(R.id.tv_balance);
         payExpenseButton = (Button) findViewById(R.id.btn_pay_debt);
 
+        userImage = MainActivity.getCurrentUser().getProfileImage();
+
         payExpenseButton.setOnClickListener( new View.OnClickListener() {
 
             @Override
@@ -137,10 +141,12 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                     Intent intent = new Intent(ExpenseDetailActivity.this, PayExpenseActivity.class);
                     intent.putExtra("groupID", groupID);
                     intent.putExtra("userID", userID);
+                    intent.putExtra("userImage", userImage);
                     intent.putExtra("debt", expenseBalance);
                     intent.putExtra("expenseID", expenseID);
                     intent.putExtra("expenseName", expenseName);
                     intent.putExtra("expenseCurrency", currency);
+                    intent.putExtra("expenseImage", expensePhoto);
                     startActivity(intent);
                     finish();
                 }
@@ -155,6 +161,7 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 expenseName = dataSnapshot.child("description").getValue(String.class);
                 Double amount = dataSnapshot.child("amount").getValue(Double.class);
                 currency = dataSnapshot.child("currency").getValue(String.class);
+                expensePhoto = dataSnapshot.child("expensePhoto").getValue(String.class);
                 expenseNameTextView.setText(expenseName);
 
                 DecimalFormat df = new DecimalFormat("#.##");

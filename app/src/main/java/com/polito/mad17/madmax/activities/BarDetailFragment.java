@@ -71,6 +71,8 @@ public class BarDetailFragment extends Fragment {
     String shownCurr;
     Double shownBal;
 
+    String image;
+
 
     //key = currency
     //value = balance for that currency
@@ -192,6 +194,7 @@ public class BarDetailFragment extends Fragment {
                             intent.putExtra("totBalances", totBalances);
                             intent.putExtra("shownCurrency", currency);
                             intent.putExtra("groupName", groupName);
+                            intent.putExtra("groupImage", image);
                             startActivity(intent);
                         }
                         //Se non ho debiti in nessuna valuta
@@ -233,7 +236,7 @@ public class BarDetailFragment extends Fragment {
                             nameTextView.setText(groupName);
 
                         //Retrieve group image
-                        String image = dataSnapshot.child("image").getValue(String.class);
+                        image = dataSnapshot.child("image").getValue(String.class);
                         if (image != null && !image.equals("noImage"))
                         {
                             Log.d (TAG, "Nome gruppo: " + dataSnapshot.child("name").getValue(String.class) + "  Immagine: " + image);

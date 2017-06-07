@@ -90,12 +90,38 @@ public class PayExpenseActivity extends AppCompatActivity {
         currencyTextView.setText(currency);
 
         userImage = (ImageView) findViewById(R.id.sender_photo);
+        if (userImageURL != null) {
             Glide.with(getLayoutInflater().getContext()).load(userImageURL)
                     .centerCrop()
                     .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(userImage);
         }
+        else {
+            Glide.with(getLayoutInflater().getContext()).load(R.drawable.user_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(userImage);
+        }
+
+        expenseImage = (ImageView) findViewById(R.id.receiver_photo);
+        if (expenseImageURL != null) {
+            Glide.with(getLayoutInflater().getContext()).load(expenseImageURL)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(expenseImage);
+        }
+        else {
+            Glide.with(getLayoutInflater().getContext()).load(R.drawable.expense_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(getLayoutInflater().getContext()))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(expenseImage);
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
