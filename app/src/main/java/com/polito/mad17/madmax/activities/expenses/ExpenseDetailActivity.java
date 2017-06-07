@@ -161,11 +161,11 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 currency = dataSnapshot.child("currency").getValue(String.class);
                 expensePhoto = dataSnapshot.child("expensePhoto").getValue(String.class);
                 expenseNameTextView.setText(expenseName);
-                /*Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
+                Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
                         .placeholder(R.color.colorPrimary)
                         .centerCrop()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(imageView);*/
+                        .into(imageView);
 
                 DecimalFormat df = new DecimalFormat("#.##");
                 amountTextView.setText(df.format(amount) + " " + currency);
