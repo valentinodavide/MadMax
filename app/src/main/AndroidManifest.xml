@@ -29,42 +29,60 @@
 
         <activity android:name=".activities.login.LoginSignUpActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"
-            android:theme="@style/AppTheme.Login">
-        </activity>
-        <activity
-            android:name=".activities.groups.GroupExpensesActivity"
-            android:parentActivityName=".activities.MainActivity">
+            android:theme="@style/AppTheme.Login"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".activities.groups.GroupExpensesActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.MainActivity" />
         </activity>
-        <activity android:name=".activities.expenses.NewExpenseActivity" />
+
+        <activity android:name=".activities.expenses.NewExpenseActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
         <activity
             android:name=".activities.users.FriendDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.groups.GroupDetailActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.MainActivity"/>
-        <activity
-            android:name=".activities.groups.NewGroupActivity"
-            android:parentActivityName=".activities.MainActivity" />
-        <activity
-            android:name=".activities.users.NewMemberActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.groups.GroupDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".activities.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.groups.NewGroupActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.users.NewMemberActivity"
             android:label="@string/title_activity_new_member"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <intent-filter android:label="MadMaxInvitiationFilter">
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
@@ -78,48 +96,69 @@
                     android:host="beeshare"
                     android:scheme="madmax" />
             </intent-filter>
-
         </activity>
-        <activity
-            android:name=".activities.SettingsActivity"
-            android:parentActivityName=".activities.MainActivity" />
-        <activity
-            android:name=".activities.users.ProfileEdit"
-            android:parentActivityName=".activities.MainActivity" />
-        <activity
-            android:name=".activities.groups.GroupEdit" />
-        <activity
-            android:name=".activities.expenses.ExpenseEdit" />
-        <activity android:name=".activities.expenses.ChooseGroupActivity" />
-        <activity
-            android:name=".activities.expenses.PendingExpenseDetailActivity"
+
+        <activity android:name=".activities.SettingsActivity"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.expenses.ExpenseDetailActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.users.ProfileEdit"
+            android:parentActivityName=".activities.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.groups.GroupEdit"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.expenses.ExpenseEdit"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.expenses.ChooseGroupActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.expenses.PendingExpenseDetailActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.expenses.ExpenseDetailActivity"
             android:parentActivityName=".activities.groups.GroupDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
         <activity android:name=".activities.expenses.PayExpenseActivity"
             android:parentActivityName=".activities.expenses.ExpenseDetailActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activities.groups.PayGroupActivity"
-            android:parentActivityName=".activities.groups.GroupDetailActivity" />
-        <activity
-            android:name=".activities.groups.BalancesActivity"
-            android:parentActivityName=".activities.groups.GroupDetailActivity"/>
-        <activity
-            android:name=".activities.expenses.SplitPolicyActivity"
-            android:parentActivityName=".activities.expenses.NewExpenseActivity"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
 
-        <service
-            android:name=".services.FirebaseServiceMessage">
+        <activity android:name=".activities.groups.PayGroupActivity"
+            android:parentActivityName=".activities.groups.GroupDetailActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <activity android:name=".activities.groups.BalancesActivity"
+            android:parentActivityName=".activities.groups.GroupDetailActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.expenses.SplitPolicyActivity"
+            android:parentActivityName=".activities.expenses.NewExpenseActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"/>
+
+        <service android:name=".services.FirebaseServiceMessage">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-        <service
-            android:name=".services.FirebaseServiceFCM">
+
+        <service android:name=".services.FirebaseServiceFCM">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

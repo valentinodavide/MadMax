@@ -54,7 +54,7 @@
         app:tabSelectedTextColor="@color/colorAccent"
         app:tabIndicatorColor="@color/colorAccent"
         android:minHeight="?attr/actionBarSize"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:layout_below="@id/title_icon"
         />
 
