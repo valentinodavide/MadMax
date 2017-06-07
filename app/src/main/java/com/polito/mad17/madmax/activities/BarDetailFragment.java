@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.groups.BalancesActivity;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
+import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
@@ -47,6 +48,7 @@ public class BarDetailFragment extends Fragment {
     private View mainView;
     private ImageView imageView;
     private TextView nameTextView;
+    private TextView emailTextView;
     private String activityName;
     private User friendDetail;
     private RelativeLayout balanceLayout;
@@ -98,6 +100,7 @@ public class BarDetailFragment extends Fragment {
 
         imageView = (ImageView) mainView.findViewById(R.id.img_photo);
         nameTextView = (TextView) mainView.findViewById(R.id.tv_bar_name);
+        emailTextView = (TextView) mainView.findViewById(R.id.tv_email);
         balanceLayout = (RelativeLayout) mainView.findViewById(R.id.lv_balance_layout);
         balanceTextView = (TextView)mainView.findViewById(R.id.tv_balance_text);
         balanceView = (TextView)mainView.findViewById(R.id.tv_balance);
@@ -123,12 +126,24 @@ public class BarDetailFragment extends Fragment {
 
                         String name = dataSnapshot.child("name").getValue(String.class);
                         String surname = dataSnapshot.child("surname").getValue(String.class);
+                        String email = dataSnapshot.child("email").getValue(String.class);
                         nameTextView.setText(name + " " + surname);
+                        emailTextView.setText(email);
 
                         // Loading profile image
-                        Glide.with(getActivity()).load(dataSnapshot.child("image").getValue(String.class))
-                                .centerCrop()
-                                .into(imageView);
+                        String photo = dataSnapshot.child("image").getValue(String.class);
+                        if (photo != null) {
+                            Glide.with(getActivity()).load(photo)
+                                    .centerCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(imageView);
+                        }
+                        else {
+                            Glide.with(getActivity()).load(R.drawable.user_default)
+                                    .centerCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .into(imageView);
+                        }
 
                         balanceLayout.setVisibility(View.GONE);
                     }
@@ -200,7 +215,6 @@ public class BarDetailFragment extends Fragment {
                 });
 
 
-                // todo qui currency
                 //retrieve data of group
                 groupListener = databaseReference.child("groups").child(groupID).addValueEventListener(new ValueEventListener() {
                     @Override

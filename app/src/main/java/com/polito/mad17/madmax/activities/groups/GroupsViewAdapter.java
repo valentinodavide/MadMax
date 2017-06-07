@@ -10,11 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.polito.mad17.madmax.R;
+import com.polito.mad17.madmax.activities.DetailFragment;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
 import com.polito.mad17.madmax.entities.Group;
@@ -188,7 +190,6 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             groupViewHolder.nameTextView.setText(item.getValue().getName());
 
-            //todo mettere debito verso il gruppo
             //mydebt = mio debito con il gruppo
             String groupname = item.getValue().getName();
 
@@ -208,8 +209,13 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             Log.d(TAG, "callingActivity " + callingActivity);
 
+
+
             if(!callingActivity.equals("FriendDetailActivity") && !callingActivity.equals("ChooseGroupActivity")) {
                 if (totBalances != null) {
+
+                    groupViewHolder.balanceTextTextView.setVisibility(View.VISIBLE);
+                    groupViewHolder.balanceTextView.setVisibility(View.VISIBLE);
                     for (Map.Entry<String, Double> entry : totBalances.entrySet()) {
                         Log.d(TAG, "Bilancio in " + groupname + " : " + entry.getValue() + " " + entry.getKey());
                     }
@@ -266,6 +272,8 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         }
 
                     }
+                    groupViewHolder.balanceTextTextView.setVisibility(View.VISIBLE);
+                    groupViewHolder.balanceTextView.setVisibility(View.VISIBLE);
                 }
                 //If there are no balances in the map
                 else {
@@ -273,13 +281,22 @@ public class GroupsViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     groupViewHolder.balanceTextTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
                     groupViewHolder.balanceTextView.setText("0 " + defaultCurrency);
                     groupViewHolder.balanceTextView.setTextColor(ContextCompat.getColor(context, R.color.colorSecondaryText));
+                    groupViewHolder.balanceTextTextView.setVisibility(View.VISIBLE);
+                    groupViewHolder.balanceTextView.setVisibility(View.VISIBLE);
                 }
             }
+            if (callingActivity.equals(DetailFragment.class.getSimpleName()))
+            {
+                groupViewHolder.balanceTextTextView.setVisibility(View.GONE);
+                groupViewHolder.balanceTextView.setVisibility(View.GONE);
+            }
+            /*
             else
             {
                 groupViewHolder.balanceTextTextView.setVisibility(View.GONE);
                 groupViewHolder.balanceTextView.setVisibility(View.GONE);
             }
+            */
 
 
 
