@@ -118,10 +118,6 @@ public class BasicActivity extends AppCompatActivity {
                     case R.id.logout:
                         //Toast.makeText(getApplicationContext() , getString(R.string.logout_selected), Toast.LENGTH_SHORT).show();
                         auth.signOut();
-
-                        intent = new Intent(getApplicationContext(), LoginSignUpActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
                         finish();
                         break;
                 }
