@@ -20,6 +20,8 @@ import com.polito.mad17.madmax.entities.Group;
 
 import java.util.HashMap;
 
+// todo controllare se viene usata
+
 public class GroupExpensesActivity extends AppCompatActivity {
     public static HashMap<String, Expense> expenses = new HashMap<>();
 
