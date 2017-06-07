@@ -193,10 +193,10 @@ public class SignUpFragment extends Fragment {
             return;
         }
 
-        CREATING_ACCOUNT = true;
-
         progressDialog.setMessage("Account creation, please wait...");
         progressDialog.show();
+
+        CREATING_ACCOUNT = true;
 
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
             @Override
@@ -261,6 +261,16 @@ public class SignUpFragment extends Fragment {
         progressDialog.setMessage("Sending email verification, please wait...");
         progressDialog.show();
 
+        // inserimento dell'utente a db (tranne la foto)
+        HashMap<String, String> newUserEntry = new HashMap<>();
+        newUserEntry.put("email", u.getEmail());
+        newUserEntry.put("password", u.getPassword());
+        newUserEntry.put("name", u.getName());
+        newUserEntry.put("surname", u.getSurname());
+        newUserEntry.put("username", u.getUsername());
+        databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+        Log.i(TAG, "new user sent into db");
+
         // for saving image
         if (imageSetted) {
             StorageReference uProfileImageFilenameRef = storageReference.child("users").child(UID).child(UID + "_profileImage.jpg");
@@ -288,32 +298,21 @@ public class SignUpFragment extends Fragment {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
 
+                        // inserimento della foto a db
                         u.setProfileImage(taskSnapshot.getMetadata().getDownloadUrl().toString());
+                        databaseReference.child("users").child(u.getID()).child("image").setValue(u.getProfileImage());
 
                         user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 progressDialog.dismiss();
                                 if (task.isSuccessful()) {
-                                    Log.i(TAG, "verification email successful sent");
-
-                                    Log.i(TAG, "insert new user into db");
-
-                                    HashMap<String, String> newUserEntry = new HashMap<>();
-
-                                    newUserEntry.put("email", u.getEmail());
-                                    newUserEntry.put("password", u.getPassword());
-//                                    newUserEntry.put("friends", u.getUserFriends().toString());
-//                                    newUserEntry.put("groups", u.getUserGroups().toString());
-                                    newUserEntry.put("image", u.getProfileImage());
-                                    newUserEntry.put("name", u.getName());
-                                    newUserEntry.put("surname", u.getSurname());
-                                    newUserEntry.put("username", u.getUsername());
-
-                                    databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
+                                    Log.i(TAG, "verification email successfully sent");
                                     Toast.makeText(getContext(), R.string.emailVerification_text, Toast.LENGTH_LONG).show();
                                 } else {
-                                    // todo delete the account and restart the activity
+                                    databaseReference.child("users").child(u.getID()).removeValue();
+                                    user.delete();
+                                    Log.d(TAG, "user deleted from db");
                                     Log.e(TAG, "verification email not sent, exception: " + task.getException());
                                 }
                                 onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "1");
@@ -329,25 +328,12 @@ public class SignUpFragment extends Fragment {
                     progressDialog.dismiss();
                     if (task.isSuccessful()) {
                         Log.i(TAG, "verification email successful sent");
-
-                        Log.i(TAG, "insert new user into db");
-
-                        HashMap<String, String> newUserEntry = new HashMap<>();
-
-                        newUserEntry.put("email", u.getEmail());
-                        newUserEntry.put("password", u.getPassword());
-//                        newUserEntry.put("friends", u.getUserFriends().toString());
-//                        newUserEntry.put("groups", u.getUserGroups().toString());
-                        newUserEntry.put("image", u.getProfileImage());
-                        newUserEntry.put("name", u.getName());
-                        newUserEntry.put("surname", u.getSurname());
-                        newUserEntry.put("username", u.getUsername());
-
-                        databaseReference.child("users").child(u.getID()).setValue(newUserEntry);
                         Toast.makeText(getContext(), R.string.emailVerification_text, Toast.LENGTH_LONG).show();
                     }
                     else {
-                        // todo delete the account and restart the activity
+                        databaseReference.child("users").child(u.getID()).removeValue();
+                        user.delete();
+                        Log.d(TAG, "user deleted from db");
                         Log.e(TAG, "verification email not sent, exception: " + task.getException());
                     }
                     onClickSignUpInterface.itemClicked(SignUpFragment.class.getSimpleName(), "1");
