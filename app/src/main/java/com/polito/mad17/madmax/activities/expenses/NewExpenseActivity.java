@@ -123,7 +123,57 @@ public class NewExpenseActivity extends AppCompatActivity {
         billPhoto = (ImageView) findViewById(R.id.img_bill);
         billPhotoText = (TextView) findViewById(R.id.tv_bill_expense);
         splitButton = (Button) findViewById(R.id.btn_split);
-        checkBox = (CheckBox) findViewById(R.id.check_unequal);
+        unequalCheckBox = (CheckBox) findViewById(R.id.check_unequal);
+
+
+        splitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Double value = null;
+                String text = amount.getText().toString();
+                if(!text.isEmpty())
+                {
+                    try
+                    {
+                        value= Double.parseDouble(text);
+                        // it means it is double
+                    } catch (Exception e1) {
+                        // this means it is not double
+                        e1.printStackTrace();
+                    }
+                    Intent intent = new Intent(NewExpenseActivity.this, SplitPolicyActivity.class);
+                    intent.putExtra("amount", value);
+                    intent.putExtra("currency", currency.getSelectedItem().toString());
+                    intent.putExtra("participants", members);
+                    intent.putExtra("totalSplit", totalSplit);
+                    intent.putExtra("groupID", groupID);
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("callingActivity", "SplitPolicyActivity");
+                    intent.putExtra("groupName", groupName);
+                    intent.putExtra("groupImage", groupImage);
+                    startActivityForResult(intent, PICK_SPLIT_REQUEST);
+                }
+                else
+                {
+                    Toast.makeText(getBaseContext(), "Fill amount field", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+            }
+        });
+
+        //Add listener to checkbox
+        addListenerOnUnequalSplit();
+
+        if (unequalCheckBox.isChecked())
+        {
+            equalSplit = true;
+        }
+        else
+        {
+            equalSplit = false;
+            splitButton.setClickable(false);
+        }
 
         // creating spinner for currencies
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
@@ -133,6 +183,28 @@ public class NewExpenseActivity extends AppCompatActivity {
         // set the defaultCurrency value for the spinner based on the user preferences
         int spinnerPosition = adapter.getPosition(defaultCurrency);
         currency.setSelection(spinnerPosition);
+
+        //Add members of this group to a map. It's needed to pass them to SplitPolicyActivity
+        databaseReference.child("groups").child(groupID).child("members").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot memberSnap : dataSnapshot.getChildren())
+                {
+                    if (!memberSnap.child("deleted").getValue(Boolean.class))
+                    {
+                        if (!members.containsKey(memberSnap.getKey()))
+                            members.put(memberSnap.getKey(), 0d);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         expensePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,9 +227,13 @@ public class NewExpenseActivity extends AppCompatActivity {
             billPhotoText.setVisibility(View.GONE);
             billPhoto.setVisibility(View.GONE);
             splitButton.setVisibility(View.GONE);
-            checkBox.setVisibility(View.GONE);
+            unequalCheckBox.setVisibility(View.GONE);
         }
         else {
+            billPhotoText.setVisibility(View.VISIBLE);
+            billPhoto.setVisibility(View.VISIBLE);
+            splitButton.setVisibility(View.VISIBLE);
+            unequalCheckBox.setVisibility(View.VISIBLE);
             billPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

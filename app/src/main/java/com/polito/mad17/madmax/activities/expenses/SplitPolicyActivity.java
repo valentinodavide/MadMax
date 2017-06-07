@@ -1,10 +1,9 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
-import android.support.v4.app.NavUtils;
+import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,7 +23,6 @@ import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -185,6 +183,7 @@ public class SplitPolicyActivity extends AppCompatActivity implements SplittersV
                 Intent intent = new Intent(SplitPolicyActivity.this, NewExpenseActivity.class);
                 intent.putExtra("amountsList", amountsList);
                 intent.putExtra("totalSplit", totalSplit);
+                intent.putExtra("groupID", groupID);
                 setResult(RESULT_OK, intent);
                 this.finish();
 

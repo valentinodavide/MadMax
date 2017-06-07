@@ -29,6 +29,7 @@
         />
 
     <RelativeLayout
+        android:id="@+id/balance_layout"
         android:layout_width="70dp"
         android:layout_height="match_parent"
         android:layout_weight="0.2">
