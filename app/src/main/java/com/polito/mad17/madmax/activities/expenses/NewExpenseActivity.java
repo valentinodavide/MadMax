@@ -24,6 +24,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -65,14 +66,16 @@ public class NewExpenseActivity extends AppCompatActivity {
     private Spinner currency;
     private ImageView expensePhoto;
     private ImageView billPhoto;
+    private TextView billPhotoText;
     private Button splitButton;
+    private CheckBox checkBox;
 
     private String groupID = null;
     private String userID = null;
     private String callingActivity;
     private String groupName;
     private String groupImage;
-    private Boolean newExpensePhoto, newBillPhoto;
+    private Boolean newExpensePhoto, newBillPhoto, isNewPending;
     //private Integer numberMembers = null;
     private Context context;
 
@@ -112,12 +115,16 @@ public class NewExpenseActivity extends AppCompatActivity {
         callingActivity = intent.getStringExtra("callingActivity");
         groupName = intent.getStringExtra("groupName");
         groupImage = intent.getStringExtra("groupImage");
+        isNewPending = intent.getBooleanExtra("newPending", false);
 
         description = (EditText) findViewById(R.id.edit_description);
         amount = (EditText) findViewById(R.id.edit_amount);
         currency = (Spinner) findViewById(R.id.currency);
         expensePhoto = (ImageView) findViewById(R.id.img_expense);
         billPhoto = (ImageView) findViewById(R.id.img_bill);
+        billPhotoText = (TextView) findViewById(R.id.tv_bill_expense);
+        splitButton = (Button) findViewById(R.id.btn_split);
+        checkBox = (CheckBox) findViewById(R.id.check_unequal);
 
         // creating spinner for currencies
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currencies, android.R.layout.simple_spinner_item);
@@ -144,21 +151,30 @@ public class NewExpenseActivity extends AppCompatActivity {
             }
         });
 
-        billPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i(TAG, "image clicked");
+        if(isNewPending)
+        {
+            billPhotoText.setVisibility(View.GONE);
+            billPhoto.setVisibility(View.GONE);
+            splitButton.setVisibility(View.GONE);
+            checkBox.setVisibility(View.GONE);
+        }
+        else {
+            billPhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.i(TAG, "image clicked");
 
-                // allow to the user the choose his profile image
-                Intent intent = new Intent();
-                // Show only images, no videos or anything else
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                // Always show the chooser (if there are multiple options available)
-                startActivityForResult(Intent.createChooser(intent,"Select picture"), PICK_BILL_PHOTO_REQUEST);
-                // now see onActivityResult
-            }
-        });
+                    // allow to the user the choose his profile image
+                    Intent intent = new Intent();
+                    // Show only images, no videos or anything else
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    // Always show the chooser (if there are multiple options available)
+                    startActivityForResult(Intent.createChooser(intent, "Select picture"), PICK_BILL_PHOTO_REQUEST);
+                    // now see onActivityResult
+                }
+            });
+        }
     }
 
     @Override
