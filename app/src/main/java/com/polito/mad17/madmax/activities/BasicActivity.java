@@ -177,7 +177,7 @@ public class BasicActivity extends AppCompatActivity {
         String profileImage = getCurrentUser().getProfileImage();
         if (profileImage != null && !profileImage.equals("")) {
             // Loading image
-            Glide.with(this).load(profileImage)
+            Glide.with(getApplicationContext()).load(profileImage)
                     .centerCrop()
                     .bitmapTransform(new CropCircleTransformation(this))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
