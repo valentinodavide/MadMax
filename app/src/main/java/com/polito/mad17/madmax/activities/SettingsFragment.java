@@ -16,16 +16,8 @@ public class SettingsFragment extends PreferenceFragment {
     private static final String TAG = SettingsFragment.class.getSimpleName();
 
     public static final String NOTIFICATION_INVITE = "notification_invite";
-    public static final String NOTIFICATION_JOIN_GROUP = "notification_joinGroup";
-    public static final String NOTIFICATION_LEAVE_GROUP = "notification_leaveGroup";
     public static final String NOTIFICATION_EXPENSE = "notification_expense";
     public static final String NOTIFICATION_PROPOSAL_EXPENSE = "notification_proposalExpense";
-    public static final String NOTIFICATION_COMMENT = "notification_comment";
-    public static final String NOTIFICATION_VOTE = "notification_vote";
-    public static final String NOTIFICATION_PROPOSAL_APPROVED = "notification_proposalApproved";
-    public static final String NOTIFICATION_PROPOSAL_NEGLECTED = "notification_proposalNeglected";
-    public static final String NOTIFICATION_PAYMENT = "notification_payment";
-    public static final String NOTIFICATION_CONFIRM_PAYMENT = "notification_confirmPayment";
     public static final String DEFAULT_CURRENCY = "defaultCurrency";
 
     private DatabaseReference databaseReference;
@@ -40,17 +32,14 @@ public class SettingsFragment extends PreferenceFragment {
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        CheckBoxPreference boxPref = (CheckBoxPreference)preference;
+        if (preference instanceof CheckBoxPreference) {
+            CheckBoxPreference boxPref = (CheckBoxPreference) preference;
 
-        if(boxPref.isChecked())
-            databaseReference.child("users").child(MainActivity.getCurrentUID()).child("notifications").child(boxPref.getKey()).setValue(true);
-        else
-            databaseReference.child("users").child(MainActivity.getCurrentUID()).child("notifications").child(boxPref.getKey()).setValue(false);
-
-        /*if(((CheckBoxPreference)preference).isChecked())
-            Log.d(TAG, "preference "+preference.getKey()+" has been activated");
-        else
-            Log.d(TAG, "preference "+preference.getKey()+" has been deactivated");*/
+            if (boxPref.isChecked())
+                databaseReference.child("users").child(MainActivity.getCurrentUID()).child("notifications").child(boxPref.getKey()).setValue(true);
+            else
+                databaseReference.child("users").child(MainActivity.getCurrentUID()).child("notifications").child(boxPref.getKey()).setValue(false);
+        }
 
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }

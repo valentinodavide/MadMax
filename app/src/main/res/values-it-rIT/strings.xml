@@ -103,14 +103,7 @@
     <string name="setting_notification_new_expense">Nuova spesa aggiunta</string>
     <string name="setting_notification_removed_expense">Spesa rimossa</string>
     <string name="setting_notification_new_proposed_expense">Nuova proposta di spesa</string>
-    <string name="setting_notification_comment">Commento su una tua spesa</string>
-    <string name="setting_notification_vote_proposed_expense">Voto su una tua proposta di spesa</string>
-    <string name="setting_notification_approved_proposed_expense">Proposta di spesa approvata</string>
-    <string name="setting_notification_neglected_proposed_expense">Proposta di spesa rimossa</string>
-    <string name="setting_notification_user_pay">Un amico ti paga</string>
-    <!--string name="setting_notification_user_confirm_payment">Un amico conferma il tuo pagamento</string-->
     <string name="setting_default_currency">Seleziona valuta di default</string>
-
     <string name="no_debts_to_pay">Nessun debito</string>
     <string name="no_debts_to_pay_for_expense">Nessun debito per questa spesa</string>
     <string name="friend_removed">Amico rimosso</string>
@@ -146,4 +139,5 @@
     <string name="split_desire">Desideri dividere la spesa in modo particolare?</string>
     <string name="cannot_leave_group">Hai un debito verso questo gruppo. Pareggia i conti prima di lasciare</string>
     <string name="leaving_group">Abbandono gruppo in corso</string>
+    <string name="prompt_currency">Scegli la tua valuta</string>
 </resources>

@@ -118,14 +118,7 @@
     <string name="setting_notification_new_expense">New expense added</string>
     <string name="setting_notification_removed_expense">Expense removed</string>
     <string name="setting_notification_new_proposed_expense">New proposal expense added</string>
-    <string name="setting_notification_comment">Comment on your proposal expenses</string>
-    <string name="setting_notification_vote_proposed_expense">Vote on your proposal expenses</string>
-    <string name="setting_notification_approved_proposed_expense">Proposal expense approved</string>
-    <string name="setting_notification_neglected_proposed_expense">Proposal expense neglected</string>
-    <string name="setting_notification_user_pay">User pay his debts with you</string>
-    <!--string name="setting_notification_user_confirm_payment">User confirm your payment</string-->
     <string name="setting_default_currency">Select default currency</string>
-
     <string name="no_debts_to_pay">No debts to pay</string>
     <string name="no_debts_to_pay_for_expense">No debts for this expense</string>
     <string name="friend_removed">Friend removed</string>
@@ -159,5 +152,5 @@
     <string name="split_desire">Do you desire to split this expense in a specific way?</string>
     <string name="cannot_leave_group">You have a debit. Break even before leaving</string>
     <string name="leaving_group">Leaving group...</string>
-
+    <string name="prompt_currency">Choose your currency</string>
 </resources>
