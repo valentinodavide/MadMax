@@ -92,7 +92,7 @@ public class NewExpenseActivity extends AppCompatActivity {
     private int PICK_SPLIT_REQUEST = 2;
 
     private CheckBox unequalCheckBox;
-    Boolean equalSplit;
+    Boolean equalSplit = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -382,11 +382,6 @@ public class NewExpenseActivity extends AppCompatActivity {
 
 
             FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
-            //todo qui
-            Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
-            myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
-            myIntent.putExtra("currentFragment", 2);
-            startActivity(myIntent);
 
             // add event for PENDING_EXPENSE_ADD
             User currentUser = MainActivity.getCurrentUser();
@@ -401,6 +396,10 @@ public class NewExpenseActivity extends AppCompatActivity {
             event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
             FirebaseUtils.getInstance().addEvent(event);
 
+            Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
+            myIntent.putExtra("UID", MainActivity.getCurrentUser().getID());
+            myIntent.putExtra("currentFragment", 2);
+            startActivity(myIntent);
         }
         //Aggiungo una spesa normale
         else
@@ -466,12 +465,7 @@ public class NewExpenseActivity extends AppCompatActivity {
                     if (groupImage != null)
                         newExpense.setGroupImage(groupImage);
 
-                        FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
-                        //todo qui
-                        Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
-                        myIntent.putExtra("UID", MainActivity.getCurrentUID());
-                        myIntent.putExtra("currentFragment", 2);
-                        startActivity(myIntent);
+                    FirebaseUtils.getInstance().addPendingExpenseFirebase(newExpense, expensePhoto, getApplicationContext());
 
                     // add event for PENDING_EXPENSE_ADD
                     User currentUser = MainActivity.getCurrentUser();
@@ -485,6 +479,11 @@ public class NewExpenseActivity extends AppCompatActivity {
                     event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
                     event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
                     FirebaseUtils.getInstance().addEvent(event);
+
+                    Intent myIntent = new Intent(NewExpenseActivity.this, MainActivity.class);
+                    myIntent.putExtra("UID", MainActivity.getCurrentUID());
+                    myIntent.putExtra("currentFragment", 2);
+                    startActivity(myIntent);
 
                 }
                 //Aggiungo una spesa normale
