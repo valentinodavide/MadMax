@@ -1,6 +1,7 @@
 package com.polito.mad17.madmax.activities.expenses;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
@@ -8,7 +9,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,18 +28,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
-import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
-import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
-
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.exp;
 
 public class ExpenseDetailActivity extends AppCompatActivity implements OnItemClickInterface, NewCommentDialogFragment.NewCommentDialogListener {
 
@@ -156,6 +153,11 @@ public class ExpenseDetailActivity extends AppCompatActivity implements OnItemCl
                 Double amount = dataSnapshot.child("amount").getValue(Double.class);
                 currency = dataSnapshot.child("currency").getValue(String.class);
                 expenseNameTextView.setText(expenseName);
+                Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .placeholder(R.color.colorPrimary)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(imageView);
 
                 DecimalFormat df = new DecimalFormat("#.##");
                 amountTextView.setText(df.format(amount) + " " + currency);

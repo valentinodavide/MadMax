@@ -358,14 +358,14 @@ public class FirebaseUtils {
 
         StorageReference uExpensePhotoFilenameRef = storageReference.child("expenses").child(eID).child(eID + "_expensePhoto.jpg");
         // Get the data from an ImageView as bytes
-        if (expensePhoto != null) {
-            expensePhoto.setDrawingCacheEnabled(true);
-            expensePhoto.buildDrawingCache();
-            bitmap = expensePhoto.getDrawingCache();
-        }
-        else{
-            bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.expense_default);
-        }
+        if(expense.getExpensePhoto() == null) {
+            if (expensePhoto != null) {
+                expensePhoto.setDrawingCacheEnabled(true);
+                expensePhoto.buildDrawingCache();
+                bitmap = expensePhoto.getDrawingCache();
+            } else {
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.expense_default);
+            }
             baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             data = baos.toByteArray();
@@ -385,6 +385,9 @@ public class FirebaseUtils {
                     databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(taskSnapshot.getMetadata().getDownloadUrl().toString());
                 }
             });
+        }
+        else
+            databaseReference.child("expenses").child(eID).child("expensePhoto").setValue(expense.getExpensePhoto());
 
         if (billPhoto != null)
         {
