@@ -2,6 +2,7 @@ package com.polito.mad17.madmax.activities.users;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import com.polito.mad17.madmax.activities.DetailFragment;
 import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
+import com.polito.mad17.madmax.activities.expenses.NewExpenseActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.GroupsViewAdapter;
 import com.polito.mad17.madmax.entities.Group;
@@ -34,6 +36,8 @@ import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.util.Collections;
 import java.util.TreeMap;
+
+import static java.security.AccessController.getContext;
 
 public class FriendDetailActivity extends AppCompatActivity implements OnItemClickInterface {
     private static final String TAG = FriendDetailActivity.class.getSimpleName();
@@ -56,10 +60,15 @@ public class FriendDetailActivity extends AppCompatActivity implements OnItemCli
 
     private Toolbar toolbar;
 
+    private FloatingActionButton fab;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_bar_main);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        updateFab(0);
 
         Log.d(TAG, "onCreate di FriendDetailActivity");
 
@@ -102,7 +111,8 @@ public class FriendDetailActivity extends AppCompatActivity implements OnItemCli
         Log.d (TAG, "Clicked item: " + item.getItemId());
         switch (item.getItemId()) {
             case R.id.one:
-                Toast.makeText(this, getString(R.string.friend_removed), Toast.LENGTH_SHORT).show();
+                FirebaseUtils.getInstance().removeFromFriends(userID, friendID);
+                Toast.makeText(this, getString(R.string.friend_removed),Toast.LENGTH_SHORT).show();
                 return true;
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button on PendingExpenseDetailActivity");
@@ -118,19 +128,14 @@ public class FriendDetailActivity extends AppCompatActivity implements OnItemCli
         }
     }
 
- /*   @Override
-    public void onListItemClick(String clickedItemIndex)
-    {
-        Intent intent = new Intent(this, GroupDetailActivity.class);
-        intent.putExtra("groupID", clickedItemIndex);
-        intent.putExtra("userID", userID);
-        startActivity(intent);
+    private void updateFab(int position) {
+        switch (position) {
+            case 0:
+                Log.d(TAG, "fab 0");
+                fab.setVisibility(View.GONE); // fab non dovrebbe essere visibile
+                break;
+        }
     }
-
-    @Override
-    public boolean onListItemLongClick(String clickedItemIndex, View v) {
-        return false;
-    }*/
 
     @Override
     public void itemClicked(String fragmentName, String itemID) {

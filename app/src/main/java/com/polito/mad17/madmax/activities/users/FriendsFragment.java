@@ -122,7 +122,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
             public void onDataChange(final DataSnapshot externalDataSnapshot) {
 
                 //svuoto la map, così se viene eliminato uno user dal db, non viene tenuto nella map che si ricarica da zero
-                //friends.clear();
+                friends.clear();
 
                 for (final DataSnapshot friendSnapshot : externalDataSnapshot.getChildren()) {
                         //getFriend(friendSnapshot.getKey());
@@ -169,6 +169,7 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                                     friends.put(id, u);
                                 else
                                     friends.remove(id);
+
 
                                 friendsViewAdapter.update(friends);
                                 friendsViewAdapter.notifyDataSetChanged();

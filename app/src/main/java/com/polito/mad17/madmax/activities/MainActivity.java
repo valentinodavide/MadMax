@@ -487,7 +487,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                     public boolean onMenuItemClick(MenuItem item) {
 
                         FirebaseUtils.getInstance().removeFromFriends(currentUID, itemID);
-                        Toast.makeText(MainActivity.this, getString(R.string.friend_removed) + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.friend_removed),Toast.LENGTH_SHORT).show();
                         return true;
                     }
                 });
