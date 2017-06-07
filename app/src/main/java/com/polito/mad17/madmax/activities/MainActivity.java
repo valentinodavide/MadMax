@@ -273,8 +273,8 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                         inviterID = null;
                         makeText(MainActivity.this, getString(R.string.new_friend), Toast.LENGTH_LONG).show();
                     }
-                    else
-                        makeText(MainActivity.this, getString(R.string.already_friends), Toast.LENGTH_LONG).show();
+                    /*else
+                        makeText(MainActivity.this, getString(R.string.already_friends), Toast.LENGTH_LONG).show();*/
                 }
 
                 // control if user is already part of requested group

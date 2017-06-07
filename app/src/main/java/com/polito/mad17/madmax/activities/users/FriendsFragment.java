@@ -30,6 +30,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import static com.polito.mad17.madmax.R.id.currency;
+import static com.polito.mad17.madmax.R.string.balance;
+
 public class FriendsFragment extends Fragment implements FriendsViewAdapter.ListItemClickListener, FriendsViewAdapter.ListItemLongClickListener {
 
     private static final String TAG = FriendsFragment.class.getSimpleName();
@@ -145,6 +148,10 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                         if(activityName.equals("GroupDetailActivity"))
                         {
                             deleted  = friendSnapshot.child("deleted").getValue(Boolean.class);
+                            if (deleted == null)
+                            {
+                                deleted = true;
+                            }
                             //Se sono negli amici "generali" e non nei membri di un gruppo, non c'è il campo deleted, quindi sarà null
                             if (!listenedGroups.contains(groupID))
                                 listenedGroups.add(groupID);
@@ -346,30 +353,49 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                                             }
                                             Double alreadyPaid = dataSnapshot.child("participants").child(userID).child("alreadyPaid").getValue(Double.class);
 
-                                            Log.d (TAG, "Fraction: " + Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())));
+                                            Double fraction = dataSnapshot.child("participants").child(userID).child("fraction").getValue(Double.class);
 
-                                            Double dueImport = Double.parseDouble(String.valueOf(dataSnapshot.child("participants").child(userID).child("fraction").getValue())) * dataSnapshot.child("amount").getValue(Double.class);
-                                            Double balance = alreadyPaid - dueImport;
-                                            String currency = dataSnapshot.child("currency").getValue(String.class);
-                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                            Double balance = null;
+                                            String currency = null;
 
-                                            //current balance for that currency
-                                            Double temp = totBalances.get(currency);
-                                            //update balance for that currency
-                                            if (temp != null)
+                                            if (fraction != null)
                                             {
-                                                totBalances.put(currency, temp + balance);
-                                                Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
-                                            }
-                                            else
-                                            {
-                                                totBalances.put(currency, balance);
-                                                Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                                Log.d (TAG, "Fraction: " + fraction);
+
+                                                Double amount = dataSnapshot.child("amount").getValue(Double.class);
+
+                                                if (amount != null)
+                                                {
+                                                    Double dueImport = fraction * amount;
+                                                    balance = alreadyPaid - dueImport;
+                                                    currency = dataSnapshot.child("currency").getValue(String.class);
+                                                    //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                                }
 
                                             }
-                                            //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
-                                            //Double currentBalance = totBalances.get(userID);
-                                            //totBalances.put(userID, currentBalance+balance);
+
+                                            if (balance != null && currency != null)
+                                            {
+                                                //current balance for that currency
+                                                Double temp = totBalances.get(currency);
+                                                //update balance for that currency
+                                                if (temp != null)
+                                                {
+                                                    totBalances.put(currency, temp + balance);
+                                                    Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+                                                }
+                                                else
+                                                {
+                                                    totBalances.put(currency, balance);
+                                                    Log.d (TAG, "Actual debt for " + groupName + ": " + totBalances.get(currency) + " " + currency);
+
+                                                }
+                                                //se user per quella spesa ha già pagato più soldi della sua quota, il balance è positivo
+                                                //Double currentBalance = totBalances.get(userID);
+                                                //totBalances.put(userID, currentBalance+balance);
+                                            }
+
+
 
                                         }
 

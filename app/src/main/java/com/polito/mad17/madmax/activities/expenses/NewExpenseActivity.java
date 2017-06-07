@@ -167,11 +167,11 @@ public class NewExpenseActivity extends AppCompatActivity {
 
         if (unequalCheckBox.isChecked())
         {
-            equalSplit = true;
+            equalSplit = false;
         }
         else
         {
-            equalSplit = false;
+            equalSplit = true;
             splitButton.setClickable(false);
         }
 

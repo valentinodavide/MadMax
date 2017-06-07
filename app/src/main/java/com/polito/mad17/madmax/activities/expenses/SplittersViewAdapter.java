@@ -121,15 +121,21 @@ public class SplittersViewAdapter extends RecyclerView.Adapter<SplittersViewAdap
         final Map.Entry<String, User> item = getItem(position);
 
         String photo = item.getValue().getProfileImage();
-        if (photo != null) {
+
+        if(photo != null) {
             Glide.with(context).load(photo)
                     .placeholder(R.drawable.user_default)
                     .centerCrop()
                     .bitmapTransform(new CropCircleTransformation(context))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(holder.imageView);
-          /*  int photoUserId = Integer.parseInt(photo);
-            holder.imageView.setImageResource(photoUserId);*/
+        }
+        else {
+            Glide.with(context).load(R.drawable.user_default)
+                    .centerCrop()
+                    .bitmapTransform(new CropCircleTransformation(context))
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.imageView);
         }
 
         Log.d (TAG, "Nome: " + item.getValue().getName());

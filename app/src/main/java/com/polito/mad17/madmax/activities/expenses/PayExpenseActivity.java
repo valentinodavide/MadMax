@@ -63,7 +63,7 @@ public class PayExpenseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_expense);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
         userID = intent.getStringExtra("userID");
@@ -106,14 +106,20 @@ public class PayExpenseActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        Intent intent;
+
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 Log.d (TAG, "Clicked up button");
+                /*
                 Intent intent = new Intent(this, GroupDetailActivity.class);
                 intent.putExtra("groupID", groupID);
                 intent.putExtra("userID", userID);
                 startActivity(intent);
+                */
+                onBackPressed();
                 return true;
 
             case R.id.action_save:
