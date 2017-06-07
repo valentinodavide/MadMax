@@ -150,43 +150,42 @@ public class FriendsFragment extends Fragment implements FriendsViewAdapter.List
                                 listenedGroups.add(groupID);
                         }
 
-                    final String id = friendSnapshot.getKey();
-                    databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
+                    if(!deleted) {
+                        final String id = friendSnapshot.getKey();
+                        databaseReference.child("users").child(id).addValueEventListener(new ValueEventListener() {
 
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            String name = dataSnapshot.child("name").getValue(String.class);
-                            String surname = dataSnapshot.child("surname").getValue(String.class);
-                            String profileImage = dataSnapshot.child("image").getValue(String.class);
+                                String name = dataSnapshot.child("name").getValue(String.class);
+                                String surname = dataSnapshot.child("surname").getValue(String.class);
+                                String profileImage = dataSnapshot.child("image").getValue(String.class);
 
-                            if(activityName.equals("MainActivity"))
-                            {
-                                User u = new User();
-                                u.setID(friendSnapshot.getKey());
-                                u.setName(name);
-                                u.setSurname(surname);
-                                u.setProfileImage(profileImage);
-                                if (!deleted)
-                                    friends.put(id, u);
-                                else
-                                    friends.remove(id);
+                                if (activityName.equals("MainActivity")) {
+                                    User u = new User();
+                                    u.setID(friendSnapshot.getKey());
+                                    u.setName(name);
+                                    u.setSurname(surname);
+                                    u.setProfileImage(profileImage);
+                                    if (!deleted)
+                                        friends.put(id, u);
+                                    else
+                                        friends.remove(id);
 
 
-                                friendsViewAdapter.update(friends);
-                                friendsViewAdapter.notifyDataSetChanged();
+                                    friendsViewAdapter.update(friends);
+                                    friendsViewAdapter.notifyDataSetChanged();
+                                } else if (activityName.equals("GroupDetailActivity")) {
+                                    getUserAndGroupBalance(id, name, surname, profileImage, groupID);
+                                }
                             }
-                            else if (activityName.equals("GroupDetailActivity"))
-                            {
-                                getUserAndGroupBalance(id, name, surname, profileImage, groupID);
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
                             }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                        });
+                    }
                 }
 
                 friendsViewAdapter.update(friends);

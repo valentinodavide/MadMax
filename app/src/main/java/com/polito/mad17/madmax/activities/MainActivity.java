@@ -218,7 +218,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                 // get user friends's IDs
                 if(dataSnapshot.child("friends").hasChildren())
                     for(DataSnapshot friend : dataSnapshot.child("friends").getChildren()){
-                        if(!friend.child("deleted").getValue(Boolean.class))
+                        if(!friend.hasChild("deleted") || !friend.child("deleted").getValue(Boolean.class))
                             currentUser.getUserFriends().put(friend.getKey(),null);
                     }
                 // get user groups's IDs
