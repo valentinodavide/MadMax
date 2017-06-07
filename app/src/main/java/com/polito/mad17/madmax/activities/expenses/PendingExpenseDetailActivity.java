@@ -5,12 +5,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,22 +27,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.polito.mad17.madmax.R;
 import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
-import com.polito.mad17.madmax.activities.InsetDivider;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
-import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
-import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.TreeMap;
-
-import static com.polito.mad17.madmax.R.id.fab;
 
 public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener, NewCommentDialogFragment.NewCommentDialogListener{
 
@@ -143,6 +135,13 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                 amountTextView.setText(amount.toString());
                 creatorID = dataSnapshot.child("creatorID").getValue(String.class);
                 groupID = dataSnapshot.child("groupID").getValue(String.class);
+
+                Glide.with(getApplicationContext()).load(dataSnapshot.child("expensePhoto").getValue(String.class)) //.load(dataSnapshot.child("image").getValue(String.class))
+                        .placeholder(R.color.colorPrimary)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(imageView);
+
                 databaseReference.child("users").child(creatorID).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot creatorSnapshot) {
