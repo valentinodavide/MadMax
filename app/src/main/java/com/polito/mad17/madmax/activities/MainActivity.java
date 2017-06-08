@@ -569,7 +569,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                                 if(MainActivity.getCurrentUser().getID().matches(dataSnapshot.getValue(String.class))) {
                                     FirebaseUtils.getInstance().removePendingExpenseFirebase(itemID, getApplicationContext());
                                     // add event for PENDING_EXPENSE_REMOVE
-                                    databaseReference.child("proposedExpenses").child(itemID)
+                                    /*databaseReference.child("proposedExpenses").child(itemID)
                                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                 @Override
                                                                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -590,7 +590,7 @@ public class MainActivity extends BasicActivity implements OnItemClickInterface,
                                                                                     Log.w(TAG, databaseError.toException());
                                                                                 }
                                                                             }
-                                            );
+                                            );*/
                                 }
                                 else
                                     Toast.makeText(MainActivity.this,getString(R.string.not_creator),Toast.LENGTH_SHORT).show();

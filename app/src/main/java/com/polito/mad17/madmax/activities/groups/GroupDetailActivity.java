@@ -211,7 +211,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                         //Toast.makeText(GroupDetailActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
                         FirebaseUtils.getInstance().removeExpenseFirebase(itemID, getApplicationContext());
 
-                        // add event for EXPENSE_REMOVE
+                        /*// add event for EXPENSE_REMOVE
                         databaseReference.child("expenses").child(itemID)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -233,7 +233,7 @@ public class GroupDetailActivity extends AppCompatActivity implements OnItemClic
                                     Log.w(TAG, databaseError.toException());
                                 }
                             }
-                        );
+                        );*/
 
                         return true;
                     }

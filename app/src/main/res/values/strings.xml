@@ -86,7 +86,7 @@
     <string name="PENDING_EXPENSE_NEGLECTED"> has been neglected!</string>
     <!--string name="FRIEND_INVITE"> New friend invited by </string-->
     <string name="FRIEND_GROUP_INVITE"> New member invited by </string>
-    <string name="FRIEND_PAY"> give you back </string>
+    <string name="FRIEND_PAY"> give back </string>
     <string name="ME_PAY">You have paid </string>
     <string name="FRIEND_COMMENT_ADD"> commented on </string>
     <string name="ME_COMMENT_ADD">You left a comment on </string>

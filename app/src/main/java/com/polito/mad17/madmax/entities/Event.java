@@ -4,7 +4,7 @@ public class Event {
     public enum EventType {
         GROUP_ADD, /*GROUP_REMOVE,*/ GROUP_EDIT,
 
-        GROUP_MEMBER_ADD, GROUP_MEMBER_REMOVE /*TODO to implementf*/,
+        GROUP_MEMBER_ADD, GROUP_MEMBER_REMOVE /*TODO to implement*/,
 
         EXPENSE_ADD, EXPENSE_REMOVE, EXPENSE_EDIT,
 

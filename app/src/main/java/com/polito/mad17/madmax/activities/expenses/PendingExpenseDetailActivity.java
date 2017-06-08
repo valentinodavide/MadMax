@@ -30,12 +30,16 @@ import com.polito.mad17.madmax.activities.ExpenseDetailPagerAdapter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.OnItemClickInterface;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
+import com.polito.mad17.madmax.entities.Event;
 import com.polito.mad17.madmax.entities.Expense;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import static com.polito.mad17.madmax.R.id.money;
 
 public class PendingExpenseDetailActivity extends AppCompatActivity implements VotersViewAdapter.ListItemClickListener, NewCommentDialogFragment.NewCommentDialogListener{
 
@@ -215,6 +219,19 @@ public class PendingExpenseDetailActivity extends AppCompatActivity implements V
                             //Delete pending expense from group
                             databaseReference.child("groups").child(groupID).child("proposedExpenses").child(expenseID).setValue(false);
 
+                            // add event for PENDING_EXPENSE_APPROVED
+                            User currentUser = MainActivity.getCurrentUser();
+                            String userID = currentUser.getID();
+                            Event event = new Event(
+                                    groupID,
+                                    Event.EventType.PENDING_EXPENSE_APPROVED,
+                                    currentUser.getName() + " " + currentUser.getSurname(),
+                                    newExpense.getDescription(),
+                                    newExpense.getAmount()
+                            );
+                            event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                            event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                            FirebaseUtils.getInstance().addEvent(event);
 
                             Intent myIntent = new Intent(PendingExpenseDetailActivity.this, GroupDetailActivity.class);
                             myIntent.putExtra("groupID", groupID);

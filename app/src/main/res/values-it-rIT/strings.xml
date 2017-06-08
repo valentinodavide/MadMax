@@ -73,7 +73,7 @@
     <string name="PENDING_EXPENSE_NEGLECTED"> è stata rifiutata!</string>
     <!--string name="FRIEND_INVITE"> Nuovo amico invitato da </string-->
     <string name="FRIEND_GROUP_INVITE"> Nuovo membro invitato da </string>
-    <string name="FRIEND_PAY"> ti ha pagato </string>
+    <string name="FRIEND_PAY"> ha pagato </string>
     <string name="ME_PAY">Hai pagato </string>
     <string name="FRIEND_COMMENT_ADD"> ha commentato la spesa </string>
     <string name="ME_COMMENT_ADD">Hai commentato la spesa </string>

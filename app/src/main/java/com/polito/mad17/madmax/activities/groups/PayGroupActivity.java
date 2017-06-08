@@ -29,11 +29,15 @@ import com.polito.mad17.madmax.activities.DecimalDigitsInputFilter;
 import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.SettingsFragment;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
+import com.polito.mad17.madmax.entities.Event;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
+import static com.polito.mad17.madmax.R.layout.event;
 import static java.lang.Math.abs;
 import static java.lang.Math.exp;
 
@@ -208,7 +212,20 @@ public class PayGroupActivity extends AppCompatActivity {
                     {
                         //currency.getSelectedItem().toString()
                         payDebtForExpenses(userID, groupID, money, shownCurrency);
-                        // todo add event for USER_PAY
+
+                        // add event for USER_PAY
+                        User currentUser = MainActivity.getCurrentUser();
+                        String userID = currentUser.getID();
+                        Event event = new Event(
+                                groupID,
+                                Event.EventType.USER_PAY,
+                                userID,
+                                money + " " + shownCurrency
+                        );
+                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                        FirebaseUtils.getInstance().addEvent(event);
+
                         intent = new Intent(this, GroupDetailActivity.class);
                         intent.putExtra("groupID", groupID);
                         intent.putExtra("userID", userID);

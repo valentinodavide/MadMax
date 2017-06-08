@@ -26,9 +26,12 @@ import com.polito.mad17.madmax.activities.MainActivity;
 import com.polito.mad17.madmax.activities.groups.GroupDetailActivity;
 import com.polito.mad17.madmax.activities.groups.PayGroupActivity;
 import com.polito.mad17.madmax.entities.CropCircleTransformation;
+import com.polito.mad17.madmax.entities.Event;
+import com.polito.mad17.madmax.entities.User;
 import com.polito.mad17.madmax.utilities.FirebaseUtils;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 import static java.lang.Math.abs;
 
@@ -180,7 +183,20 @@ public class PayExpenseActivity extends AppCompatActivity {
                     {
                         Toast.makeText(PayExpenseActivity.this, getString(R.string.paid), Toast.LENGTH_SHORT).show();
                         payDebtForExpense(userID, expenseID, money);
-                        // todo add event for USER_PAY
+
+                        // add event for USER_PAY
+                        User currentUser = MainActivity.getCurrentUser();
+                        String userID = currentUser.getID();
+                        Event event = new Event(
+                                groupID,
+                                Event.EventType.USER_PAY,
+                                userID,
+                                money + " €"
+                        );
+                        event.setDate(new SimpleDateFormat("yyyy.MM.dd").format(new java.util.Date()));
+                        event.setTime(new SimpleDateFormat("HH:mm").format(new java.util.Date()));
+                        FirebaseUtils.getInstance().addEvent(event);
+
                         intent = new Intent(this, ExpenseDetailActivity.class);
                         intent.putExtra("groupID", groupID);
                         intent.putExtra("userID", userID);

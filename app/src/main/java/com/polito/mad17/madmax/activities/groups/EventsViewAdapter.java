@@ -149,17 +149,16 @@ public class EventsViewAdapter extends RecyclerView.Adapter<EventsViewAdapter.Ev
                 event.setDescription(context.getString(R.string.FRIEND_GROUP_INVITE) + " " + event.getObject());
                 break;
             case USER_PAY: // instead of the username the subject must be the ID of the user
-                // todo da mettere currency
                 eventViewHolder.imageView.setImageResource(R.drawable.user_pay);
                 if (currentUser.getID().equals(event.getSubject())) {
-                    event.setDescription(context.getString(R.string.ME_PAY) + " " + event.getAmount());
+                    event.setDescription(context.getString(R.string.ME_PAY) + " " + event.getObject());
                 }
                 else {
                     databaseReference.child("users").child(event.getSubject())
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                event.setDescription(dataSnapshot.child("name").getValue(String.class) + " " + dataSnapshot.child("surname").getValue(String.class) + " " + context.getString(R.string.FRIEND_PAY) + " " + event.getAmount());
+                                event.setDescription(dataSnapshot.child("name").getValue(String.class) + " " + dataSnapshot.child("surname").getValue(String.class) + " " + context.getString(R.string.FRIEND_PAY) + " " + event.getObject());
                             }
 
                             @Override
